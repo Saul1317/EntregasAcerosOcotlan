@@ -3,13 +3,14 @@
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/cardview_choferes"
-    cardview:cardCornerRadius="@dimen/cardview_radius_choferes">
+    cardview:cardCornerRadius="@dimen/cardview_radius_choferes"
+    android:layout_marginBottom="5dp">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <ImageView
+            android:id="@+id/foto_fondo_chofer"
             android:layout_width="match_parent"
             android:layout_height="@dimen/cardview_choferes"
             android:background="@drawable/camion_prueba"
@@ -27,6 +28,7 @@
                 android:paddingBottom="16dp">
 
                 <ImageView
+                    android:id="@+id/foto_perfil_chofer"
                     android:layout_width="75dp"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
@@ -41,6 +43,7 @@
                 android:paddingLeft="16dp"
                 android:paddingBottom="16dp">
                 <TextView
+                    android:id="@+id/txt_nombre_chofer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Arnulfo Luna"

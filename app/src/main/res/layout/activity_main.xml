@@ -6,8 +6,20 @@
     android:layout_height="match_parent"
     tools:context="com.acerosocotlan.entregasacerosocotlan.controlador.MainActivity">
 
-    <include layout="@layout/content_main" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp">
 
+        <include layout="@layout/cardview_choferes"></include>
+        <include layout="@layout/cardview_choferes"></include>
+        <include layout="@layout/cardview_choferes"></include>
+
+    </LinearLayout>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"

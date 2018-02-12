@@ -20,7 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".controlador.MainActivity" />
         <activity
-            android:name=".controlador.MainActivity"/>
+            android:name=".controlador.RutasActivity"
+            android:label="@string/title_activity_rutas"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
+
 </manifest>
