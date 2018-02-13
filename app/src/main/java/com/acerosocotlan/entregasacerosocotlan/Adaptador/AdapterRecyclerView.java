@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
+import com.acerosocotlan.entregasacerosocotlan.modelo.Camion;
 import com.acerosocotlan.entregasacerosocotlan.modelo.Choferes;
 
 import java.util.ArrayList;
@@ -20,12 +21,12 @@ import java.util.ArrayList;
 
 public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerView.AdapterRecyclerHolder>{
 
-    private ArrayList<Choferes> choferesArrayList;
+    private ArrayList<Camion> camionArrayList;
     private int resource;
     private Activity activity;
 
-    public AdapterRecyclerView(ArrayList<Choferes> choferesArrayList, int resource, Activity activity) {
-        this.choferesArrayList = choferesArrayList;
+    public AdapterRecyclerView(ArrayList<Camion> camionArrayList, int resource, Activity activity) {
+        this.camionArrayList = camionArrayList;
         this.resource = resource;
         this.activity = activity;
     }
@@ -38,13 +39,13 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
 
     @Override
     public void onBindViewHolder(AdapterRecyclerHolder holder, int position) {
-        Choferes chf = choferesArrayList.get(position);
-        holder.nombre_chofer_Cardview.setText(chf.getNombre());
+        Camion camionInstancia = camionArrayList.get(position);
+        holder.nombre_chofer_Cardview.setText(camionInstancia.getNombre_chofer());
     }
 
     @Override
     public int getItemCount() {
-        return choferesArrayList.size();
+        return camionArrayList.size();
     }
 
     public class AdapterRecyclerHolder extends RecyclerView.ViewHolder{

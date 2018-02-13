@@ -24,6 +24,14 @@
         <activity
             android:name=".controlador.RutasActivity"
             android:label="@string/title_activity_rutas"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".controlador.EntregasActivity"
+            android:label="@string/title_activity_entregas"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".controlador.SelectorActivity"
+            android:label="@string/title_activity_selector"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

@@ -2,4 +2,8 @@
     <string name="app_name">Entregas Aceros Ocotlan</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_rutas">RutasActivity</string>
+    <string name="title_activity_entregas">Entregas Activity</string>
+    <string name="sociedad">Sociedad</string>
+    <string name="sucursal">Sucursal</string>
+    <string name="title_activity_selector">SelectorActivity</string>
 </resources>

@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 
 import com.acerosocotlan.entregasacerosocotlan.Adaptador.AdapterRecyclerView;
 import com.acerosocotlan.entregasacerosocotlan.R;
+import com.acerosocotlan.entregasacerosocotlan.modelo.Camion;
 import com.acerosocotlan.entregasacerosocotlan.modelo.Choferes;
 
 import java.security.AccessController;
@@ -27,6 +28,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        RecyclerView choferesRecycler = (RecyclerView) findViewById(R.id.choferes_recycler);
+        LinearLayoutManager l = new LinearLayoutManager(getApplicationContext());
+        l.setOrientation(LinearLayoutManager.VERTICAL);
+        choferesRecycler.setLayoutManager(l);
+        AdapterRecyclerView arv = new AdapterRecyclerView(cargarArrayList(),R.layout.cardview_choferes, MainActivity.this);
+        choferesRecycler.setAdapter(arv);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,12 +45,53 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public ArrayList<Choferes> cargarArrayList(){
-        ArrayList<Choferes> listachoferes = new ArrayList<>();
-        listachoferes.add(new Choferes(
+    public ArrayList<Camion> cargarArrayList(){
+        ArrayList<Camion> listacamion = new ArrayList<>();
+        listacamion.add(new Camion(
                 "C://Users/Saul/Desktop/usuario_ejemplo.jpg",
+                "Saúl Alejandro",
                 "C://Users/Saul/Desktop/camion_prueba.jpg",
-                "Saúl Alejandro Delgado Mayorga"));
-        return listachoferes;
+                "",
+                "",
+                "",
+                "",
+                ""));
+        listacamion.add(new Camion(
+                "C://Users/Saul/Desktop/usuario_ejemplo.jpg",
+                "Miguel Angel",
+                "C://Users/Saul/Desktop/camion_prueba.jpg",
+                "",
+                "",
+                "",
+                "",
+                ""));
+        listacamion.add(new Camion(
+                "C://Users/Saul/Desktop/usuario_ejemplo.jpg",
+                "Pepe",
+                "C://Users/Saul/Desktop/camion_prueba.jpg",
+                "",
+                "",
+                "",
+                "",
+                ""));
+        listacamion.add(new Camion(
+                "C://Users/Saul/Desktop/usuario_ejemplo.jpg",
+                "Lalo",
+                "C://Users/Saul/Desktop/camion_prueba.jpg",
+                "",
+                "",
+                "",
+                "",
+                ""));
+        listacamion.add(new Camion(
+                "C://Users/Saul/Desktop/usuario_ejemplo.jpg",
+                "Daniel",
+                "C://Users/Saul/Desktop/camion_prueba.jpg",
+                "",
+                "",
+                "",
+                "",
+                ""));
+        return listacamion;
     }
 }

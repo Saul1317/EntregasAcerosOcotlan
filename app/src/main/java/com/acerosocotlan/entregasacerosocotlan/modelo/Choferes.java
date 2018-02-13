@@ -6,37 +6,28 @@ package com.acerosocotlan.entregasacerosocotlan.modelo;
 
 public class Choferes {
 
-    private String foto_perfil;
-    private String fondo_perfil;
-    private String nombre;
+    private String foto_perfil_chofer;
+    private String nombre_chofer;
 
-    public Choferes(String foto_perfil, String fondo_perfil, String nombre) {
-        this.foto_perfil = foto_perfil;
-        this.fondo_perfil = fondo_perfil;
-        this.nombre = nombre;
+
+    public Choferes(String foto_perfil_chofer, String nombre_chofer) {
+        this.foto_perfil_chofer = foto_perfil_chofer;
+        this.nombre_chofer = nombre_chofer;
     }
 
-    public String getFoto_perfil() {
-        return foto_perfil;
+    public String getFoto_perfil_chofer() {
+        return foto_perfil_chofer;
     }
 
-    public void setFoto_perfil(String foto_perfil) {
-        this.foto_perfil = foto_perfil;
+    public void setFoto_perfil_chofer(String foto_perfil_chofer) {
+        this.foto_perfil_chofer = foto_perfil_chofer;
     }
 
-    public String getFondo_perfil() {
-        return fondo_perfil;
+    public String getNombre_chofer() {
+        return nombre_chofer;
     }
 
-    public void setFondo_perfil(String fondo_perfil) {
-        this.fondo_perfil = fondo_perfil;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombre_chofer(String nombre_chofer) {
+        this.nombre_chofer = nombre_chofer;
     }
 }
