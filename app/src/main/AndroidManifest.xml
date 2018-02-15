@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.acerosocotlan.entregasacerosocotlan">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".modelo.TimeActivity"
         android:allowBackup="true"
@@ -26,12 +28,20 @@
             android:label="@string/title_activity_rutas"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".controlador.EntregasActivity"
-            android:label="@string/title_activity_entregas"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".controlador.SelectorActivity"
             android:label="@string/title_activity_selector"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".controlador.EntregaActivity"
+            android:label="@string/title_activity_entrega"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".controlador.DescargaEntregaActivity"
+            android:label="@string/title_activity_descarga_entrega"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".controlador.EvidenciasActivity"
+            android:label="@string/title_activity_evidencias"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

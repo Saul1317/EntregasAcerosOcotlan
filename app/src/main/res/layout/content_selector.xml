@@ -17,47 +17,30 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:gravity="center_vertical"
             android:layout_margin="@dimen/margen_ventana"
             android:layout_weight="0.3">
-            <LinearLayout
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text="@string/sociedad"
+                android:textSize="@dimen/texto_principal"
+                android:textStyle="bold"/>
+            <Spinner
+                android:id="@+id/spinner_sociedad"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/margen_componentes"
-                    android:layout_gravity="center"
-                    android:text="@string/sociedad"
-                    android:textSize="@dimen/texto_principal"
-                    android:textStyle="bold"/>
-                <Spinner
-                    android:id="@+id/spinner_sociedad"
-                    android:paddingLeft="5dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                </Spinner>
-            </LinearLayout>
-            <LinearLayout
+                android:layout_height="50dp">
+            </Spinner>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text="@string/sucursal"
+                android:textSize="@dimen/texto_principal"
+                android:textStyle="bold"/>
+            <Spinner
+                android:id="@+id/spinner_sucursal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/sucursal"
-                    android:layout_marginBottom="@dimen/margen_componentes"
-                    android:layout_gravity="center"
-                    android:textSize="@dimen/texto_principal"
-                    android:textStyle="bold"/>
-                <Spinner
-                    android:id="@+id/spinner_sucursal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/margen_componentes">
-                </Spinner>
-            </LinearLayout>
+                android:layout_height="50dp">
+            </Spinner>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"

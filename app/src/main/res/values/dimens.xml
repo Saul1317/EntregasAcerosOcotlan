@@ -2,7 +2,9 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="cardview_choferes">200dp</dimen>
     <dimen name="cardview_radius_choferes">4dp</dimen>
-    <dimen name="texto_principal">30sp</dimen>
+    <dimen name="texto_principal">25sp</dimen>
     <dimen name="margen_componentes">16dp</dimen>
     <dimen name="margen_ventana">16dp</dimen>
+    <dimen name="app_bar_height">180dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>

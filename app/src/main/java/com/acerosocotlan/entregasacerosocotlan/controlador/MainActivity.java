@@ -12,14 +12,22 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.Adaptador.AdapterRecyclerView;
 import com.acerosocotlan.entregasacerosocotlan.R;
 import com.acerosocotlan.entregasacerosocotlan.modelo.Camion;
+import com.acerosocotlan.entregasacerosocotlan.modelo.Camion_retrofit;
 import com.acerosocotlan.entregasacerosocotlan.modelo.Choferes;
+import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
+import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkService;
 
 import java.security.AccessController;
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager l = new LinearLayoutManager(getApplicationContext());
         l.setOrientation(LinearLayoutManager.VERTICAL);
         choferesRecycler.setLayoutManager(l);
+        ObtenerCamiones();
         AdapterRecyclerView arv = new AdapterRecyclerView(cargarArrayList(),R.layout.cardview_choferes, MainActivity.this);
         choferesRecycler.setAdapter(arv);
 
@@ -56,42 +65,28 @@ public class MainActivity extends AppCompatActivity {
                 "",
                 "",
                 ""));
-        listacamion.add(new Camion(
-                "C://Users/Saul/Desktop/usuario_ejemplo.jpg",
-                "Miguel Angel",
-                "C://Users/Saul/Desktop/camion_prueba.jpg",
-                "",
-                "",
-                "",
-                "",
-                ""));
-        listacamion.add(new Camion(
-                "C://Users/Saul/Desktop/usuario_ejemplo.jpg",
-                "Pepe",
-                "C://Users/Saul/Desktop/camion_prueba.jpg",
-                "",
-                "",
-                "",
-                "",
-                ""));
-        listacamion.add(new Camion(
-                "C://Users/Saul/Desktop/usuario_ejemplo.jpg",
-                "Lalo",
-                "C://Users/Saul/Desktop/camion_prueba.jpg",
-                "",
-                "",
-                "",
-                "",
-                ""));
-        listacamion.add(new Camion(
-                "C://Users/Saul/Desktop/usuario_ejemplo.jpg",
-                "Daniel",
-                "C://Users/Saul/Desktop/camion_prueba.jpg",
-                "",
-                "",
-                "",
-                "",
-                ""));
         return listacamion;
+    }
+    public void ObtenerCamiones(){
+       Call<Camion_retrofit> call= NetworkAdapter.getApiService().CatalogoCamiones();
+       call.enqueue(new CamionesCallback());
+    }
+    class CamionesCallback implements Callback<Camion_retrofit> {
+        @Override
+        public void onResponse(Call<Camion_retrofit> call, Response<Camion_retrofit> response) {
+            if (response.isSuccessful()){
+                Camion_retrofit camionRespuesta = response.body();
+                System.out.print(camionRespuesta.getNombre());
+                System.out.print(camionRespuesta.getModelo());
+                System.out.print(camionRespuesta.getTipo());
+                System.out.print(camionRespuesta.getPesoMaximo());
+            }else{
+                Toast.makeText(getApplicationContext(), "ERROR al decifrar la respuesta",Toast.LENGTH_LONG).show();
+            }
+        }
+        @Override
+        public void onFailure(Call<Camion_retrofit> call, Throwable t) {
+            Toast.makeText(getApplicationContext(), "No hay conexión al servidor",Toast.LENGTH_LONG).show();
+        }
     }
 }
