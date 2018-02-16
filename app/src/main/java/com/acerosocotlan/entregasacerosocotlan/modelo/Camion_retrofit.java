@@ -173,4 +173,25 @@ public class Camion_retrofit {
     public void setApellidoMaterno(String apellidoMaterno) {
         this.apellidoMaterno = apellidoMaterno;
     }
+
+    @Override
+    public String toString() {
+        return "Camion_retrofit{" +
+                "clave='" + clave + '\'' +
+                ", descripcion='" + descripcion + '\'' +
+                ", estatus='" + estatus + '\'' +
+                ", tipo='" + tipo + '\'' +
+                ", modelo='" + modelo + '\'' +
+                ", serie='" + serie + '\'' +
+                ", placas='" + placas + '\'' +
+                ", pesoUnidad='" + pesoUnidad + '\'' +
+                ", pesoMaximo='" + pesoMaximo + '\'' +
+                ", pesoToleranciaMaxima='" + pesoToleranciaMaxima + '\'' +
+                ", claveChofer='" + claveChofer + '\'' +
+                ", foto='" + foto + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", apellidoPaterno='" + apellidoPaterno + '\'' +
+                ", apellidoMaterno='" + apellidoMaterno + '\'' +
+                '}';
+    }
 }

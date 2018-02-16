@@ -18,7 +18,6 @@ public class NetworkAdapter {
                     .baseUrl(URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
-            Camion_retrofit requestPost = new Camion_retrofit();
             API_SERVICE = retrofit.create(NetworkService.class);
         }
         return API_SERVICE;

@@ -1,7 +1,6 @@
 package com.acerosocotlan.entregasacerosocotlan.Adaptador;
 
 import android.app.Activity;
-import android.graphics.Picture;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,10 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
-import com.acerosocotlan.entregasacerosocotlan.modelo.Camion;
-import com.acerosocotlan.entregasacerosocotlan.modelo.Choferes;
+import com.acerosocotlan.entregasacerosocotlan.modelo.Camion_retrofit;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Saul on 12/02/2018.
@@ -21,11 +19,11 @@ import java.util.ArrayList;
 
 public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerView.AdapterRecyclerHolder>{
 
-    private ArrayList<Camion> camionArrayList;
+    private List<Camion_retrofit> camionArrayList;
     private int resource;
     private Activity activity;
 
-    public AdapterRecyclerView(ArrayList<Camion> camionArrayList, int resource, Activity activity) {
+    public AdapterRecyclerView(List<Camion_retrofit> camionArrayList, int resource, Activity activity) {
         this.camionArrayList = camionArrayList;
         this.resource = resource;
         this.activity = activity;
@@ -39,8 +37,8 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
 
     @Override
     public void onBindViewHolder(AdapterRecyclerHolder holder, int position) {
-        Camion camionInstancia = camionArrayList.get(position);
-        holder.nombre_chofer_Cardview.setText(camionInstancia.getNombre_chofer());
+        Camion_retrofit camionInstancia = camionArrayList.get(position);
+        holder.nombre_chofer_Cardview.setText(camionInstancia.getNombre());
     }
 
     @Override
