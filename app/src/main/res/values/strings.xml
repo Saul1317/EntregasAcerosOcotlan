@@ -98,4 +98,5 @@
     </string>
     <string name="title_activity_descarga_entrega">DescargaEntregaActivity</string>
     <string name="title_activity_evidencias">EvidenciasActivity</string>
+    <string name="title_activity_scrolling_rutas">ScrollingRutasActivity</string>
 </resources>

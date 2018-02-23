@@ -24,10 +24,6 @@
         </activity>
         <activity android:name=".controlador.MainActivity" />
         <activity
-            android:name=".controlador.RutasActivity"
-            android:label="@string/title_activity_rutas"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".controlador.SelectorActivity"
             android:label="@string/title_activity_selector"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -42,6 +38,10 @@
         <activity
             android:name=".controlador.EvidenciasActivity"
             android:label="@string/title_activity_evidencias"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".controlador.ScrollingRutasActivity"
+            android:label="@string/title_activity_scrolling_rutas"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

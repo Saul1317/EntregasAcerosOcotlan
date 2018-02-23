@@ -16,6 +16,7 @@ import android.widget.Spinner;
 
 import com.acerosocotlan.entregasacerosocotlan.Adaptador.Spinner_Adaptador;
 import com.acerosocotlan.entregasacerosocotlan.R;
+import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 
 public class SelectorActivity extends AppCompatActivity {
 
@@ -28,7 +29,7 @@ public class SelectorActivity extends AppCompatActivity {
     ImageButton boton_ingresar;
 
     /******* variable para preferencias*****/
-    private SharedPreferences prs;
+    private SharedPreferences sharedPreferences;
     Spinner_Adaptador SA;
 
     String [] sociedad= {"Pruebas","Arandas","Autlan","Ayotlan","Bajio","DAO","GAO","Ixtapa","La Cienega","DAO",
@@ -61,7 +62,7 @@ public class SelectorActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         /****ejecuta identificadores *****/
         Identificadores();
-        prs = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("Login", Context.MODE_PRIVATE);
 
         /*****adapatador para spinner sociedad*****/
         SA = new Spinner_Adaptador(getApplicationContext(),sociedad);
@@ -147,12 +148,13 @@ public class SelectorActivity extends AppCompatActivity {
                 //  Toast.makeText(LoginActivity.this, text_sucursal +" "+ text_sociedad, Toast.LENGTH_SHORT).show();
                 NuevaActividad();
                 GuardarPreferencias(text_sociedad, text_sucursal);
+                NuevaActividad();
             }
         });
     }
 
     private void GuardarPreferencias(String sociedad, String sucursal){
-        SharedPreferences.Editor editor = prs.edit();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("sociedad", sociedad);
         editor.putString("sucursal", sucursal);
         editor.apply();
@@ -167,10 +169,8 @@ public class SelectorActivity extends AppCompatActivity {
 
     /******* metodo para mostrar actividad ********/
     private void NuevaActividad(){
-
-    }
-
-    /******* metodo para setear sucural y sociedad ********/
-    private void setPreferencias(){
+        Intent i = new Intent(SelectorActivity.this, MainActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
     }
 }

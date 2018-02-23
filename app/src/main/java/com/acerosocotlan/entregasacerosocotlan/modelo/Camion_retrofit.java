@@ -41,9 +41,9 @@ public class Camion_retrofit {
     @SerializedName("claveChofer")
     @Expose
     private String claveChofer;
-    @SerializedName("foto")
+    @SerializedName("foto_camion")
     @Expose
-    private String foto;
+    private String fotoCamion;
     @SerializedName("nombre")
     @Expose
     private String nombre;
@@ -53,6 +53,28 @@ public class Camion_retrofit {
     @SerializedName("apellidoMaterno")
     @Expose
     private String apellidoMaterno;
+    @SerializedName("foto_chofer")
+    @Expose
+    private String fotoChofer;
+
+    public Camion_retrofit(String clave, String descripcion, String estatus, String tipo, String modelo, String serie, String placas, String pesoUnidad, String pesoMaximo, String pesoToleranciaMaxima, String claveChofer, String fotoCamion, String nombre, String apellidoPaterno, String apellidoMaterno, String fotoChofer) {
+        this.clave = clave;
+        this.descripcion = descripcion;
+        this.estatus = estatus;
+        this.tipo = tipo;
+        this.modelo = modelo;
+        this.serie = serie;
+        this.placas = placas;
+        this.pesoUnidad = pesoUnidad;
+        this.pesoMaximo = pesoMaximo;
+        this.pesoToleranciaMaxima = pesoToleranciaMaxima;
+        this.claveChofer = claveChofer;
+        this.fotoCamion = fotoCamion;
+        this.nombre = nombre;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.fotoChofer = fotoChofer;
+    }
 
     public String getClave() {
         return clave;
@@ -142,12 +164,12 @@ public class Camion_retrofit {
         this.claveChofer = claveChofer;
     }
 
-    public String getFoto() {
-        return foto;
+    public String getFotoCamion() {
+        return fotoCamion;
     }
 
-    public void setFoto(String foto) {
-        this.foto = foto;
+    public void setFotoCamion(String fotoCamion) {
+        this.fotoCamion = fotoCamion;
     }
 
     public String getNombre() {
@@ -174,6 +196,14 @@ public class Camion_retrofit {
         this.apellidoMaterno = apellidoMaterno;
     }
 
+    public String getFotoChofer() {
+        return fotoChofer;
+    }
+
+    public void setFotoChofer(String fotoChofer) {
+        this.fotoChofer = fotoChofer;
+    }
+
     @Override
     public String toString() {
         return "Camion_retrofit{" +
@@ -188,10 +218,11 @@ public class Camion_retrofit {
                 ", pesoMaximo='" + pesoMaximo + '\'' +
                 ", pesoToleranciaMaxima='" + pesoToleranciaMaxima + '\'' +
                 ", claveChofer='" + claveChofer + '\'' +
-                ", foto='" + foto + '\'' +
+                ", fotoCamion='" + fotoCamion + '\'' +
                 ", nombre='" + nombre + '\'' +
                 ", apellidoPaterno='" + apellidoPaterno + '\'' +
                 ", apellidoMaterno='" + apellidoMaterno + '\'' +
+                ", fotoChofer='" + fotoChofer + '\'' +
                 '}';
     }
 }
