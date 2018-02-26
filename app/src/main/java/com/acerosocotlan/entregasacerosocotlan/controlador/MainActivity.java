@@ -22,7 +22,6 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView choferesRecycler;
-    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +53,5 @@ public class MainActivity extends AppCompatActivity {
     }
     public void inicializador(){
         choferesRecycler = (RecyclerView) findViewById(R.id.choferes_recycler);
-        sharedPreferences = getSharedPreferences("Login", Context.MODE_PRIVATE);
     }
 }
