@@ -9,6 +9,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.Gravity;
@@ -20,17 +22,29 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.acerosocotlan.entregasacerosocotlan.Adaptador.AdapterRecyclerView;
+import com.acerosocotlan.entregasacerosocotlan.Adaptador.AdapterRecyclerViewRutaCamion;
 import com.acerosocotlan.entregasacerosocotlan.R;
+import com.acerosocotlan.entregasacerosocotlan.modelo.Camion_retrofit;
+import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
+import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ScrollingRutasActivity extends AppCompatActivity {
     private SharedPreferences prs;
+    private RecyclerView rutasRecycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling_rutas);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_rutas);
-        setSupportActionBar(toolbar);
+        inicializador();
+        ObtenerRuta();
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -106,5 +120,30 @@ public class ScrollingRutasActivity extends AppCompatActivity {
         Intent i = new Intent(ScrollingRutasActivity.this, SelectorActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
+    }
+    public void ObtenerRuta(){
+        Call<List<RutaCamion_retrofit>> call = NetworkAdapter.getApiService().RutasCamiones("rutasmovil-JP89115/gao_pruebas");
+        call.enqueue(new Callback<List<RutaCamion_retrofit>>() {
+            @Override
+            public void onResponse(Call<List<RutaCamion_retrofit>> call, Response<List<RutaCamion_retrofit>> response) {
+                List<RutaCamion_retrofit> rutas_retrofit = response.body();
+                Toast.makeText(getApplicationContext(),"1",Toast.LENGTH_LONG).show();
+                LlenarRecyclerView(rutas_retrofit);
+            }
+
+            @Override
+            public void onFailure(Call<List<RutaCamion_retrofit>> call, Throwable t) {
+            }
+        });
+    }
+    public void LlenarRecyclerView(List<RutaCamion_retrofit> camion){
+        LinearLayoutManager l = new LinearLayoutManager(getApplicationContext());
+        l.setOrientation(LinearLayoutManager.VERTICAL);
+        rutasRecycler.setLayoutManager(l);
+        AdapterRecyclerViewRutaCamion arv = new AdapterRecyclerViewRutaCamion(camion,R.layout.cardview_rutas, ScrollingRutasActivity.this, getApplicationContext());
+        rutasRecycler.setAdapter(arv);
+    }
+    public void inicializador(){
+        rutasRecycler = (RecyclerView) findViewById(R.id.rutas_recycler);
     }
 }

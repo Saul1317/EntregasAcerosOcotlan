@@ -15,6 +15,9 @@ import retrofit2.http.Url;
 
 public interface NetworkService {
     //http://10.1.15.12:8080/web/entregas/catcamiones/gao_pruebas
+    //http://entregas.dyndns.org/web/entregas/rutasmovil-jr46404/gao_pruebas
     @POST
     Call<List<Camion_retrofit>> CatalogoCamiones(@Url String url);
+    @POST
+    Call<List<RutaCamion_retrofit>> RutasCamiones(@Url String url);
 }

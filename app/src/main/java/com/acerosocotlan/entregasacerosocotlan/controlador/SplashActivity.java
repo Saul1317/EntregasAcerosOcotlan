@@ -22,12 +22,12 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
-        Intent intentSelector = new Intent(SplashActivity.this, SelectorActivity.class);
+        Intent intentSelector = new Intent(SplashActivity.this,SelectorActivity.class);
         Intent intentRutas = new Intent(SplashActivity.this, ScrollingRutasActivity.class);
 
         if (!TextUtils.isEmpty(MetodosSharedPreference.getSociedadPref(prs))
                 && !TextUtils.isEmpty(MetodosSharedPreference.getSociedadPref(prs))
-                && !TextUtils.isEmpty(MetodosSharedPreference.getcamionPref(prs)) ){
+                && !TextUtils.isEmpty(String.valueOf(MetodosSharedPreference.getCamionPref(prs)))){
             startActivity(intentRutas);
         }else{
             startActivity(intentSelector);

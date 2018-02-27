@@ -55,7 +55,7 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
         holder.foto_fondo_Cardview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MetodosSharedPreference.setcamionPref(sharedPreferences, position);
+                MetodosSharedPreference.setCamionPref(sharedPreferences, position);
                 Intent intent = new Intent(activity, ScrollingRutasActivity.class);
                 activity.startActivity(intent);
             }
