@@ -32,6 +32,10 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
     private Activity activity;
     private Context context;
 
+    public List<Camion_retrofit> getCamionArrayList() {
+        return camionArrayList;
+    }
+
     public AdapterRecyclerView(List<Camion_retrofit> camionArrayList, int resource, Activity activity, Context context) {
         this.camionArrayList = camionArrayList;
         this.resource = resource;
@@ -56,11 +60,20 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
             @Override
             public void onClick(View view) {
                 MetodosSharedPreference.setCamionPref(sharedPreferences, position);
+                MetodosSharedPreference.GuardarUsuarioCamion(sharedPreferences,
+                        camionInstancia.getPlacas(),
+                        camionInstancia.getNombre(),
+                        camionInstancia.getApellidoPaterno(),
+                        camionInstancia.getFotoChofer(),
+                        camionInstancia.getClaveChofer(),
+                        camionInstancia.getPesoUnidad(),
+                        camionInstancia.getPesoMaximo());
                 Intent intent = new Intent(activity, ScrollingRutasActivity.class);
                 activity.startActivity(intent);
             }
         });
     }
+
     @Override
     public int getItemCount() {
         return camionArrayList.size();

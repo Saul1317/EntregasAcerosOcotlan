@@ -27,7 +27,7 @@ public class SplashActivity extends AppCompatActivity {
 
         if (!TextUtils.isEmpty(MetodosSharedPreference.getSociedadPref(prs))
                 && !TextUtils.isEmpty(MetodosSharedPreference.getSociedadPref(prs))
-                && !TextUtils.isEmpty(String.valueOf(MetodosSharedPreference.getCamionPref(prs)))){
+                && !TextUtils.isEmpty(String.valueOf(MetodosSharedPreference.ObtenerPlacasPref(prs)))){
             startActivity(intentRutas);
         }else{
             startActivity(intentSelector);

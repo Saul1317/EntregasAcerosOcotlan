@@ -41,7 +41,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".controlador.ScrollingRutasActivity"
-            android:label="@string/title_activity_scrolling_rutas"
+            android:label=" "
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 

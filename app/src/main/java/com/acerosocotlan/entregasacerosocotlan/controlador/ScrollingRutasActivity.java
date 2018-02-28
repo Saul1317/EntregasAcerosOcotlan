@@ -19,15 +19,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.Adaptador.AdapterRecyclerView;
 import com.acerosocotlan.entregasacerosocotlan.Adaptador.AdapterRecyclerViewRutaCamion;
 import com.acerosocotlan.entregasacerosocotlan.R;
 import com.acerosocotlan.entregasacerosocotlan.modelo.Camion_retrofit;
+import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
 import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -38,14 +42,18 @@ import retrofit2.Response;
 public class ScrollingRutasActivity extends AppCompatActivity {
     private SharedPreferences prs;
     private RecyclerView rutasRecycler;
+    private TextView nombre_chofer, clave_chofer, peso_camion,peso_maximo_camion, placa_camion;
+    private ImageView foto_chofer;
+    private AdapterRecyclerView instanciaRecycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling_rutas);
+        prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         inicializador();
         ObtenerRuta();
-        prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,12 +130,12 @@ public class ScrollingRutasActivity extends AppCompatActivity {
         startActivity(i);
     }
     public void ObtenerRuta(){
-        Call<List<RutaCamion_retrofit>> call = NetworkAdapter.getApiService().RutasCamiones("rutasmovil-JP89115/gao_pruebas");
+        Call<List<RutaCamion_retrofit>> call = NetworkAdapter.getApiService().RutasCamiones(
+                "rutasmovil-"+MetodosSharedPreference.ObtenerPlacasPref(prs)+"/gao_pruebas");
         call.enqueue(new Callback<List<RutaCamion_retrofit>>() {
             @Override
             public void onResponse(Call<List<RutaCamion_retrofit>> call, Response<List<RutaCamion_retrofit>> response) {
                 List<RutaCamion_retrofit> rutas_retrofit = response.body();
-                Toast.makeText(getApplicationContext(),"1",Toast.LENGTH_LONG).show();
                 LlenarRecyclerView(rutas_retrofit);
             }
 
@@ -145,5 +153,25 @@ public class ScrollingRutasActivity extends AppCompatActivity {
     }
     public void inicializador(){
         rutasRecycler = (RecyclerView) findViewById(R.id.rutas_recycler);
+        nombre_chofer = (TextView) findViewById(R.id.txt_nombre_perfil_chofer);
+        nombre_chofer.setText(MetodosSharedPreference.ObtenerNombrePref(prs)+" "+MetodosSharedPreference.ObtenerApellidoPref(prs));
+
+        placa_camion = (TextView) findViewById(R.id.txt_placas);
+        placa_camion.setText("Placas: "+MetodosSharedPreference.ObtenerPlacasPref(prs));
+
+        clave_chofer  = (TextView) findViewById(R.id.txt_clave_chofer);
+        clave_chofer.setText("Clave del chofer: "+MetodosSharedPreference.ObtenerClaveChoferPref(prs));
+
+        peso_camion  = (TextView) findViewById(R.id.txt_peso_camion);
+        peso_camion.setText("Peso del camion: "+MetodosSharedPreference.ObtenerPesoCamionChoferPref(prs));
+
+        peso_maximo_camion  = (TextView) findViewById(R.id.txt_peso_maximo_camion);
+        peso_maximo_camion.setText("Peso maximo del camion: "+MetodosSharedPreference.ObtenerPesoMaximoCamionPref(prs));
+
+        foto_chofer = (ImageView) findViewById(R.id.foto_perfil_chofer);
+        Picasso.with(getApplicationContext()).load(MetodosSharedPreference.ObtenerFotoPref(prs)).fit().into(foto_chofer);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_rutas);
+        setSupportActionBar(toolbar);
     }
 }
