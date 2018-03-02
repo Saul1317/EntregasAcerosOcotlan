@@ -22,7 +22,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".controlador.MainActivity" />
+        <activity
+            android:name=".controlador.MainActivity"
+            android:theme="@style/CatalogoCamiones" />
         <activity
             android:name=".controlador.SelectorActivity"
             android:label="@string/title_activity_selector"
@@ -43,6 +45,7 @@
             android:name=".controlador.ScrollingRutasActivity"
             android:label=" "
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".controlador.SplashV2"></activity>
     </application>
 
 </manifest>

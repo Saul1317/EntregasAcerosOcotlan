@@ -80,7 +80,6 @@ public class ScrollingRutasActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
     private void remover_variables_sharedpreference(){
         prs.edit().clear().apply();
     }
@@ -131,12 +130,14 @@ public class ScrollingRutasActivity extends AppCompatActivity {
     }
     public void ObtenerRuta(){
         Call<List<RutaCamion_retrofit>> call = NetworkAdapter.getApiService().RutasCamiones(
-                "rutasmovil-"+MetodosSharedPreference.ObtenerPlacasPref(prs)+"/gao_pruebas");
+                "rutasmovil_"+MetodosSharedPreference.ObtenerPlacasPref(prs)+"/gao_pruebas");
         call.enqueue(new Callback<List<RutaCamion_retrofit>>() {
             @Override
             public void onResponse(Call<List<RutaCamion_retrofit>> call, Response<List<RutaCamion_retrofit>> response) {
-                List<RutaCamion_retrofit> rutas_retrofit = response.body();
-                LlenarRecyclerView(rutas_retrofit);
+                if (response.isSuccessful()){
+                    List<RutaCamion_retrofit> rutas_retrofit = response.body();
+                    LlenarRecyclerView(rutas_retrofit);
+                }
             }
 
             @Override

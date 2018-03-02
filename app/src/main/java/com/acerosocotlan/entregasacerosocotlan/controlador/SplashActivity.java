@@ -26,8 +26,8 @@ public class SplashActivity extends AppCompatActivity {
         Intent intentRutas = new Intent(SplashActivity.this, ScrollingRutasActivity.class);
 
         if (!TextUtils.isEmpty(MetodosSharedPreference.getSociedadPref(prs))
-                && !TextUtils.isEmpty(MetodosSharedPreference.getSociedadPref(prs))
-                && !TextUtils.isEmpty(String.valueOf(MetodosSharedPreference.ObtenerPlacasPref(prs)))){
+                && !TextUtils.isEmpty(MetodosSharedPreference.getSucursalPref(prs))
+                && !TextUtils.isEmpty(MetodosSharedPreference.ObtenerPlacasPref(prs))){
             startActivity(intentRutas);
         }else{
             startActivity(intentSelector);

@@ -51,7 +51,10 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
     @Override
     public void onBindViewHolder(RutasAdapterRecyclerHolder holder, int position) {
         RutaCamion_retrofit rutascamionInstancia = rutasArrayList.get(position);
-        holder.fecha_salida.setText(rutascamionInstancia.getFechaSalida());
+        String string = rutascamionInstancia.getFechaSalida();
+        String[] parts = string.split(" ");
+        String part1 = parts[0];
+        holder.fecha_salida.setText(part1);
         holder.numero_entrega.setText(rutascamionInstancia.getNumEntregas());
         holder.cardViewRutas.setOnClickListener(new View.OnClickListener() {
             @Override
