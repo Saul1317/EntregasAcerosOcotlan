@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         ObtenerCamiones();
     }
     public void ObtenerCamiones(){
-        Call<List<Camion_retrofit>> call =NetworkAdapter.getApiService().CatalogoCamiones("catcamiones/gao_pruebas");
+        Call<List<Camion_retrofit>> call =NetworkAdapter.getApiService().CatalogoCamiones("catcamiones/gao");
         call.enqueue(new Callback<List<Camion_retrofit>>() {
             @Override
             public void onResponse(Call<List<Camion_retrofit>> call, Response<List<Camion_retrofit>> response) {

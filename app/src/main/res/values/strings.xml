@@ -12,4 +12,5 @@
     <string name="title_activity_scrolling_rutas">ScrollingRutasActivity</string>
     <string name="titulo_toolbar_rutas">Rutas</string>
     <string name="title_activity_referencia">Referencia</string>
+    <string name="title_activity_formulario">FormularioActivity</string>
 </resources>

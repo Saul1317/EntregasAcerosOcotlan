@@ -9,64 +9,56 @@ import com.google.gson.annotations.SerializedName;
 
 public class RutaCamion_retrofit {
 
-    @SerializedName("id_entregas")
+    @SerializedName("id_ruta")
     @Expose
-    private String idEntregas;
+    private String idRuta;
     @SerializedName("sucursal")
     @Expose
     private String sucursal;
-    @SerializedName("almacen")
+    @SerializedName("ProgramadaPara")
     @Expose
-    private String almacen;
-    @SerializedName("folio")
-    @Expose
-    private String folio;
+    private String programadaPara;
     @SerializedName("claveVehiculo")
     @Expose
     private String claveVehiculo;
     @SerializedName("claveChofer")
     @Expose
     private String claveChofer;
-    @SerializedName("fechaSalida")
+    @SerializedName("FechaInicio")
     @Expose
-    private String fechaSalida;
-    @SerializedName("fechaLlegada")
+    private String fechaInicio;
+    @SerializedName("KmInicio")
+    @Expose
+    private String kmInicio;
+    @SerializedName("FechaLlegada")
     @Expose
     private String fechaLlegada;
-    @SerializedName("kilomSalida")
+    @SerializedName("KmLlegada")
     @Expose
-    private String kilomSalida;
-    @SerializedName("kilomLlegada")
-    @Expose
-    private String kilomLlegada;
-    @SerializedName("placas")
-    @Expose
-    private String placas;
+    private String kmLlegada;
     @SerializedName("numEntregas")
     @Expose
     private String numEntregas;
 
-    public RutaCamion_retrofit(String idEntregas, String sucursal, String almacen, String folio, String claveVehiculo, String claveChofer, String fechaSalida, String fechaLlegada, String kilomSalida, String kilomLlegada, String placas, String numEntregas) {
-        this.idEntregas = idEntregas;
+    public RutaCamion_retrofit(String idRuta, String sucursal, String programadaPara, String claveVehiculo, String claveChofer, String fechaInicio, String kmInicio, String fechaLlegada, String kmLlegada, String numEntregas) {
+        this.idRuta = idRuta;
         this.sucursal = sucursal;
-        this.almacen = almacen;
-        this.folio = folio;
+        this.programadaPara = programadaPara;
         this.claveVehiculo = claveVehiculo;
         this.claveChofer = claveChofer;
-        this.fechaSalida = fechaSalida;
+        this.fechaInicio = fechaInicio;
+        this.kmInicio = kmInicio;
         this.fechaLlegada = fechaLlegada;
-        this.kilomSalida = kilomSalida;
-        this.kilomLlegada = kilomLlegada;
-        this.placas = placas;
+        this.kmLlegada = kmLlegada;
         this.numEntregas = numEntregas;
     }
 
-    public String getIdEntregas() {
-        return idEntregas;
+    public String getIdRuta() {
+        return idRuta;
     }
 
-    public void setIdEntregas(String idEntregas) {
-        this.idEntregas = idEntregas;
+    public void setIdRuta(String idRuta) {
+        this.idRuta = idRuta;
     }
 
     public String getSucursal() {
@@ -77,20 +69,12 @@ public class RutaCamion_retrofit {
         this.sucursal = sucursal;
     }
 
-    public String getAlmacen() {
-        return almacen;
+    public String getProgramadaPara() {
+        return programadaPara;
     }
 
-    public void setAlmacen(String almacen) {
-        this.almacen = almacen;
-    }
-
-    public String getFolio() {
-        return folio;
-    }
-
-    public void setFolio(String folio) {
-        this.folio = folio;
+    public void setProgramadaPara(String programadaPara) {
+        this.programadaPara = programadaPara;
     }
 
     public String getClaveVehiculo() {
@@ -109,12 +93,20 @@ public class RutaCamion_retrofit {
         this.claveChofer = claveChofer;
     }
 
-    public String getFechaSalida() {
-        return fechaSalida;
+    public String getFechaInicio() {
+        return fechaInicio;
     }
 
-    public void setFechaSalida(String fechaSalida) {
-        this.fechaSalida = fechaSalida;
+    public void setFechaInicio(String fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public String getKmInicio() {
+        return kmInicio;
+    }
+
+    public void setKmInicio(String kmInicio) {
+        this.kmInicio = kmInicio;
     }
 
     public String getFechaLlegada() {
@@ -125,28 +117,12 @@ public class RutaCamion_retrofit {
         this.fechaLlegada = fechaLlegada;
     }
 
-    public String getKilomSalida() {
-        return kilomSalida;
+    public String getKmLlegada() {
+        return kmLlegada;
     }
 
-    public void setKilomSalida(String kilomSalida) {
-        this.kilomSalida = kilomSalida;
-    }
-
-    public String getKilomLlegada() {
-        return kilomLlegada;
-    }
-
-    public void setKilomLlegada(String kilomLlegada) {
-        this.kilomLlegada = kilomLlegada;
-    }
-
-    public String getPlacas() {
-        return placas;
-    }
-
-    public void setPlacas(String placas) {
-        this.placas = placas;
+    public void setKmLlegada(String kmLlegada) {
+        this.kmLlegada = kmLlegada;
     }
 
     public String getNumEntregas() {
@@ -160,17 +136,15 @@ public class RutaCamion_retrofit {
     @Override
     public String toString() {
         return "RutaCamion_retrofit{" +
-                "idEntregas='" + idEntregas + '\'' +
+                "idRuta='" + idRuta + '\'' +
                 ", sucursal='" + sucursal + '\'' +
-                ", almacen='" + almacen + '\'' +
-                ", folio='" + folio + '\'' +
+                ", programadaPara='" + programadaPara + '\'' +
                 ", claveVehiculo='" + claveVehiculo + '\'' +
                 ", claveChofer='" + claveChofer + '\'' +
-                ", fechaSalida='" + fechaSalida + '\'' +
+                ", fechaInicio='" + fechaInicio + '\'' +
+                ", kmInicio='" + kmInicio + '\'' +
                 ", fechaLlegada='" + fechaLlegada + '\'' +
-                ", kilomSalida='" + kilomSalida + '\'' +
-                ", kilomLlegada='" + kilomLlegada + '\'' +
-                ", placas='" + placas + '\'' +
+                ", kmLlegada='" + kmLlegada + '\'' +
                 ", numEntregas='" + numEntregas + '\'' +
                 '}';
     }

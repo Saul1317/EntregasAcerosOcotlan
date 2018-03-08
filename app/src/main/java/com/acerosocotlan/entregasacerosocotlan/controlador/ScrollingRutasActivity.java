@@ -69,7 +69,6 @@ public class ScrollingRutasActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_scrolling_rutas, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -130,7 +129,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
     }
     public void ObtenerRuta(){
         Call<List<RutaCamion_retrofit>> call = NetworkAdapter.getApiService().RutasCamiones(
-                "rutasmovil_"+MetodosSharedPreference.ObtenerPlacasPref(prs)+"/gao_pruebas");
+                "rutasmovil_"+MetodosSharedPreference.ObtenerPlacasPref(prs)+"/gao");
         call.enqueue(new Callback<List<RutaCamion_retrofit>>() {
             @Override
             public void onResponse(Call<List<RutaCamion_retrofit>> call, Response<List<RutaCamion_retrofit>> response) {

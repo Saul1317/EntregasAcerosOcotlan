@@ -14,8 +14,10 @@ import android.widget.TextView;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
 import com.acerosocotlan.entregasacerosocotlan.controlador.EntregaActivity;
+import com.acerosocotlan.entregasacerosocotlan.controlador.FormularioActivity;
 import com.acerosocotlan.entregasacerosocotlan.controlador.ScrollingRutasActivity;
 import com.acerosocotlan.entregasacerosocotlan.modelo.Camion_retrofit;
+import com.acerosocotlan.entregasacerosocotlan.modelo.ConvertidorFecha;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
 import com.squareup.picasso.Picasso;
@@ -51,15 +53,16 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
     @Override
     public void onBindViewHolder(RutasAdapterRecyclerHolder holder, int position) {
         RutaCamion_retrofit rutascamionInstancia = rutasArrayList.get(position);
-        String string = rutascamionInstancia.getFechaSalida();
-        String[] parts = string.split(" ");
-        String part1 = parts[0];
-        holder.fecha_salida.setText(part1);
+        String fechahora = rutascamionInstancia.getProgramadaPara();
+        ConvertidorFecha confecha= new ConvertidorFecha();
+        String fecha = confecha.ConvertirFecha(fechahora);
+        holder.fecha_programada.setText(fecha);
+        holder.numero_folio.setText(rutascamionInstancia.getIdRuta());
         holder.numero_entrega.setText(rutascamionInstancia.getNumEntregas());
         holder.cardViewRutas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(activity, EntregaActivity.class);
+                Intent intent = new Intent(activity, FormularioActivity.class);
                 activity.startActivity(intent);
             }
         });
@@ -71,12 +74,13 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
     }
 
     public class RutasAdapterRecyclerHolder extends RecyclerView.ViewHolder{
-        private TextView numero_entrega, fecha_salida;
+        private TextView numero_entrega, fecha_programada, numero_folio;
         private CardView cardViewRutas;
 
         public RutasAdapterRecyclerHolder(View itemView) {
             super(itemView);
-            fecha_salida = (TextView) itemView.findViewById(R.id.txt_fecha_salida);
+            fecha_programada = (TextView) itemView.findViewById(R.id.txt_fecha_programada);
+            numero_folio = (TextView) itemView.findViewById(R.id.txt_numero_folio_ruta);
             numero_entrega = (TextView) itemView.findViewById(R.id.txt_numero_entrega);
             cardViewRutas = (CardView) itemView.findViewById(R.id.cardview_rutas);
         }

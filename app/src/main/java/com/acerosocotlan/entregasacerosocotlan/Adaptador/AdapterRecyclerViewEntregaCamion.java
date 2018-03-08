@@ -47,7 +47,6 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
 
         public EntregasAdapterRecyclerHolder(View itemView) {
             super(itemView);
-            fecha_salida = (TextView) itemView.findViewById(R.id.txt_fecha_salida);
             numero_entrega = (TextView) itemView.findViewById(R.id.txt_numero_entrega);
             cardViewRutas = (CardView) itemView.findViewById(R.id.cardview_rutas);
         }

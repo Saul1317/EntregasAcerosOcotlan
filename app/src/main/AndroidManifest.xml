@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.acerosocotlan.entregasacerosocotlan">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -43,6 +45,10 @@
             android:name=".controlador.ScrollingRutasActivity"
             android:label=" "
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".controlador.FormularioActivity"
+            android:label="@string/title_activity_formulario"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
