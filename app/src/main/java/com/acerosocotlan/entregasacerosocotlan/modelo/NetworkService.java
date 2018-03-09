@@ -30,10 +30,9 @@ public interface NetworkService {
 
     @FormUrlEncoded
     @POST
-    Call<ResponseBody> MandarFormularioPost(@Url String url,
+    Call<List<String>> MandarFormularioPost(@Url String url,
                                             @Field("fechainicio") String fecha,
                                             @Field("latinicio") String latitud,
                                             @Field("loninicio") String longitud,
-                                            @Field("kminicio") String km
-                                            );
+                                            @Field("kminicio") String km);
 }
