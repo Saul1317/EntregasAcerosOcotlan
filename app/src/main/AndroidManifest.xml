@@ -3,6 +3,8 @@
     package="com.acerosocotlan.entregasacerosocotlan">
 
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera"
+        android:required="true" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -51,6 +53,15 @@
             android:name=".controlador.FormularioActivity"
             android:label="@string/title_activity_formulario"
             android:theme="@style/AppTheme"></activity>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.acerosocotlan.entregasacerosocotlan"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
+        </provider>
     </application>
 
 </manifest>

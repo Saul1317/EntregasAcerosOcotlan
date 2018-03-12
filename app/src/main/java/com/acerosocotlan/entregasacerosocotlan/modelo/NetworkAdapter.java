@@ -11,7 +11,7 @@ public class NetworkAdapter {
     private static NetworkService API_SERVICE;
 
     public static NetworkService getApiService() {
-        String URL = "http://201.163.93.148/web/entregas/";
+        String URL = "http://192.168.0.226/web/entregas/";
 
         if(API_SERVICE == null) {
             Retrofit retrofit = new Retrofit.Builder()

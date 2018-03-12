@@ -27,6 +27,8 @@ public interface NetworkService {
     Call<List<RutaCamion_retrofit>> RutasCamiones(@Url String url);
     @POST
     Call<ResponseBody> MandarFormulario(@Url String url, @FieldMap Map<String, String> map);
+    @POST
+    Call<List<InformacionAvisos_retrofit>> ObtenerInformacionParaAviso(@Url String url);
 
     @FormUrlEncoded
     @POST

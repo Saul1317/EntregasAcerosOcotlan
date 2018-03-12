@@ -6,6 +6,7 @@ package com.acerosocotlan.entregasacerosocotlan.modelo;
 
 public class ConvertidorFecha {
     String ano, dia, mes,diaTexto;
+
     public String ConvertirFecha(String fechaHora){
         String[] fechaHoraTotal = fechaHora.split(" ");
         String fechaTotal = fechaHoraTotal[0];

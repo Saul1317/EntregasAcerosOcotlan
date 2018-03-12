@@ -30,8 +30,9 @@ public class SplashV2 extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intentRutas = new Intent(SplashV2.this, FormularioActivity.class);
-                startActivity(intentRutas);
+                //Intent intentRutas = new Intent(SplashV2.this, FormularioActivity.class);
+                //startActivity(intentRutas);
+                CargarActivity();
             }
         },3000);
     }
