@@ -2,6 +2,7 @@ package com.acerosocotlan.entregasacerosocotlan.controlador;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -9,19 +10,24 @@ import android.graphics.BitmapFactory;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -48,6 +54,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 public class FormularioActivity extends AppCompatActivity {
     private Location location;
     private LocationManager locationManager;
@@ -57,8 +66,10 @@ public class FormularioActivity extends AppCompatActivity {
     private double latitude;
     private double longitud;
     private Calendar calendar;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    String mCurrentPhotoPath;
+    String CARPETA_RAIZ="acerosOcotlan/";
+    String RUTA_IMAGEN = CARPETA_RAIZ+"evidencia";
+    String path;
+    private final int COD_TOMAR_FOTO=20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +79,8 @@ public class FormularioActivity extends AppCompatActivity {
         botonTomarFoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //InsertarFormulario();
-                EjecutarPermisosCamara();
+                //InsertarFormulario()
+                MenuCamara();
             }
         });
 
@@ -89,6 +100,7 @@ public class FormularioActivity extends AppCompatActivity {
         imagenEvidencia =(ImageView) findViewById(R.id.imagen_formulario);
         botonTomarFoto=(Button) findViewById(R.id.btn_tomar_foto_formulario);
     }
+
     //OBTENER DATOS
     public void ObtenerLocalizacionCamion(){
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
@@ -110,52 +122,134 @@ public class FormularioActivity extends AppCompatActivity {
         calendar = Calendar.getInstance();
         //simpleDateFormat.format(calendar.getTime())
     }
-    //CAMARA
-    private void EjecutarPermisosCamara(){
-        int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 225);
-        } else {
-            AbrirCamara();
-        }
-    }
-    private void AbrirCamara() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-                Toast.makeText(getApplicationContext(), mCurrentPhotoPath.toString(), Toast.LENGTH_LONG).show();
-            } catch (IOException ex) {
 
+    //CAMARA
+    private void MenuCamara(){
+        final CharSequence[] opciones = {"Tomar Foto", "Cargar Imagen","Cancelar"};
+        AlertDialog.Builder alertOpciones = new AlertDialog.Builder(FormularioActivity.this);
+        alertOpciones.setTitle("Selecciona una opción");
+        alertOpciones.setItems(opciones, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if(opciones[i].equals("Tomar Foto")){
+                    Toast.makeText(FormularioActivity.this, "Tomar foto", Toast.LENGTH_SHORT).show();
+                    if(EjecutarPermisosCamara()==true){
+                        TomarImagen();
+                    }else{
+                        Toast.makeText(FormularioActivity.this, "No hay permisos", Toast.LENGTH_SHORT).show();
+                    }
+                }else if (opciones[i].equals("Cargar Imagen")){
+                    Toast.makeText(FormularioActivity.this, "Cargar Foto", Toast.LENGTH_SHORT).show();
+                }else if (opciones[i].equals("Cancelar")){
+                    dialogInterface.dismiss();
+                }
             }
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
-                        "com.acerosocotlan.entregasacerosocotlan",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        });
+        alertOpciones.show();
+    }
+    private boolean EjecutarPermisosCamara(){
+        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.M){
+            return true;
+        }
+        if((checkSelfPermission(CAMERA)==PackageManager.PERMISSION_GRANTED)&&
+                (checkSelfPermission(WRITE_EXTERNAL_STORAGE)==PackageManager.PERMISSION_GRANTED)){
+            return true;
+        }
+
+        if((shouldShowRequestPermissionRationale(CAMERA)) ||
+                (shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE))){
+            cargarDialogoRecomendacion();
+        }else{
+            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE,CAMERA},100);
+        }
+        return false;
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode==100){
+            if(grantResults.length==2 && grantResults[0]==PackageManager.PERMISSION_GRANTED
+                    && grantResults[1]==PackageManager.PERMISSION_GRANTED){
+                solicitarPermisosManual();
+            }else{
             }
         }
     }
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
+    private void cargarDialogoRecomendacion() {
+        AlertDialog.Builder dialogo=new AlertDialog.Builder(FormularioActivity.this);
+        dialogo.setTitle("Permisos Desactivados");
+        dialogo.setMessage("Debe aceptar los permisos para el correcto funcionamiento de la App");
+        dialogo.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                ActivityCompat.requestPermissions(FormularioActivity.this, new String[]{WRITE_EXTERNAL_STORAGE,CAMERA},100);
+            }
+        });
+        dialogo.show();
     }
-    private void AgregarFotoGaleria() {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(mCurrentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
+    private void TomarImagen(){
+        File fileImagen = new File(Environment.getExternalStorageDirectory(), RUTA_IMAGEN);
+        boolean existencia = fileImagen.exists();
+        String nombreImagen="";
+        if (existencia==false){
+            existencia = fileImagen.mkdirs();
+        }
+        if (existencia==true){
+            nombreImagen= (System.currentTimeMillis()/1000)+".jpg";
+        }
+        path = Environment.getExternalStorageDirectory()+File.separator+RUTA_IMAGEN+File.separator+nombreImagen;
+        File imagen = new File(path);
+        Intent intent=null;
+        intent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
+        {
+            String authorities=getApplicationContext().getPackageName()+".provider";
+            Uri imageUri=FileProvider.getUriForFile(this,authorities,imagen);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        }else
+        {
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imagen));
+        }
+        startActivityForResult(intent,COD_TOMAR_FOTO);
+    }
+    private void solicitarPermisosManual() {
+        final CharSequence[] opciones={"si","no"};
+        final AlertDialog.Builder alertOpciones=new AlertDialog.Builder(FormularioActivity.this);
+        alertOpciones.setTitle("¿Desea configurar los permisos de forma manual?");
+        alertOpciones.setItems(opciones, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (opciones[i].equals("si")){
+                    Intent intent=new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri=Uri.fromParts("package",getPackageName(),null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getApplicationContext(),"Los permisos no fueron aceptados",Toast.LENGTH_SHORT).show();
+                    dialogInterface.dismiss();
+                }
+            }
+        });
+        alertOpciones.show();
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case COD_TOMAR_FOTO:
+                MediaScannerConnection.scanFile(getApplicationContext(), new String[]{path}, null, new MediaScannerConnection.OnScanCompletedListener() {
+                    @Override
+                    public void onScanCompleted(String s, Uri uri) {
+                        Log.i("Ruta de almacenamiento","Path: "+path);
+                    }
+                });
+                setPic();
+                break;
+            case 10:
+                break;
+        }
     }
     private void setPic() {
         // Get the dimensions of the View
@@ -165,7 +259,7 @@ public class FormularioActivity extends AppCompatActivity {
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        BitmapFactory.decodeFile(path, bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
 
@@ -177,7 +271,7 @@ public class FormularioActivity extends AppCompatActivity {
         bmOptions.inSampleSize = scaleFactor;
         bmOptions.inPurgeable = true;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        Bitmap bitmap = BitmapFactory.decodeFile(path, bmOptions);
         imagenEvidencia.setImageBitmap(bitmap);
     }
 
