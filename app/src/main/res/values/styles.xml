@@ -47,5 +47,4 @@
         <item name="colorControlHighlight">@color/colorPrimary</item>
         <item name="android:textColor">@color/icons</item>
     </style>
-
 </resources>

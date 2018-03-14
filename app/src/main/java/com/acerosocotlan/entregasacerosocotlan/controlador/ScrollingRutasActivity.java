@@ -169,7 +169,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
         peso_maximo_camion.setText("Peso maximo del camion: "+MetodosSharedPreference.ObtenerPesoMaximoCamionPref(prs));
 
         foto_chofer = (ImageView) findViewById(R.id.foto_perfil_chofer);
-        Picasso.with(getApplicationContext()).load(MetodosSharedPreference.ObtenerFotoPref(prs)).fit().into(foto_chofer);
+        Picasso.with(getApplicationContext()).load(MetodosSharedPreference.ObtenerFotoPref(prs)).fit().placeholder(R.drawable.obrero).into(foto_chofer);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_rutas);
         setSupportActionBar(toolbar);

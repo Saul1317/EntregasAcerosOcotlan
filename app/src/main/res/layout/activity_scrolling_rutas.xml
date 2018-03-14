@@ -41,7 +41,6 @@
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
-
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/foto_perfil_chofer"
         android:layout_width="100dp"
