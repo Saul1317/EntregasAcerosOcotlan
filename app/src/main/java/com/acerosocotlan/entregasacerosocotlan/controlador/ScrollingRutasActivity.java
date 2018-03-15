@@ -53,7 +53,6 @@ public class ScrollingRutasActivity extends AppCompatActivity {
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         inicializador();
         ObtenerRuta();
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

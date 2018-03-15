@@ -32,10 +32,6 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
     private Activity activity;
     private Context context;
 
-    public List<Camion_retrofit> getCamionArrayList() {
-        return camionArrayList;
-    }
-
     public AdapterRecyclerView(List<Camion_retrofit> camionArrayList, int resource, Activity activity, Context context) {
         this.camionArrayList = camionArrayList;
         this.resource = resource;

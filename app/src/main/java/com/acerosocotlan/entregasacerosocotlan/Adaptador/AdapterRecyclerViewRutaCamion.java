@@ -9,18 +9,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
-import com.acerosocotlan.entregasacerosocotlan.controlador.EntregaActivity;
 import com.acerosocotlan.entregasacerosocotlan.controlador.FormularioActivity;
-import com.acerosocotlan.entregasacerosocotlan.controlador.ScrollingRutasActivity;
-import com.acerosocotlan.entregasacerosocotlan.modelo.Camion_retrofit;
 import com.acerosocotlan.entregasacerosocotlan.modelo.ConvertidorFecha;
-import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 

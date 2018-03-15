@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardview="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardview_entregas"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:layout_marginVertical="5dp"
+    cardview:cardCornerRadius="@dimen/cardview_radius_choferes">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/txt_entregas_folio_entrega"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/txt_tamano_cardview_rutas"
+                    android:text="Folio entrega"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/txt_entregas_sucursal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/txt_tamano_cardview_rutas"
+                    android:textStyle="bold"
+                    android:text="Sucursal"/>
+                <TextView
+                    android:id="@+id/txt_entregas_FolioRuta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/txt_tamano_cardview_rutas"
+                    android:textStyle="bold"
+                    android:text="Folio ruta"/>
+                <TextView
+                    android:id="@+id/txt_entregas_Entrega"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/txt_tamano_cardview_rutas"
+                    android:textStyle="bold"
+                    android:text="Entrega"/>
+                <TextView
+                    android:id="@+id/txt_entregas_FechaInicio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/txt_tamano_cardview_rutas"
+                    android:textStyle="bold"
+                    android:text="Fecha Inicio"/>
+                <TextView
+                    android:id="@+id/txt_entregas_FechaLlegada"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/txt_tamano_cardview_rutas"
+                    android:textStyle="bold"
+                    android:text="Fecha LLegada"/>
+                <TextView
+                    android:id="@+id/txt_entregas_FechaSalida"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/txt_tamano_cardview_rutas"
+                    android:textStyle="bold"
+                    android:text="Fecha Salida"/>
+                <TextView
+                    android:id="@+id/txt_entregas_comentarios"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/txt_tamano_cardview_rutas"
+                    android:textStyle="bold"
+                    android:text="Comentarios"/>
+                <TextView
+                    android:id="@+id/txt_entregas_Estatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/txt_tamano_cardview_rutas"
+                    android:textStyle="bold"
+                    android:text="Estatus"/>
+                <TextView
+                    android:id="@+id/txt_entregas_KgTotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/txt_tamano_cardview_rutas"
+                    android:textStyle="bold"
+                    android:text="Kg Total"/>
+                <TextView
+                    android:id="@+id/txt_entregas_Pedido"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/txt_tamano_cardview_rutas"
+                    android:textStyle="bold"
+                    android:text="Pedido"/>
+            </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

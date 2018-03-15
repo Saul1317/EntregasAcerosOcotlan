@@ -59,6 +59,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
@@ -79,6 +81,7 @@ public class FormularioActivity extends AppCompatActivity {
     private String RUTA_IMAGEN = CARPETA_RAIZ+"evidencia";
     private String path;
     private final int COD_TOMAR_FOTO=20;
+    private final int COD_SELECCIONA_FOTO=10;
     File imagen;
 
     @Override
@@ -89,13 +92,17 @@ public class FormularioActivity extends AppCompatActivity {
         imagenEvidencia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MenuCamara();
+                EjecutarPermisosCamara();
             }
         });
         botonEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogoConfirmacion();
+                if(txt_kilometraje.getText().toString().isEmpty()){
+                    DialogoValidacion();
+                }else{
+                    DialogoConfirmacion();
+                }
             }
         });
     }
@@ -104,12 +111,13 @@ public class FormularioActivity extends AppCompatActivity {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         imagenEvidencia =(ImageView) findViewById(R.id.imagen_formulario);
         botonEnviar= (Button) findViewById(R.id.btn_enviar_formulario);
+        txt_kilometraje = (EditText)findViewById(R.id.text_input_layout_kilometraje);
     }
     //OBTENER DATOS
     public void ObtenerLocalizacionCamion(){
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
+                ActivityCompat.requestPermissions(FormularioActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
             }else{
                 location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 latitude = location.getLatitude();
@@ -134,10 +142,10 @@ public class FormularioActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 if(opciones[i].equals("Tomar Foto")){
-                    Toast.makeText(FormularioActivity.this, "Tomar foto", Toast.LENGTH_SHORT).show();
                     EjecutarPermisosCamara();
                 }else if (opciones[i].equals("Cargar Imagen")){
                     Toast.makeText(FormularioActivity.this, "Cargar Foto", Toast.LENGTH_SHORT).show();
+                    CargarImagenes();
                 }else if (opciones[i].equals("Cancelar")){
                     dialogInterface.dismiss();
                 }
@@ -182,9 +190,15 @@ public class FormularioActivity extends AppCompatActivity {
         }
         startActivityForResult(intent,COD_TOMAR_FOTO);
     }
+    private void CargarImagenes(){
+        Intent intent=new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/");
+        startActivityForResult(intent.createChooser(intent,"Seleccione la Aplicación"),COD_SELECCIONA_FOTO);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==RESULT_OK){}
         switch (requestCode){
             case COD_TOMAR_FOTO:
                 MediaScannerConnection.scanFile(getApplicationContext(), new String[]{path}, null, new MediaScannerConnection.OnScanCompletedListener() {
@@ -195,15 +209,14 @@ public class FormularioActivity extends AppCompatActivity {
                 });
                 setPic();
                 break;
-            case 10:
+            case COD_SELECCIONA_FOTO:
+                Uri miPath = data.getData();
+                path= miPath.getPath();
+                Toast.makeText(this, path, Toast.LENGTH_SHORT).show();
                 break;
         }
     }
     private void setPic() {
-        // Get the dimensions of the View
-        if (imagen==null){
-
-        }else {
             int targetW = imagenEvidencia.getWidth();
             int targetH = imagenEvidencia.getHeight();
 
@@ -223,17 +236,21 @@ public class FormularioActivity extends AppCompatActivity {
             bmOptions.inPurgeable = true;
 
             Bitmap bitmap = BitmapFactory.decodeFile(path, bmOptions);
-            imagenEvidencia.setImageBitmap(bitmap);
-        }
+            if (bitmap!=null) {
+                imagenEvidencia.setImageBitmap(bitmap);
+            }else{
+                return;
+            }
     }
     //Retrofit2
     public void InsertarFormulario(){
+        ObtenerLocalizacionCamion();
         Call<List<String>> call = NetworkAdapter.getApiService().MandarFormularioPost(
-                "http://192.168.0.226/web/entregas/iniciarruta_43/gao",
-                "2018-08-03 09:59:00",
-                "0",
-                "0",
-                "0");
+                "iniciarruta_43/gao",
+                ObtenerFecha(),
+                String.valueOf(latitude),
+                String.valueOf(longitud),
+                txt_kilometraje.getText().toString());
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
@@ -256,13 +273,14 @@ public class FormularioActivity extends AppCompatActivity {
     }
     public void ObtenerListaAvisos(){
         Call<List<InformacionAvisos_retrofit>> call = NetworkAdapter.getApiService().ObtenerInformacionParaAviso(
-                "http://192.168.0.226/web/entregas/avisogeneral_43/gao");
+                "avisogeneral_43/gao");
         call.enqueue(new Callback<List<InformacionAvisos_retrofit>>() {
             @Override
             public void onResponse(Call<List<InformacionAvisos_retrofit>> call, Response<List<InformacionAvisos_retrofit>> response) {
                 if(response.isSuccessful()){
                     List<InformacionAvisos_retrofit> respuesta = response.body();
                     Toast.makeText(getApplicationContext(),"Obtuvimos los datos correctamente para mandar un mensaje: "+respuesta.get(0).getTelefono(), Toast.LENGTH_LONG).show();
+                    NuevaActividad();
                 }else{
                     Toast.makeText(getApplicationContext(), "No manches", Toast.LENGTH_LONG).show();
                 }
@@ -274,12 +292,14 @@ public class FormularioActivity extends AppCompatActivity {
             }
         });
     }
+    //ACTIVITY
     public void DialogoConfirmacion(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Aviso de confirmación");
         alert.setMessage("Esta a punto de comenzar una ruta, desea continuar?");
         alert.setPositiveButton("OK", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
+                InsertarFormulario();
             }
         });
 
@@ -288,6 +308,21 @@ public class FormularioActivity extends AppCompatActivity {
             }
         });
         alert.show();
+    }
+    public void DialogoValidacion(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Aviso de validación");
+        alert.setMessage("Falta ingresar el kilometraje actual del camión");
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
+    }
+    public void NuevaActividad(){
+        Intent i = new Intent(FormularioActivity.this, ActivityEntregas.class);
+        //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
     }
 
     //NO UTILIZABLES

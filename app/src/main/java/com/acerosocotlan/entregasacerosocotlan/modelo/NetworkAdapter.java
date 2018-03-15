@@ -11,7 +11,7 @@ public class NetworkAdapter {
     private static NetworkService API_SERVICE;
 
     public static NetworkService getApiService() {
-        String URL = "http://192.168.0.226/web/entregas/";
+        String URL = "http://entregas.dyndns.org/web/entregas/";
 
         if(API_SERVICE == null) {
             Retrofit retrofit = new Retrofit.Builder()
