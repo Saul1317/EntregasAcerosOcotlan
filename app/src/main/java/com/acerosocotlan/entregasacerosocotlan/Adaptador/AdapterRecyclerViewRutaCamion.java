@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.acerosocotlan.entregasacerosocotlan.R;
 import com.acerosocotlan.entregasacerosocotlan.controlador.FormularioActivity;
 import com.acerosocotlan.entregasacerosocotlan.modelo.ConvertidorFecha;
+import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
 
 import java.util.List;
@@ -46,7 +47,7 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
 
     @Override
     public void onBindViewHolder(RutasAdapterRecyclerHolder holder, int position) {
-        RutaCamion_retrofit rutascamionInstancia = rutasArrayList.get(position);
+        final RutaCamion_retrofit rutascamionInstancia = rutasArrayList.get(position);
         String fechahora = rutascamionInstancia.getProgramadaPara();
         ConvertidorFecha confecha= new ConvertidorFecha();
         String fecha = confecha.ConvertirFecha(fechahora);
@@ -56,6 +57,7 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
         holder.cardViewRutas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                MetodosSharedPreference.GuardarRuta(sharedPreferences, rutascamionInstancia.getIdRuta().toString());
                 Intent intent = new Intent(activity, FormularioActivity.class);
                 activity.startActivity(intent);
             }

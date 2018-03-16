@@ -39,12 +39,9 @@ public class MetodosSharedPreference {
     public static String ObtenerPesoMaximoCamionPref(SharedPreferences prs){
         return prs.getString("peso_maximo_camion",null);
     }
-    public static void setCamionPref(SharedPreferences prs, int num_camion){
-        SharedPreferences.Editor editor = prs.edit();
-        editor.putInt("num_camion", num_camion);
-        editor.apply();
+    public static String ObtenerFolioRutaPref(SharedPreferences prs){
+        return prs.getString("folio_ruta",null);
     }
-
     public static void GuardarUsuarioCamion(SharedPreferences prs,String placas, String nombre,
                                            String apellido, String foto, String clave_chofer, String peso, String peso_maximo){
         SharedPreferences.Editor editor = prs.edit();
@@ -55,6 +52,12 @@ public class MetodosSharedPreference {
         editor.putString("clave_chofer_camion", clave_chofer);
         editor.putString("peso_camion", peso);
         editor.putString("peso_maximo_camion", peso_maximo);
+        editor.apply();
+    }
+
+    public static void GuardarRuta(SharedPreferences prs,String folio){
+        SharedPreferences.Editor editor = prs.edit();
+        editor.putString("folio_ruta", folio);
         editor.apply();
     }
 }

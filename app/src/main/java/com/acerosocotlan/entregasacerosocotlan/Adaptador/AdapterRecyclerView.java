@@ -55,15 +55,14 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
         holder.foto_fondo_Cardview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MetodosSharedPreference.setCamionPref(sharedPreferences, position);
                 MetodosSharedPreference.GuardarUsuarioCamion(sharedPreferences,
-                        camionInstancia.getPlacas(),
-                        camionInstancia.getNombre(),
-                        camionInstancia.getApellidoPaterno(),
-                        camionInstancia.getFotoChofer(),
-                        camionInstancia.getClaveChofer(),
-                        camionInstancia.getPesoUnidad(),
-                        camionInstancia.getPesoMaximo());
+                        camionInstancia.getPlacas().toString(),
+                        camionInstancia.getNombre().toString(),
+                        camionInstancia.getApellidoPaterno().toString(),
+                        camionInstancia.getFotoChofer().toString(),
+                        camionInstancia.getClaveChofer().toString(),
+                        camionInstancia.getPesoUnidad().toString(),
+                        camionInstancia.getPesoMaximo().toString());
                 Intent intent = new Intent(activity, ScrollingRutasActivity.class);
                 activity.startActivity(intent);
             }

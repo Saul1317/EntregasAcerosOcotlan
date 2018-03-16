@@ -1,5 +1,7 @@
 package com.acerosocotlan.entregasacerosocotlan.controlador;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -30,6 +32,7 @@ import retrofit2.Response;
 
 public class ActivityEntregas extends AppCompatActivity {
     private RecyclerView entregaRecycler;
+    private SharedPreferences prs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,19 +40,10 @@ public class ActivityEntregas extends AppCompatActivity {
         setContentView(R.layout.activity_entregas);
         Inicializador();
         ObtenerRuta();
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
-
     public void ObtenerRuta(){
         Call<List<EntregasCamion_retrofit>> call = NetworkAdapter.getApiService().EntregasCamiones(
-                "http://entregas.dyndns.org/web/entregas/entregasmovil_42/gao");
+                "http://entregas.dyndns.org/web/entregas/entregasmovil_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/gao");
         call.enqueue(new Callback<List<EntregasCamion_retrofit>>() {
             @Override
             public void onResponse(Call<List<EntregasCamion_retrofit>> call, Response<List<EntregasCamion_retrofit>> response) {
@@ -73,9 +67,9 @@ public class ActivityEntregas extends AppCompatActivity {
         entregaRecycler.setAdapter(arv);
     }
     public void Inicializador(){
+        prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         entregaRecycler = (RecyclerView) findViewById(R.id.entregas_recycler);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
-
 }

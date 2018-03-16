@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -83,6 +84,8 @@ public class FormularioActivity extends AppCompatActivity {
     private final int COD_TOMAR_FOTO=20;
     private final int COD_SELECCIONA_FOTO=10;
     File imagen;
+    //SHARED PREFERENCE
+    private SharedPreferences prs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +111,7 @@ public class FormularioActivity extends AppCompatActivity {
     }
     //Inicializador de componentes
     public void Inicializador(){
+        prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         imagenEvidencia =(ImageView) findViewById(R.id.imagen_formulario);
         botonEnviar= (Button) findViewById(R.id.btn_enviar_formulario);
@@ -134,25 +138,6 @@ public class FormularioActivity extends AppCompatActivity {
         return simpleDateFormat.format(calendar.getTime()).toString();
     }
     //CAMARA
-    private void MenuCamara(){
-        final CharSequence[] opciones = {"Tomar Foto", "Cargar Imagen","Cancelar"};
-        AlertDialog.Builder alertOpciones = new AlertDialog.Builder(FormularioActivity.this);
-        alertOpciones.setTitle("Selecciona una opción");
-        alertOpciones.setItems(opciones, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if(opciones[i].equals("Tomar Foto")){
-                    EjecutarPermisosCamara();
-                }else if (opciones[i].equals("Cargar Imagen")){
-                    Toast.makeText(FormularioActivity.this, "Cargar Foto", Toast.LENGTH_SHORT).show();
-                    CargarImagenes();
-                }else if (opciones[i].equals("Cancelar")){
-                    dialogInterface.dismiss();
-                }
-            }
-        });
-        alertOpciones.show();
-    }
     private void EjecutarPermisosCamara(){
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -189,11 +174,6 @@ public class FormularioActivity extends AppCompatActivity {
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imagen));
         }
         startActivityForResult(intent,COD_TOMAR_FOTO);
-    }
-    private void CargarImagenes(){
-        Intent intent=new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intent.setType("image/");
-        startActivityForResult(intent.createChooser(intent,"Seleccione la Aplicación"),COD_SELECCIONA_FOTO);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -246,7 +226,7 @@ public class FormularioActivity extends AppCompatActivity {
     public void InsertarFormulario(){
         ObtenerLocalizacionCamion();
         Call<List<String>> call = NetworkAdapter.getApiService().MandarFormularioPost(
-                "iniciarruta_43/gao",
+                "iniciarruta_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/gao",
                 ObtenerFecha(),
                 String.valueOf(latitude),
                 String.valueOf(longitud),
@@ -273,13 +253,12 @@ public class FormularioActivity extends AppCompatActivity {
     }
     public void ObtenerListaAvisos(){
         Call<List<InformacionAvisos_retrofit>> call = NetworkAdapter.getApiService().ObtenerInformacionParaAviso(
-                "avisogeneral_43/gao");
+                "avisogeneral_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/gao");
         call.enqueue(new Callback<List<InformacionAvisos_retrofit>>() {
             @Override
             public void onResponse(Call<List<InformacionAvisos_retrofit>> call, Response<List<InformacionAvisos_retrofit>> response) {
                 if(response.isSuccessful()){
                     List<InformacionAvisos_retrofit> respuesta = response.body();
-                    Toast.makeText(getApplicationContext(),"Obtuvimos los datos correctamente para mandar un mensaje: "+respuesta.get(0).getTelefono(), Toast.LENGTH_LONG).show();
                     NuevaActividad();
                 }else{
                     Toast.makeText(getApplicationContext(), "No manches", Toast.LENGTH_LONG).show();
@@ -297,7 +276,7 @@ public class FormularioActivity extends AppCompatActivity {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Aviso de confirmación");
         alert.setMessage("Esta a punto de comenzar una ruta, desea continuar?");
-        alert.setPositiveButton("OK", new DialogInterface.OnClickListener(){
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
                 InsertarFormulario();
             }
@@ -358,5 +337,29 @@ public class FormularioActivity extends AppCompatActivity {
             }
         });
         alertOpciones.show();
+    }
+    //CAMARA NO UTILIZADO
+    private void MenuCamara(){
+        final CharSequence[] opciones = {"Tomar Foto", "Cargar Imagen","Cancelar"};
+        AlertDialog.Builder alertOpciones = new AlertDialog.Builder(FormularioActivity.this);
+        alertOpciones.setTitle("Selecciona una opción");
+        alertOpciones.setItems(opciones, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if(opciones[i].equals("Tomar Foto")){
+                    EjecutarPermisosCamara();
+                }else if (opciones[i].equals("Cargar Imagen")){
+                    Toast.makeText(FormularioActivity.this, "Cargar Foto", Toast.LENGTH_SHORT).show();
+                }else if (opciones[i].equals("Cancelar")){
+                    dialogInterface.dismiss();
+                }
+            }
+        });
+        alertOpciones.show();
+    }
+    private void CargarImagenes(){
+        Intent intent=new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/");
+        startActivityForResult(intent.createChooser(intent,"Seleccione la Aplicación"),COD_SELECCIONA_FOTO);
     }
 }

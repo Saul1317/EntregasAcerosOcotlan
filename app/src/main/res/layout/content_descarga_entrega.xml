@@ -11,25 +11,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp"
         android:weightSum="1">
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="0.5">
-            <ImageView
+            <ImageButton
+                android:id="@+id/boton_descarga_camion"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/camiondescargar"/>
+                android:layout_height="match_parent"
+                android:theme="@style/Boton_descargar_camion"
+                android:src="@drawable/camiondescargarsinfondo"/>
         </FrameLayout>
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="0.5">
-            <ImageView
+            <ImageButton
+                android:id="@+id/boton_finalizacion_descarga"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/camionfinalizado"/>
+                android:layout_height="match_parent"
+                android:theme="@style/Boton_finalizar_descarga_camion"
+                android:src="@drawable/camionfinalizadosinfondo"/>
         </FrameLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

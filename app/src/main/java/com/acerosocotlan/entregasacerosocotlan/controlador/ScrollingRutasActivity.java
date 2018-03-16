@@ -44,7 +44,6 @@ public class ScrollingRutasActivity extends AppCompatActivity {
     private RecyclerView rutasRecycler;
     private TextView nombre_chofer, clave_chofer, peso_camion,peso_maximo_camion, placa_camion;
     private ImageView foto_chofer;
-    private AdapterRecyclerView instanciaRecycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

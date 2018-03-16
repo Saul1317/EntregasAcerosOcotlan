@@ -49,16 +49,9 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
     public void onBindViewHolder(EntregasAdapterRecyclerHolder holder, int position) {
         EntregasCamion_retrofit entregascamionInstancia = entregaArrayList.get(position);
         holder.folio_entregas.setText(entregascamionInstancia.getFolioEntrega().toString());
-        holder.sucursal.setText(entregascamionInstancia.getSucursal().toString());
         holder.entrega.setText(entregascamionInstancia.getEntrega().toString());
-        holder.folio_ruta.setText(entregascamionInstancia.getFolioRuta().toString());
-        holder.fecha_inicio.setText(entregascamionInstancia.getFechaInicio().toString());
         holder.fecha_llegada.setText(entregascamionInstancia.getFechaLlegada().toString());
         holder.fecha_salida.setText(entregascamionInstancia.getFechaSalida().toString());
-        holder.comentario.setText(entregascamionInstancia.getComentarios().toString());
-        holder.estatus.setText(entregascamionInstancia.getEstatus().toString());
-        holder.kg_total.setText(entregascamionInstancia.getKgTotal().toString());
-        holder.pedido.setText(entregascamionInstancia.getPedido().toString());
         holder.cardViewEntregas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,22 +67,15 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
     }
 
     public class EntregasAdapterRecyclerHolder extends RecyclerView.ViewHolder{
-        private TextView folio_entregas, sucursal, folio_ruta, entrega, fecha_inicio, fecha_llegada, fecha_salida, comentario, estatus, kg_total, pedido;
+        private TextView folio_entregas, entrega, fecha_llegada, fecha_salida;
         private CardView cardViewEntregas;
 
         public EntregasAdapterRecyclerHolder(View itemView) {
             super(itemView);
             folio_entregas = (TextView) itemView.findViewById(R.id.txt_entregas_folio_entrega);
-            sucursal = (TextView) itemView.findViewById(R.id.txt_entregas_sucursal);
-            folio_ruta = (TextView) itemView.findViewById(R.id.txt_entregas_FolioRuta);
             entrega = (TextView) itemView.findViewById(R.id.txt_entregas_Entrega);
-            fecha_inicio = (TextView) itemView.findViewById(R.id.txt_entregas_FechaInicio);
             fecha_llegada = (TextView) itemView.findViewById(R.id.txt_entregas_FechaLlegada);
             fecha_salida = (TextView) itemView.findViewById(R.id.txt_entregas_FechaSalida);
-            comentario = (TextView) itemView.findViewById(R.id.txt_entregas_comentarios);
-            estatus = (TextView) itemView.findViewById(R.id.txt_entregas_Estatus);
-            kg_total = (TextView) itemView.findViewById(R.id.txt_entregas_KgTotal);
-            pedido = (TextView) itemView.findViewById(R.id.txt_entregas_Pedido);
             cardViewEntregas = (CardView) itemView.findViewById(R.id.cardview_entregas);
         }
     }
