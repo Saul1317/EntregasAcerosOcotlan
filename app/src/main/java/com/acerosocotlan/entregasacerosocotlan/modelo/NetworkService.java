@@ -29,7 +29,6 @@ public interface NetworkService {
     Call<List<EntregasCamion_retrofit>> EntregasCamiones(@Url String url);
     @POST
     Call<List<InformacionAvisos_retrofit>> ObtenerInformacionParaAviso(@Url String url);
-
     @FormUrlEncoded
     @POST
     Call<List<String>> MandarFormularioPost(@Url String url,
@@ -37,4 +36,24 @@ public interface NetworkService {
                                             @Field("latinicio") String latitud,
                                             @Field("loninicio") String longitud,
                                             @Field("kminicio") String km);
+    @FormUrlEncoded
+    @POST
+    Call<List<String>> IniciaEntrega(@Url String url,
+                                                     @Field("fecha") String fecha,
+                                                     @Field("latitud") String latitud,
+                                                     @Field("longitud") String longitud);
+    @FormUrlEncoded
+    @POST
+    Call<List<String>> LlegadaEntrega(@Url String url,
+                                     @Field("fecha") String fecha,
+                                     @Field("latitud") String latitud,
+                                     @Field("longitud") String longitud);
+
+    @FormUrlEncoded
+    @POST
+    Call<List<String>> SalidaEntrega(@Url String url,
+                                     @Field("fecha") String fecha,
+                                     @Field("latitud") String latitud,
+                                     @Field("longitud") String longitud,
+                                     @Field("comentario") String estatus);
 }

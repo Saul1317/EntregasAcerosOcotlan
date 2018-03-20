@@ -66,6 +66,10 @@
         <activity
             android:name=".controlador.ActivityFinalizacionRuta"
             android:label="@string/title_activity_finalizacion_ruta"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".controlador.FinalizarRutaActivity"
+            android:label="@string/title_activity_finalizar_ruta"
             android:theme="@style/AppTheme"></activity>
     </application>
 

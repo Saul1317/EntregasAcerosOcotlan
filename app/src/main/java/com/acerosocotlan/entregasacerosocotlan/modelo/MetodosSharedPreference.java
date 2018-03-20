@@ -42,6 +42,10 @@ public class MetodosSharedPreference {
     public static String ObtenerFolioRutaPref(SharedPreferences prs){
         return prs.getString("folio_ruta",null);
     }
+
+    public static String ObtenerFolioEntregaPref(SharedPreferences prs){
+        return prs.getString("folio_entrega",null);
+    }
     public static void GuardarUsuarioCamion(SharedPreferences prs,String placas, String nombre,
                                            String apellido, String foto, String clave_chofer, String peso, String peso_maximo){
         SharedPreferences.Editor editor = prs.edit();
@@ -58,6 +62,11 @@ public class MetodosSharedPreference {
     public static void GuardarRuta(SharedPreferences prs,String folio){
         SharedPreferences.Editor editor = prs.edit();
         editor.putString("folio_ruta", folio);
+        editor.apply();
+    }
+    public static void GuardarFolioEntrega(SharedPreferences prs,String folio){
+        SharedPreferences.Editor editor = prs.edit();
+        editor.putString("folio_entrega", folio);
         editor.apply();
     }
 }

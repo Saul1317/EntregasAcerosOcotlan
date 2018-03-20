@@ -15,4 +15,5 @@
     <string name="title_activity_formulario">FormularioActivity</string>
     <string name="hint_edittext_km_camion">Introduce el kilometraje actual</string>
     <string name="title_activity_finalizacion_ruta">ActivityFinalizacionRuta</string>
+    <string name="title_activity_finalizar_ruta">FinalizarRutaActivity</string>
 </resources>
