@@ -69,6 +69,7 @@ public class ActivityEntregas extends AppCompatActivity {
         btn_finalizar_ruta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                NuevaActividad();
 
             }
         });
@@ -160,5 +161,12 @@ public class ActivityEntregas extends AppCompatActivity {
             }
         });
 
+    }
+    @Override
+    public void onBackPressed()
+    {
+        Intent i = new Intent(ActivityEntregas.this, ScrollingRutasActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
     }
 }

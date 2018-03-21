@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
+import com.acerosocotlan.entregasacerosocotlan.controlador.ActivityEntregas;
 import com.acerosocotlan.entregasacerosocotlan.controlador.FormularioActivity;
 import com.acerosocotlan.entregasacerosocotlan.modelo.ConvertidorFecha;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
@@ -57,9 +58,17 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
         holder.cardViewRutas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MetodosSharedPreference.GuardarRuta(sharedPreferences, rutascamionInstancia.getIdRuta().toString());
-                Intent intent = new Intent(activity, FormularioActivity.class);
-                activity.startActivity(intent);
+                if (rutascamionInstancia.getFechaInicio().toString().isEmpty()){
+                    MetodosSharedPreference.GuardarRuta(sharedPreferences, rutascamionInstancia.getIdRuta().toString());
+                    Intent intent = new Intent(activity, FormularioActivity.class);
+                    activity.startActivity(intent);
+                }
+                else{
+                    MetodosSharedPreference.GuardarRuta(sharedPreferences, rutascamionInstancia.getIdRuta().toString());
+                    Intent intent = new Intent(activity, ActivityEntregas.class);
+                    activity.startActivity(intent);
+                }
+
             }
         });
     }

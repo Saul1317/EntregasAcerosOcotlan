@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
 import com.acerosocotlan.entregasacerosocotlan.modelo.InformacionAvisos_retrofit;
+import com.acerosocotlan.entregasacerosocotlan.modelo.Localizacion;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
 import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
@@ -57,12 +58,8 @@ public class FinalizarRutaActivity extends AppCompatActivity {
     private Button botonEnviar;
     private EditText txt_kilometraje;
     //DATOS EXTERNOS
-    private Location location;
-    private LocationManager locationManager;
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private Calendar calendar;
-    private double latitude;
-    private double longitud;
     //RUTAS DE LA CAMARA
     private String CARPETA_RAIZ="acerosOcotlan/";
     private String RUTA_IMAGEN = CARPETA_RAIZ+"evidencia";
@@ -72,6 +69,8 @@ public class FinalizarRutaActivity extends AppCompatActivity {
     File imagen;
     //SHARED PREFERENCE
     private SharedPreferences prs;
+    //INSTANCIA
+    private Localizacion localizacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,27 +109,11 @@ public class FinalizarRutaActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         imagenEvidencia =(ImageView) findViewById(R.id.imagen_formulario_finalizar);
         botonEnviar= (Button) findViewById(R.id.btn_enviar_formulario_finalizar);
         txt_kilometraje = (EditText)findViewById(R.id.text_input_layout_kilometraje_finalizar);
     }
     //OBTENER DATOS
-    public void ObtenerLocalizacionCamion(){
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(FinalizarRutaActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
-            }else{
-                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                latitude = location.getLatitude();
-                longitud = location.getLongitude();
-            }
-        }else {
-            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            latitude = location.getLatitude();
-            longitud = location.getLongitude();
-        }
-    }
     public String ObtenerFecha(){
         calendar = Calendar.getInstance();
         return simpleDateFormat.format(calendar.getTime()).toString();
@@ -222,12 +205,12 @@ public class FinalizarRutaActivity extends AppCompatActivity {
     }
     //Retrofit2
     public void InsertarFormulario(){
-        ObtenerLocalizacionCamion();
-        Call<List<String>> call = NetworkAdapter.getApiService().MandarFormularioPost(
-                "iniciarruta_"+ MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/gao",
+        localizacion = new Localizacion();
+        Call<List<String>> call = NetworkAdapter.getApiService().LlegadaRuta(
+                "finalizarruta_"+ MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/gao",
                 ObtenerFecha(),
-                String.valueOf(latitude),
-                String.valueOf(longitud),
+                localizacion.ObtenerLatitud(FinalizarRutaActivity.this, getApplicationContext()),
+                localizacion.ObtenerLongitud(FinalizarRutaActivity.this, getApplicationContext()),
                 txt_kilometraje.getText().toString());
         call.enqueue(new Callback<List<String>>() {
             @Override
@@ -235,9 +218,12 @@ public class FinalizarRutaActivity extends AppCompatActivity {
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0).toString();
-                    if (valor.equals("iniciada")){
-                        Toast.makeText(getApplicationContext(),valor, Toast.LENGTH_LONG).show();
-                        ObtenerListaAvisos();
+                    Toast.makeText(getApplicationContext(),valor, Toast.LENGTH_LONG).show();
+                    if (valor.equals("finalizada")){
+                        Toast.makeText(getApplicationContext(),"Se completo la ruta", Toast.LENGTH_LONG).show();
+                        Intent i = new Intent(FinalizarRutaActivity.this, ScrollingRutasActivity.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(i);
                     }
                 }else{
                     Toast.makeText(getApplicationContext(), "No manches", Toast.LENGTH_LONG).show();
@@ -249,34 +235,14 @@ public class FinalizarRutaActivity extends AppCompatActivity {
             }
         });
     }
-    public void ObtenerListaAvisos(){
-        Call<List<InformacionAvisos_retrofit>> call = NetworkAdapter.getApiService().ObtenerInformacionParaAviso(
-                "avisogeneral_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/gao");
-        call.enqueue(new Callback<List<InformacionAvisos_retrofit>>() {
-            @Override
-            public void onResponse(Call<List<InformacionAvisos_retrofit>> call, Response<List<InformacionAvisos_retrofit>> response) {
-                if(response.isSuccessful()){
-                    List<InformacionAvisos_retrofit> respuesta = response.body();
-                    NuevaActividad();
-                }else{
-                    Toast.makeText(getApplicationContext(), "No manches", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<InformacionAvisos_retrofit>> call, Throwable t) {
-
-            }
-        });
-    }
     //ACTIVITY
     public void DialogoConfirmacion(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Aviso de confirmación");
-        alert.setMessage("Esta a punto de comenzar una ruta, desea continuar?");
+        alert.setMessage("Esta a punto de finalizar esta ruta, desea continuar?");
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
-                //InsertarFormulario();
+                InsertarFormulario();
             }
         });
 
