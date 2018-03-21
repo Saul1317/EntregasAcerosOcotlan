@@ -261,7 +261,7 @@ public class FormularioActivity extends AppCompatActivity {
                     List<InformacionAvisos_retrofit> respuesta = response.body();
                     NuevaActividad();
                 }else{
-                    Toast.makeText(getApplicationContext(), "No manches", Toast.LENGTH_LONG).show();
+                    Log.i("LOL", "NO ENTRA");
                 }
             }
 

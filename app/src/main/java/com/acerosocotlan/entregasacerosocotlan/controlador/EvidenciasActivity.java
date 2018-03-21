@@ -1,8 +1,10 @@
 package com.acerosocotlan.entregasacerosocotlan.controlador;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,8 +30,18 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
+import com.acerosocotlan.entregasacerosocotlan.modelo.Localizacion;
+import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
+import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -47,6 +59,13 @@ public class EvidenciasActivity extends AppCompatActivity {
     private final int COD_TOMAR_FOTO=20;
     private final int COD_SELECCIONA_FOTO=10;
     File imagen;
+    //DATOS EXTERNOS
+    static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    private Calendar calendar;
+    //SHARED PREFERENCE
+    private SharedPreferences prs;
+    //INSTANCIA
+    private Localizacion localizacion;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +74,7 @@ public class EvidenciasActivity extends AppCompatActivity {
         boton_finalizar_entrega_camion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NuevaActividad();
+                DialogoConfirmacion();
             }
         });
         imagenEvidencia.setOnClickListener(new View.OnClickListener() {
@@ -152,6 +171,7 @@ public class EvidenciasActivity extends AppCompatActivity {
     }
     //ACTIVITY
     public void Inicializador(){
+        prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         imagenEvidencia =(ImageView) findViewById(R.id.imagen_evidencia);
@@ -162,5 +182,56 @@ public class EvidenciasActivity extends AppCompatActivity {
         Intent i = new Intent(EvidenciasActivity.this, ActivityEntregas.class);
         //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
+    }
+    public void DialogoConfirmacion(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Aviso de confirmación");
+        alert.setMessage("Esta a punto de informar su salida, desea continuar?");
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+                Toast.makeText(EvidenciasActivity.this, "ENVIAR DATOS DE LLEGADA", Toast.LENGTH_SHORT).show();
+                InsertarSalidaCamion();
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
+    }
+    //OBTENER DATOS
+    public String ObtenerFecha(){
+        calendar = Calendar.getInstance();
+        return simpleDateFormat.format(calendar.getTime()).toString();
+    }
+    //RETROFIT2
+    public void InsertarSalidaCamion(){
+        localizacion = new Localizacion();
+        Call<List<String>> call = NetworkAdapter.getApiService().SalidaEntrega(
+                "iniciarentrega_"+ MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_salida/gao",
+                ObtenerFecha(),
+                localizacion.ObtenerLatitud(EvidenciasActivity.this, getApplicationContext()),
+                localizacion.ObtenerLongitud(EvidenciasActivity.this, getApplicationContext()),
+                edit_txt_comentarios.getText().toString());
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                if(response.isSuccessful()){
+                    List<String> respuesta = response.body();
+                    String valor = respuesta.get(0).toString();
+                    Toast.makeText(getApplicationContext(),valor, Toast.LENGTH_LONG).show();
+                    if (valor.equals("correcto")){
+                        NuevaActividad();
+                    }
+                }else{
+                    Toast.makeText(getApplicationContext(), "No manches", Toast.LENGTH_LONG).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getMessage());
+            }
+        });
     }
 }

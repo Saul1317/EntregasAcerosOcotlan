@@ -38,10 +38,20 @@ public interface NetworkService {
                                             @Field("kminicio") String km);
     @FormUrlEncoded
     @POST
+    Call<List<String>> LlegadaRuta(@Url String url,
+                                            @Field("fechallegada") String fecha,
+                                            @Field("latllegada") String latitud,
+                                            @Field("lonllegada") String longitud,
+                                            @Field("kmllegada") String km);
+    @FormUrlEncoded
+    @POST
     Call<List<String>> IniciaEntrega(@Url String url,
                                                      @Field("fecha") String fecha,
                                                      @Field("latitud") String latitud,
                                                      @Field("longitud") String longitud);
+    @POST
+    Call<List<AvisoPersonal_retrofit>> ObtenerAvisoPersonal(@Url String url);
+
     @FormUrlEncoded
     @POST
     Call<List<String>> LlegadaEntrega(@Url String url,
@@ -55,5 +65,5 @@ public interface NetworkService {
                                      @Field("fecha") String fecha,
                                      @Field("latitud") String latitud,
                                      @Field("longitud") String longitud,
-                                     @Field("comentario") String estatus);
+                                     @Field("comentarios") String comentario);
 }

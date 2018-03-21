@@ -1,6 +1,7 @@
 package com.acerosocotlan.entregasacerosocotlan.controlador;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,7 +27,9 @@ import android.widget.Toast;
 import com.acerosocotlan.entregasacerosocotlan.Adaptador.AdapterRecyclerViewEntregaCamion;
 import com.acerosocotlan.entregasacerosocotlan.Adaptador.AdapterRecyclerViewRutaCamion;
 import com.acerosocotlan.entregasacerosocotlan.R;
+import com.acerosocotlan.entregasacerosocotlan.modelo.AvisoPersonal_retrofit;
 import com.acerosocotlan.entregasacerosocotlan.modelo.EntregasCamion_retrofit;
+import com.acerosocotlan.entregasacerosocotlan.modelo.InformacionAvisos_retrofit;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
 import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
@@ -66,7 +69,7 @@ public class ActivityEntregas extends AppCompatActivity {
         btn_finalizar_ruta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NuevaActividad();
+
             }
         });
     }
@@ -85,21 +88,6 @@ public class ActivityEntregas extends AppCompatActivity {
         startActivity(i);
     }
     //OBTENER DATOS
-    public void ObtenerLocalizacionCamion(){
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(ActivityEntregas.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
-            }else{
-                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                latitude = location.getLatitude();
-                longitud = location.getLongitude();
-            }
-        }else {
-            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            latitude = location.getLatitude();
-            longitud = location.getLongitude();
-        }
-    }
     public String ObtenerFecha(){
         calendar = Calendar.getInstance();
         return simpleDateFormat.format(calendar.getTime()).toString();
@@ -131,7 +119,6 @@ public class ActivityEntregas extends AppCompatActivity {
         entregaRecycler.setAdapter(arv);
     }
     public void InsertarFormulario(String folio, String latitud, String longitud){
-        //ObtenerLocalizacionCamion();
         Call<List<String>> call = NetworkAdapter.getApiService().IniciaEntrega(
                 "iniciarentrega_"+folio+"_inicio/gao",
                  ObtenerFecha(),
@@ -144,6 +131,9 @@ public class ActivityEntregas extends AppCompatActivity {
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0).toString();
                     Log.i("Respuesta", valor);
+                    if (valor.equals("correcto")){
+                        ObtenerAvisoPersonal();
+                    }
                 }else{
                     Toast.makeText(getApplicationContext(), "No manches", Toast.LENGTH_LONG).show();
                 }
@@ -153,5 +143,22 @@ public class ActivityEntregas extends AppCompatActivity {
                 Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getLocalizedMessage());
             }
         });
+    }
+    public void ObtenerAvisoPersonal() {
+        Call<List<AvisoPersonal_retrofit>> call = NetworkAdapter.getApiService().ObtenerAvisoPersonal("avisopersonal_5/gao");
+        call.enqueue(new Callback<List<AvisoPersonal_retrofit>>() {
+            @Override
+            public void onResponse(Call<List<AvisoPersonal_retrofit>> call, Response<List<AvisoPersonal_retrofit>> response) {
+                    if (response.isSuccessful()){
+                        List<AvisoPersonal_retrofit> respuesta = response.body();
+                        Log.i("AQUI", "Se mando");
+                    }
+            }
+            @Override
+            public void onFailure(Call<List<AvisoPersonal_retrofit>> call, Throwable t) {
+                Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getLocalizedMessage());
+            }
+        });
+
     }
 }

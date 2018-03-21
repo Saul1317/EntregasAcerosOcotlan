@@ -23,8 +23,10 @@ import android.widget.Toast;
 import com.acerosocotlan.entregasacerosocotlan.R;
 import com.acerosocotlan.entregasacerosocotlan.controlador.ActivityEntregas;
 import com.acerosocotlan.entregasacerosocotlan.controlador.DescargaEntregaActivity;
+import com.acerosocotlan.entregasacerosocotlan.controlador.FinalizarRutaActivity;
 import com.acerosocotlan.entregasacerosocotlan.controlador.FormularioActivity;
 import com.acerosocotlan.entregasacerosocotlan.modelo.EntregasCamion_retrofit;
+import com.acerosocotlan.entregasacerosocotlan.modelo.Localizacion;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
 import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
@@ -78,12 +80,17 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
             @Override
             public void onClick(View view) {
                 MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregascamionInstancia.getFolioEntrega().toString());
-                ActivityEntregas a = new ActivityEntregas();
-                a.InsertarFormulario(MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences),"0","0");
+                ActivityEntregas activityEntregasInstancia = new ActivityEntregas();
+                Localizacion localizacionInstancia = new Localizacion();
+                activityEntregasInstancia.InsertarFormulario(
+                        MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences),
+                        localizacionInstancia.ObtenerLatitud(activity, context),
+                        localizacionInstancia.ObtenerLongitud(activity, context));
+                Intent i = new Intent(context, DescargaEntregaActivity.class);
+                activity.startActivity(i);
             }
         });
     }
-
     @Override
     public int getItemCount() {
         return entregaArrayList.size();

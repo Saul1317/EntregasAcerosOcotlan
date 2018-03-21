@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
+import com.acerosocotlan.entregasacerosocotlan.modelo.Localizacion;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
 
@@ -40,14 +41,12 @@ public class DescargaEntregaActivity extends AppCompatActivity {
 
     ImageButton btn_descarga_camion, btn_finalizacion_camion;
     //DATOS EXTERNOS
-    private Location location;
-    private LocationManager locationManager;
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private Calendar calendar;
-    private double latitude;
-    private double longitud;
     //SHARED PREFERENCE
     private SharedPreferences prs;
+    //INSTANCIA
+    private Localizacion localizacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +67,12 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         });
     }
     public void Inicializador(){
+        prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         btn_descarga_camion = (ImageButton) findViewById(R.id.boton_descarga_camion);
         btn_finalizacion_camion = (ImageButton) findViewById(R.id.boton_finalizacion_descarga);
         btn_finalizacion_camion.setEnabled(false);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
     }
     public void NuevaActividad(){
         Intent i = new Intent(DescargaEntregaActivity.this, EvidenciasActivity.class);
@@ -87,8 +86,10 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
                 Toast.makeText(DescargaEntregaActivity.this, "ENVIAR DATOS DE LLEGADA", Toast.LENGTH_SHORT).show();
+                InsertarLlegadaCamion();
                 btn_finalizacion_camion.setEnabled(true);
                 btn_descarga_camion.setEnabled(false);
+
             }
         });
 
@@ -100,40 +101,26 @@ public class DescargaEntregaActivity extends AppCompatActivity {
     }
 
     //OBTENER DATOS
-    public void ObtenerLocalizacionCamion(){
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(DescargaEntregaActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
-            }else{
-                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                latitude = location.getLatitude();
-                longitud = location.getLongitude();
-            }
-        }else {
-            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            latitude = location.getLatitude();
-            longitud = location.getLongitude();
-        }
-    }
     public String ObtenerFecha(){
         calendar = Calendar.getInstance();
         return simpleDateFormat.format(calendar.getTime()).toString();
     }
     //RETROFIT2
-    public void InsertarFormulario(){
-        ObtenerLocalizacionCamion();
-        Call<List<String>> call = NetworkAdapter.getApiService().IniciaEntrega(
-                "iniciarentrega_"+ MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"inicia/gao",
+    public void InsertarLlegadaCamion(){
+        localizacion = new Localizacion();
+        Call<List<String>> call = NetworkAdapter.getApiService().LlegadaEntrega(
+                "iniciarentrega_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_llegada/gao",
                 ObtenerFecha(),
-                String.valueOf(latitude),
-                String.valueOf(longitud));
+                localizacion.ObtenerLatitud(DescargaEntregaActivity.this, getApplicationContext()),
+                localizacion.ObtenerLongitud(DescargaEntregaActivity.this, getApplicationContext()));
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0).toString();
-                    if (valor.equals("iniciada")){
+                    Toast.makeText(getApplicationContext(),valor, Toast.LENGTH_LONG).show();
+                    if (valor.equals("correcto")){
                         Toast.makeText(getApplicationContext(),"Se insertó correctamente", Toast.LENGTH_LONG).show();
                     }
                 }else{
