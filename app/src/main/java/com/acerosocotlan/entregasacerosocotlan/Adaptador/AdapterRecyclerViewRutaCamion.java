@@ -2,8 +2,10 @@ package com.acerosocotlan.entregasacerosocotlan.Adaptador;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import com.acerosocotlan.entregasacerosocotlan.R;
 import com.acerosocotlan.entregasacerosocotlan.controlador.ActivityEntregas;
 import com.acerosocotlan.entregasacerosocotlan.controlador.FormularioActivity;
+import com.acerosocotlan.entregasacerosocotlan.controlador.ScrollingRutasActivity;
 import com.acerosocotlan.entregasacerosocotlan.modelo.ConvertidorFecha;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
@@ -59,16 +62,41 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
             @Override
             public void onClick(View view) {
                 if (rutascamionInstancia.getFechaInicio().toString().isEmpty()){
-                    MetodosSharedPreference.GuardarRuta(sharedPreferences, rutascamionInstancia.getIdRuta().toString());
-                    Intent intent = new Intent(activity, FormularioActivity.class);
-                    activity.startActivity(intent);
+                    AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+                    alert.setTitle("Aviso de confirmación");
+                    alert.setMessage("Esta a punto de iniciar una ruta, ¿Desea continuar?");
+                    alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            MetodosSharedPreference.GuardarRuta(sharedPreferences, rutascamionInstancia.getIdRuta().toString());
+                            Intent intent = new Intent(activity, FormularioActivity.class);
+                            activity.startActivity(intent);
+                        }
+                    });
+
+                    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                        }
+                    });
+                    alert.show();
                 }
                 else{
-                    MetodosSharedPreference.GuardarRuta(sharedPreferences, rutascamionInstancia.getIdRuta().toString());
-                    Intent intent = new Intent(activity, ActivityEntregas.class);
-                    activity.startActivity(intent);
-                }
+                    AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+                    alert.setTitle("Aviso de confirmación");
+                    alert.setMessage("Esta ruta ya fue inicializada, ¿Desea continuar?");
+                    alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            MetodosSharedPreference.GuardarRuta(sharedPreferences, rutascamionInstancia.getIdRuta().toString());
+                            Intent intent = new Intent(activity, ActivityEntregas.class);
+                            activity.startActivity(intent);
+                        }
+                    });
 
+                    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                        }
+                    });
+                    alert.show();
+                }
             }
         });
     }
@@ -77,7 +105,6 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
     public int getItemCount() {
         return rutasArrayList.size();
     }
-
     public class RutasAdapterRecyclerHolder extends RecyclerView.ViewHolder{
         private TextView numero_entrega, fecha_programada, numero_folio;
         private CardView cardViewRutas;

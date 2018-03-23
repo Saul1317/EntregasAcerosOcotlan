@@ -2,8 +2,10 @@ package com.acerosocotlan.entregasacerosocotlan.Adaptador;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
+import com.acerosocotlan.entregasacerosocotlan.controlador.DescargaEntregaActivity;
 import com.acerosocotlan.entregasacerosocotlan.controlador.ScrollingRutasActivity;
 import com.acerosocotlan.entregasacerosocotlan.modelo.Camion_retrofit;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
@@ -64,6 +67,7 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
                         camionInstancia.getPesoUnidad().toString(),
                         camionInstancia.getPesoMaximo().toString());
                 Intent intent = new Intent(activity, ScrollingRutasActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 activity.startActivity(intent);
             }
         });

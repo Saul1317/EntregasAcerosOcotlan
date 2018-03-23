@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+
 import com.acerosocotlan.entregasacerosocotlan.Adaptador.AdapterRecyclerView;
 import com.acerosocotlan.entregasacerosocotlan.R;
 import com.acerosocotlan.entregasacerosocotlan.modelo.Camion_retrofit;
@@ -51,5 +53,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void inicializador(){
         choferesRecycler = (RecyclerView) findViewById(R.id.choferes_recycler);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
     }
 }

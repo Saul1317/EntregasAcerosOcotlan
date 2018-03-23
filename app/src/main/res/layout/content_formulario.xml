@@ -13,6 +13,14 @@
         android:orientation="vertical"
         android:padding="@dimen/margen_ventana"
         android:weightSum="1">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/instrucciones_formulario"
+            android:textSize="@dimen/texto_intrucciones_formulario"
+            android:textStyle="normal"
+            android:textColor="@color/primary_text"
+            android:layout_marginBottom="20dp"/>
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

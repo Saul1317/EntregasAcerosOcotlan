@@ -3,6 +3,7 @@ package com.acerosocotlan.entregasacerosocotlan.Adaptador;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -11,6 +12,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -79,15 +81,28 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
         holder.cardViewEntregas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregascamionInstancia.getFolioEntrega().toString());
-                ActivityEntregas activityEntregasInstancia = new ActivityEntregas();
-                Localizacion localizacionInstancia = new Localizacion();
-                activityEntregasInstancia.InsertarFormulario(
-                        MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences),
-                        localizacionInstancia.ObtenerLatitud(activity, context),
-                        localizacionInstancia.ObtenerLongitud(activity, context));
-                Intent i = new Intent(context, DescargaEntregaActivity.class);
-                activity.startActivity(i);
+                AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+                alert.setTitle("Aviso de confirmación");
+                alert.setMessage("Esta a punto de inicializar esta entrega, ¿Desea continuar?");
+                alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregascamionInstancia.getFolioEntrega().toString());
+                        ActivityEntregas activityEntregasInstancia = new ActivityEntregas();
+                        Localizacion localizacionInstancia = new Localizacion();
+                        activityEntregasInstancia.InsertarFormulario(
+                                MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences),
+                                localizacionInstancia.ObtenerLatitud(activity, context),
+                                localizacionInstancia.ObtenerLongitud(activity, context));
+                        Intent i = new Intent(context, DescargaEntregaActivity.class);
+                        activity.startActivity(i);
+                    }
+                });
+
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                });
+                alert.show();
             }
         });
     }

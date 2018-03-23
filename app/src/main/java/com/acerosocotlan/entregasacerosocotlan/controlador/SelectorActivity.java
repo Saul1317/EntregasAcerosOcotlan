@@ -26,7 +26,7 @@ public class SelectorActivity extends AppCompatActivity {
     Spinner spinner_sucursal, spinner_local;
 
     /*******variable para boton**********/
-    ImageButton boton_ingresar;
+    Button boton_ingresar;
 
     /******* variable para preferencias*****/
     private SharedPreferences sharedPreferences;
@@ -146,7 +146,6 @@ public class SelectorActivity extends AppCompatActivity {
                 text_sucursal = spinner_sucursal.getSelectedItem().toString();
                 text_sociedad = spinner_local.getSelectedItem().toString();
                 //  Toast.makeText(LoginActivity.this, text_sucursal +" "+ text_sociedad, Toast.LENGTH_SHORT).show();
-                NuevaActividad();
                 GuardarPreferencias(text_sociedad, text_sucursal);
                 NuevaActividad();
             }
@@ -164,13 +163,12 @@ public class SelectorActivity extends AppCompatActivity {
     private void Identificadores(){
         spinner_sucursal = (Spinner) findViewById(R.id.spinner_sucursal);
         spinner_local = (Spinner) findViewById(R.id.spinner_sociedad);
-        boton_ingresar= (ImageButton) findViewById(R.id.boton_ingresar);
+        boton_ingresar= (Button) findViewById(R.id.boton_ingresar);
     }
 
     /******* metodo para mostrar actividad ********/
     private void NuevaActividad(){
         Intent i = new Intent(SelectorActivity.this, MainActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
     }
 }

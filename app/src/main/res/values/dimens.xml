@@ -2,10 +2,12 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="cardview_choferes">200dp</dimen>
     <dimen name="cardview_radius_choferes">4dp</dimen>
-    <dimen name="texto_principal">25sp</dimen>
+    <dimen name="texto_principal">17sp</dimen>
     <dimen name="margen_componentes">16dp</dimen>
     <dimen name="margen_ventana">16dp</dimen>
     <dimen name="app_barra_altura">200dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="txt_tamano_cardview_rutas">15sp</dimen>
+    <dimen name="texto_intrucciones">17dp</dimen>
+    <dimen name="texto_intrucciones_formulario">17dp</dimen>
 </resources>
