@@ -41,13 +41,6 @@
                         android:textSize="@dimen/txt_tamano_cardview_rutas"
                         android:textStyle="bold"/>
                     <TextView
-                        android:id="@+id/txt_clave_chofer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Clave del chofer"
-                        android:textSize="@dimen/txt_tamano_cardview_rutas"
-                        android:textStyle="bold"/>
-                    <TextView
                         android:id="@+id/txt_peso_camion"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

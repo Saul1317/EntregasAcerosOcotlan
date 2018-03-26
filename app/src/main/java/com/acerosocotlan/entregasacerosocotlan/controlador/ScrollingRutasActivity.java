@@ -42,7 +42,7 @@ import retrofit2.Response;
 public class ScrollingRutasActivity extends AppCompatActivity {
     private SharedPreferences prs;
     private RecyclerView rutasRecycler;
-    private TextView nombre_chofer, clave_chofer, peso_camion,peso_maximo_camion, placa_camion;
+    private TextView nombre_chofer, peso_camion,peso_maximo_camion, placa_camion;
     private ImageView foto_chofer;
 
     @Override
@@ -151,13 +151,10 @@ public class ScrollingRutasActivity extends AppCompatActivity {
     public void inicializador(){
         rutasRecycler = (RecyclerView) findViewById(R.id.rutas_recycler);
         nombre_chofer = (TextView) findViewById(R.id.txt_nombre_perfil_chofer);
-        nombre_chofer.setText(MetodosSharedPreference.ObtenerNombrePref(prs)+" "+MetodosSharedPreference.ObtenerApellidoPref(prs));
+        nombre_chofer.setText(MetodosSharedPreference.ObtenerNombrePref(prs));
 
         placa_camion = (TextView) findViewById(R.id.txt_placas);
         placa_camion.setText("Placas: "+MetodosSharedPreference.ObtenerPlacasPref(prs));
-
-        clave_chofer  = (TextView) findViewById(R.id.txt_clave_chofer);
-        clave_chofer.setText("Clave del chofer: "+MetodosSharedPreference.ObtenerClaveChoferPref(prs));
 
         peso_camion  = (TextView) findViewById(R.id.txt_peso_camion);
         peso_camion.setText("Peso del camion: "+MetodosSharedPreference.ObtenerPesoCamionChoferPref(prs));

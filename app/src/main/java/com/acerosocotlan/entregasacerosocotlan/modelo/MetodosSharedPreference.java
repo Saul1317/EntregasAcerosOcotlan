@@ -69,4 +69,12 @@ public class MetodosSharedPreference {
         editor.putString("folio_entrega", folio);
         editor.apply();
     }
+
+    public static void GuardarFechasEntrega(SharedPreferences prs, String inicio,String llegada, String salida){
+        SharedPreferences.Editor editor = prs.edit();
+        editor.putString("fecha_entrega_inicio", inicio);
+        editor.putString("fecha_entrega_llegada", llegada);
+        editor.putString("fecha_entrega_salida", salida);
+        editor.apply();
+    }
 }

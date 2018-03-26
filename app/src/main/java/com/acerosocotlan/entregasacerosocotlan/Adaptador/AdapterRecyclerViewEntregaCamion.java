@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -19,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,10 +76,13 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
     @Override
     public void onBindViewHolder(EntregasAdapterRecyclerHolder holder, int position) {
         final EntregasCamion_retrofit entregascamionInstancia = entregaArrayList.get(position);
+        if (!entregascamionInstancia.getFechaInicio().toString().isEmpty()){
+            holder.linearLayout_entregas.setBackgroundColor(Color.parseColor("#FFD600"));
+        }
         holder.folio_entregas.setText(entregascamionInstancia.getFolioEntrega().toString());
         holder.entrega.setText(entregascamionInstancia.getEntrega().toString());
-        holder.fecha_llegada.setText(entregascamionInstancia.getFechaLlegada().toString());
-        holder.fecha_salida.setText(entregascamionInstancia.getFechaSalida().toString());
+        holder.txt_cliente.setText(entregascamionInstancia.getNomcliente().toString());
+        holder.txt_direccion.setText(entregascamionInstancia.getDireccion().toString());
         holder.cardViewEntregas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,6 +92,10 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
                 alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
                     public void onClick(DialogInterface dialog, int whichButton) {
                         MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregascamionInstancia.getFolioEntrega().toString());
+                        MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences,
+                                entregascamionInstancia.getFechaInicio().toString(),
+                                entregascamionInstancia.getFechaLlegada().toString(),
+                                entregascamionInstancia.getFechaSalida().toString());
                         ActivityEntregas activityEntregasInstancia = new ActivityEntregas();
                         Localizacion localizacionInstancia = new Localizacion();
                         activityEntregasInstancia.InsertarFormulario(
@@ -112,16 +121,18 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
     }
 
     public class EntregasAdapterRecyclerHolder extends RecyclerView.ViewHolder{
-        private TextView folio_entregas, entrega, fecha_llegada, fecha_salida;
+        private TextView folio_entregas, entrega, txt_cliente, txt_direccion;
         private CardView cardViewEntregas;
+        private LinearLayout linearLayout_entregas;
 
         public EntregasAdapterRecyclerHolder(View itemView) {
             super(itemView);
             folio_entregas = (TextView) itemView.findViewById(R.id.txt_entregas_folio_entrega);
             entrega = (TextView) itemView.findViewById(R.id.txt_entregas_Entrega);
-            fecha_llegada = (TextView) itemView.findViewById(R.id.txt_entregas_FechaLlegada);
-            fecha_salida = (TextView) itemView.findViewById(R.id.txt_entregas_FechaSalida);
+            txt_cliente = (TextView) itemView.findViewById(R.id.txt_entregas_cliente);
+            txt_direccion = (TextView) itemView.findViewById(R.id.txt_entregas_direccion);
             cardViewEntregas = (CardView) itemView.findViewById(R.id.cardview_entregas);
+            linearLayout_entregas= (LinearLayout) itemView.findViewById(R.id.linear_layout_entregas_cardview);
         }
     }
 }

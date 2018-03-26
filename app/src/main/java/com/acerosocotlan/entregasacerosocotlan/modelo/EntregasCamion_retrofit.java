@@ -41,6 +41,12 @@ public class EntregasCamion_retrofit {
     @SerializedName("Pedido")
     @Expose
     private String pedido;
+    @SerializedName("nomcliente")
+    @Expose
+    private String nomcliente;
+    @SerializedName("direccion")
+    @Expose
+    private String direccion;
 
     public EntregasCamion_retrofit(String folioEntrega, String sucursal, String folioRuta, String entrega, String fechaInicio, String fechaLlegada, String fechaSalida, String comentarios, String estatus, String kgTotal, String pedido) {
         this.folioEntrega = folioEntrega;
@@ -144,6 +150,22 @@ public class EntregasCamion_retrofit {
         this.pedido = pedido;
     }
 
+    public String getNomcliente() {
+        return nomcliente;
+    }
+
+    public void setNomcliente(String nomcliente) {
+        this.nomcliente = nomcliente;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
     @Override
     public String toString() {
         return "EntregasCamion_retrofit{" +
@@ -158,6 +180,8 @@ public class EntregasCamion_retrofit {
                 ", estatus='" + estatus + '\'' +
                 ", kgTotal='" + kgTotal + '\'' +
                 ", pedido='" + pedido + '\'' +
+                ", nomcliente='" + nomcliente + '\'' +
+                ", direccion='" + direccion + '\'' +
                 '}';
     }
 }

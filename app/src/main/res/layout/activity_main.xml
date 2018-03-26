@@ -22,9 +22,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="5dp">
+        android:paddingHorizontal="14dp"
+        android:paddingTop="7dp">
         <android.support.v7.widget.RecyclerView
             android:id="@+id/choferes_recycler"
             android:layout_width="match_parent"

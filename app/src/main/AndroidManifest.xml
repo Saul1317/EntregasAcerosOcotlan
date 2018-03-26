@@ -27,7 +27,8 @@
         </activity>
         <activity
             android:name=".controlador.MainActivity"
-            android:theme="@style/CatalogoCamiones" />
+            android:theme="@style/CatalogoCamiones"
+            android:label="Selecciona tu unidad"/>
         <activity
             android:name=".controlador.SelectorActivity"
             android:label="@string/title_activity_selector"

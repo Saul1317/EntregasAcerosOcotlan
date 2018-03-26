@@ -52,7 +52,9 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
     @Override
     public void onBindViewHolder(AdapterRecyclerHolder holder, final int position) {
         final Camion_retrofit camionInstancia = camionArrayList.get(position);
-        holder.nombre_chofer_Cardview.setText(camionInstancia.getNombre());
+        holder.nombre_chofer_Cardview.setText(camionInstancia.getNombre()+" "+camionInstancia.getApellidoPaterno());
+        holder.modelo_camion_carview.setText(camionInstancia.getDescripcion());
+        holder.placas_camion_carview.setText("Placas "+camionInstancia.getPlacas());
         Picasso.with(context).load(camionInstancia.getFotoCamion().toString()).fit().into(holder.foto_fondo_Cardview);
         Picasso.with(context).load(camionInstancia.getFotoChofer()).fit().placeholder(R.drawable.obrero).into(holder.foto_perfil_Cardview);
         holder.foto_fondo_Cardview.setOnClickListener(new View.OnClickListener() {
@@ -80,13 +82,15 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
     public class AdapterRecyclerHolder extends RecyclerView.ViewHolder{
 
         private ImageView foto_fondo_Cardview, foto_perfil_Cardview;
-        private TextView nombre_chofer_Cardview ;
+        private TextView nombre_chofer_Cardview, modelo_camion_carview, placas_camion_carview ;
 
         public AdapterRecyclerHolder(View itemView) {
             super(itemView);
             foto_fondo_Cardview =(ImageView) itemView.findViewById(R.id.foto_fondo_chofer);
             foto_perfil_Cardview =(ImageView) itemView.findViewById(R.id.foto_perfil_chofer);
             nombre_chofer_Cardview = (TextView) itemView.findViewById(R.id.txt_nombre_chofer);
+            modelo_camion_carview = (TextView) itemView.findViewById(R.id.txt_modelo_camion);
+            placas_camion_carview = (TextView) itemView.findViewById(R.id.txt_placas_camion);
         }
     }
 }
