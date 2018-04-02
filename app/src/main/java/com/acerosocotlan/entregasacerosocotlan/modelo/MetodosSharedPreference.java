@@ -46,6 +46,18 @@ public class MetodosSharedPreference {
     public static String ObtenerFolioEntregaPref(SharedPreferences prs){
         return prs.getString("folio_entrega",null);
     }
+
+    public static String ObtenerFechaInicioPref(SharedPreferences prs){
+        return prs.getString("fecha_entrega_inicio",null);
+    }
+
+    public static String ObtenerFechaLlegadaPref(SharedPreferences prs){
+        return prs.getString("fecha_entrega_llegada",null);
+    }
+
+    public static String ObtenerFechaSalidaPref(SharedPreferences prs){
+        return prs.getString("fecha_entrega_salida",null);
+    }
     public static void GuardarUsuarioCamion(SharedPreferences prs,String placas, String nombre,
                                            String apellido, String foto, String clave_chofer, String peso, String peso_maximo){
         SharedPreferences.Editor editor = prs.edit();

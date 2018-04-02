@@ -53,6 +53,14 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_descarga_entrega);
         Inicializador();
+        if(MetodosSharedPreference.ObtenerFechaLlegadaPref(prs).isEmpty()){
+            btn_finalizacion_camion.setEnabled(false);
+            btn_descarga_camion.setEnabled(true);
+        }else{
+            btn_finalizacion_camion.setEnabled(true);
+            btn_descarga_camion.setEnabled(false);
+        }
+
         btn_descarga_camion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,7 +93,6 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         alert.setMessage("Esta a punto de informar su llegada con el cliente, desea continuar?");
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
-                Toast.makeText(DescargaEntregaActivity.this, "ENVIAR DATOS DE LLEGADA", Toast.LENGTH_SHORT).show();
                 InsertarLlegadaCamion();
                 btn_finalizacion_camion.setEnabled(true);
                 btn_descarga_camion.setEnabled(false);
@@ -99,7 +106,6 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         });
         alert.show();
     }
-
     //OBTENER DATOS
     public String ObtenerFecha(){
         calendar = Calendar.getInstance();
