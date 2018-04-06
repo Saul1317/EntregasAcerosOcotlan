@@ -32,7 +32,6 @@ public class Localizacion {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
             }else{
                 location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                 latitude = location.getLatitude();
@@ -46,7 +45,7 @@ public class Localizacion {
     public String ObtenerLongitud(Activity activity, Context context){
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+
             }else{
                 location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                 longitud = location.getLongitude();
@@ -56,5 +55,21 @@ public class Localizacion {
             longitud = location.getLongitude();
         }
         return String.valueOf(longitud);
+    }
+    public boolean ValidarPermisosGPS(Activity activity){
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }else{
+                return true;
+            }
+        }else {
+            return true;
+        }
+    }
+    public void PedirPermisosGPS(Activity activity){
+        ActivityCompat.requestPermissions(activity, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+
     }
 }

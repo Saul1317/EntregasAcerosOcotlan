@@ -42,13 +42,11 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
         this.context = context;
         sharedPreferences = activity.getSharedPreferences("Login", Context.MODE_PRIVATE);
     }
-
     @Override
     public RutasAdapterRecyclerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(resource, parent,false);
         return new RutasAdapterRecyclerHolder(view);
     }
-
     @Override
     public void onBindViewHolder(RutasAdapterRecyclerHolder holder, int position) {
         final RutaCamion_retrofit rutascamionInstancia = rutasArrayList.get(position);
@@ -100,7 +98,6 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
             }
         });
     }
-
     @Override
     public int getItemCount() {
         return rutasArrayList.size();

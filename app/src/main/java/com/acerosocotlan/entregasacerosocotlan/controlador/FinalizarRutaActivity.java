@@ -89,7 +89,11 @@ public class FinalizarRutaActivity extends AppCompatActivity {
                 if(txt_kilometraje.getText().toString().isEmpty()){
                     DialogoValidacion();
                 }else{
-                    DialogoConfirmacion();
+                    if (ValidarPermisosGPS()==true){
+                        DialogoConfirmacion();
+                    }else {
+                        ActivityCompat.requestPermissions(FinalizarRutaActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+                    }
                 }
             }
         });
@@ -117,6 +121,17 @@ public class FinalizarRutaActivity extends AppCompatActivity {
     public String ObtenerFecha(){
         calendar = Calendar.getInstance();
         return simpleDateFormat.format(calendar.getTime()).toString();
+    }
+    public boolean ValidarPermisosGPS(){
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }else{
+                return true;
+            }
+        }else {
+            return true;
+        }
     }
     //CAMARA
     private void EjecutarPermisosCamara(){
@@ -267,5 +282,4 @@ public class FinalizarRutaActivity extends AppCompatActivity {
         //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
     }
-
 }

@@ -59,10 +59,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
         <activity
             android:name=".controlador.ActivityEntregas"
-            android:label="@string/title_activity_entregas"
+            android:label="Seleccione su entrega"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".controlador.FinalizarRutaActivity"

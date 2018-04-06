@@ -104,7 +104,11 @@ public class FormularioActivity extends AppCompatActivity {
                 if(txt_kilometraje.getText().toString().isEmpty()){
                     DialogoValidacion();
                 }else{
-                    DialogoConfirmacion();
+                    if (ValidarPermisosGPS()==true){
+                        DialogoConfirmacion();
+                    }else {
+                        ActivityCompat.requestPermissions(FormularioActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+                    }
                 }
             }
         });
@@ -121,7 +125,7 @@ public class FormularioActivity extends AppCompatActivity {
     public void ObtenerLocalizacionCamion(){
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(FormularioActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+
             }else{
                 location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 latitude = location.getLatitude();
@@ -131,6 +135,17 @@ public class FormularioActivity extends AppCompatActivity {
             location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             latitude = location.getLatitude();
             longitud = location.getLongitude();
+        }
+    }
+    public boolean ValidarPermisosGPS(){
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }else{
+                return true;
+            }
+        }else {
+            return true;
         }
     }
     public String ObtenerFecha(){
@@ -224,7 +239,8 @@ public class FormularioActivity extends AppCompatActivity {
     }
     //Retrofit2
     public void InsertarFormulario(){
-        ObtenerLocalizacionCamion();
+        Log.i("Latitud",String.valueOf(latitude));
+        Log.i("Longitud",String.valueOf(longitud));
         Call<List<String>> call = NetworkAdapter.getApiService().MandarFormularioPost(
                 "iniciarruta_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/gao",
                 ObtenerFecha(),
@@ -278,6 +294,7 @@ public class FormularioActivity extends AppCompatActivity {
         alert.setMessage("Esta a punto de comenzar una ruta, desea continuar?");
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
+                ObtenerLocalizacionCamion();
                 InsertarFormulario();
             }
         });

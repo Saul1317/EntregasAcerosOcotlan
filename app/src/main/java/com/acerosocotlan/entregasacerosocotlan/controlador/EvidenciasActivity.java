@@ -43,6 +43,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
@@ -74,7 +76,11 @@ public class EvidenciasActivity extends AppCompatActivity {
         boton_finalizar_entrega_camion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogoConfirmacion();
+                if (ValidarPermisosGPS()==true){
+                    DialogoConfirmacion();
+                }else {
+                    ActivityCompat.requestPermissions(EvidenciasActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+                }
             }
         });
         imagenEvidencia.setOnClickListener(new View.OnClickListener() {
@@ -189,7 +195,6 @@ public class EvidenciasActivity extends AppCompatActivity {
         alert.setMessage("Esta a punto de informar su salida, desea continuar?");
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
-                Toast.makeText(EvidenciasActivity.this, "ENVIAR DATOS DE LLEGADA", Toast.LENGTH_SHORT).show();
                 InsertarSalidaCamion();
             }
         });
@@ -204,6 +209,17 @@ public class EvidenciasActivity extends AppCompatActivity {
     public String ObtenerFecha(){
         calendar = Calendar.getInstance();
         return simpleDateFormat.format(calendar.getTime()).toString();
+    }
+    public boolean ValidarPermisosGPS(){
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }else{
+                return true;
+            }
+        }else {
+            return true;
+        }
     }
     //RETROFIT2
     public void InsertarSalidaCamion(){

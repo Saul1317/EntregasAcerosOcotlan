@@ -17,6 +17,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -47,7 +49,6 @@ public class DescargaEntregaActivity extends AppCompatActivity {
     private SharedPreferences prs;
     //INSTANCIA
     private Localizacion localizacion;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +65,11 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         btn_descarga_camion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogoConfirmacion();
+                if (ValidarPermisosGPS()==true){
+                    DialogoConfirmacion();
+                }else {
+                    ActivityCompat.requestPermissions(DescargaEntregaActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+                }
             }
         });
         btn_finalizacion_camion.setOnClickListener(new View.OnClickListener() {
@@ -73,6 +78,21 @@ public class DescargaEntregaActivity extends AppCompatActivity {
                 NuevaActividad();
             }
         });
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_entregas, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.posponer_entrega:
+                DialogoConfirmacionPosponerEntrega();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
     public void Inicializador(){
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
@@ -106,10 +126,40 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         });
         alert.show();
     }
+    public void DialogoConfirmacionPosponerEntrega(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Aviso de confirmación");
+        alert.setMessage("Esta a punto de posponer la entrega, desea continuar?");
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+                InsertarLlegadaCamion();
+                btn_finalizacion_camion.setEnabled(true);
+                btn_descarga_camion.setEnabled(false);
+
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
+    }
     //OBTENER DATOS
     public String ObtenerFecha(){
         calendar = Calendar.getInstance();
         return simpleDateFormat.format(calendar.getTime()).toString();
+    }
+    public boolean ValidarPermisosGPS(){
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }else{
+                return true;
+            }
+        }else {
+            return true;
+        }
     }
     //RETROFIT2
     public void InsertarLlegadaCamion(){

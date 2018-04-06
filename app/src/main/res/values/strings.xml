@@ -7,15 +7,16 @@
     <string name="sucursal">Sucursal</string>
     <string name="title_activity_selector">Aceros Ocotlan</string>
     <string name="title_activity_entrega">Chofer</string>
-    <string name="title_activity_descarga_entrega">DescargaEntregaActivity</string>
-    <string name="title_activity_evidencias">EvidenciasActivity</string>
-    <string name="title_activity_scrolling_rutas">ScrollingRutasActivity</string>
+    <string name="title_activity_descarga_entrega">Presione el boton</string>
+    <string name="title_activity_evidencias">Introduzca el kilometraje actual</string>
+    <string name="title_activity_scrolling_rutas"> </string>
     <string name="titulo_toolbar_rutas">Rutas</string>
     <string name="title_activity_referencia">Referencia</string>
-    <string name="title_activity_formulario">FormularioActivity</string>
-    <string name="hint_edittext_km_camion">Introducir el kilometraje actual</string>
+    <string name="title_activity_formulario">Introduzca el kilometraje actual</string>
+    <string name="hint_edittext_km_camion">Introduzca el kilometraje actual</string>
     <string name="title_activity_finalizacion_ruta">ActivityFinalizacionRuta</string>
-    <string name="title_activity_finalizar_ruta">FinalizarRutaActivity</string>
+    <string name="title_activity_finalizar_ruta">Introducir el kilometraje actual</string>
     <string name="instrucciones_selector_sucursal">Seleccione la sucursal y sociedad a la que pertenece.</string>
     <string name="instrucciones_formulario">Tome una foto del kilometraje actual del camión.</string>
+    <string name="posponer">Posponer entrega</string>
 </resources>

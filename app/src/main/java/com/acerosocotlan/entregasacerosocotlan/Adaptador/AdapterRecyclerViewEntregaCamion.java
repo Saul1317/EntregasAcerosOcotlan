@@ -56,8 +56,9 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
     private List<EntregasCamion_retrofit> entregaArrayList;
     private SharedPreferences sharedPreferences;
     private Activity activity;
-    private ActivityEntregas a;
     private Context context;
+    private Localizacion localizacionInstancia = new Localizacion();
+    private EntregasCamion_retrofit entregascamionInstancia;
 
     public AdapterRecyclerViewEntregaCamion(List<EntregasCamion_retrofit> entregaArrayList , int resource, Activity activity, Context context) {
         this.resource = resource;
@@ -66,16 +67,14 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
         this.context = context;
         sharedPreferences = activity.getSharedPreferences("Login", Context.MODE_PRIVATE);
     }
-
     @Override
     public EntregasAdapterRecyclerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(resource, parent,false);
         return new EntregasAdapterRecyclerHolder(view);
     }
-
     @Override
     public void onBindViewHolder(EntregasAdapterRecyclerHolder holder, int position) {
-        final EntregasCamion_retrofit entregascamionInstancia = entregaArrayList.get(position);
+        entregascamionInstancia = entregaArrayList.get(position);
         if (!entregascamionInstancia.getFechaInicio().toString().isEmpty()){
             holder.linearLayout_entregas.setBackgroundColor(Color.parseColor("#FFD600"));
         }
@@ -86,32 +85,16 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
         holder.cardViewEntregas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-                alert.setTitle("Aviso de confirmación");
-                alert.setMessage("Esta a punto de inicializar esta entrega, ¿Desea continuar?");
-                alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregascamionInstancia.getFolioEntrega().toString());
-                        MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences,
-                                entregascamionInstancia.getFechaInicio().toString(),
-                                entregascamionInstancia.getFechaLlegada().toString(),
-                                entregascamionInstancia.getFechaSalida().toString());
-                        ActivityEntregas activityEntregasInstancia = new ActivityEntregas();
-                        Localizacion localizacionInstancia = new Localizacion();
-                        activityEntregasInstancia.InsertarFormulario(
-                                MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences),
-                                localizacionInstancia.ObtenerLatitud(activity, context),
-                                localizacionInstancia.ObtenerLongitud(activity, context));
-                        Intent i = new Intent(context, DescargaEntregaActivity.class);
-                        activity.startActivity(i);
+                if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+                    if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                            && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(activity, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+                    }else{
+                        DialogodeConfirmacion();
                     }
-                });
-
-                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                    }
-                });
-                alert.show();
+                }else {
+                    DialogodeConfirmacion();
+                }
             }
         });
     }
@@ -119,7 +102,6 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
     public int getItemCount() {
         return entregaArrayList.size();
     }
-
     public class EntregasAdapterRecyclerHolder extends RecyclerView.ViewHolder{
         private TextView folio_entregas, entrega, txt_cliente, txt_direccion;
         private CardView cardViewEntregas;
@@ -134,5 +116,37 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
             cardViewEntregas = (CardView) itemView.findViewById(R.id.cardview_entregas);
             linearLayout_entregas= (LinearLayout) itemView.findViewById(R.id.linear_layout_entregas_cardview);
         }
+    }
+    public void DialogodeConfirmacion(){
+        //Codigo de confirmación
+        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+        alert.setTitle("Aviso de confirmación");
+        alert.setMessage("Esta a punto de inicializar esta entrega, ¿Desea continuar?");
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //METODOS SHARED PREFERENCE
+                MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregascamionInstancia.getFolioEntrega().toString());
+                MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences,
+                        entregascamionInstancia.getFechaInicio().toString(),
+                        entregascamionInstancia.getFechaLlegada().toString(),
+                        entregascamionInstancia.getFechaSalida().toString());
+                //INSTANCIAS ACTIVIDADES
+                ActivityEntregas activityEntregasInstancia = new ActivityEntregas();
+                //METODO PARA INSERTAR
+                activityEntregasInstancia.InsertarFormulario(
+                        MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences),
+                        localizacionInstancia.ObtenerLatitud(activity, context),
+                        localizacionInstancia.ObtenerLongitud(activity, context));
+                Intent i = new Intent(context, DescargaEntregaActivity.class);
+                activity.startActivity(i);
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
+
     }
 }
