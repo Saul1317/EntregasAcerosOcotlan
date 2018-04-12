@@ -49,7 +49,14 @@
             android:name=".controlador.FormularioActivity"
             android:label="@string/title_activity_formulario"
             android:theme="@style/AppTheme" />
-
+        <activity
+            android:name=".controlador.ActivityEntregas"
+            android:label="Seleccione su entrega"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".controlador.FinalizarRutaActivity"
+            android:label="@string/title_activity_finalizar_ruta"
+            android:theme="@style/AppTheme"></activity>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -59,14 +66,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-        <activity
-            android:name=".controlador.ActivityEntregas"
-            android:label="Seleccione su entrega"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".controlador.FinalizarRutaActivity"
-            android:label="@string/title_activity_finalizar_ruta"
-            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
