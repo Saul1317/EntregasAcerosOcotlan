@@ -174,13 +174,7 @@ public class DescargaEntregaActivity extends AppCompatActivity {
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
-                    String valor = respuesta.get(0).toString();
-                    Toast.makeText(getApplicationContext(),valor, Toast.LENGTH_LONG).show();
-                    if (valor.equals("correcto")){
-                        Toast.makeText(getApplicationContext(),"Se insertó correctamente", Toast.LENGTH_LONG).show();
-                    }
                 }else{
-                    Toast.makeText(getApplicationContext(), "No manches", Toast.LENGTH_LONG).show();
                 }
             }
             @Override
@@ -188,5 +182,12 @@ public class DescargaEntregaActivity extends AppCompatActivity {
                 Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getMessage());
             }
         });
+    }
+    @Override
+    public void onBackPressed()
+    {
+        Intent i = new Intent(DescargaEntregaActivity.this, ActivityEntregas.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
     }
 }

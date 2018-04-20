@@ -70,7 +70,6 @@ public class ActivityEntregas extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 NuevaActividad();
-
             }
         });
     }
@@ -120,6 +119,7 @@ public class ActivityEntregas extends AppCompatActivity {
         entregaRecycler.setAdapter(arv);
     }
     public void InsertarFormulario(String folio, String latitud, String longitud){
+        Log.i("FOLIO UTILIZADO INSERT",folio);
         Call<List<String>> call = NetworkAdapter.getApiService().IniciaEntrega(
                 "iniciarentrega_"+folio+"_inicio/gao",
                  ObtenerFecha(),
@@ -131,12 +131,10 @@ public class ActivityEntregas extends AppCompatActivity {
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0).toString();
-                    Log.i("Respuesta", valor);
                     if (valor.equals("correcto")){
-                        ObtenerAvisoPersonal();
+                        Log.i("EJECUCION INSERT","Se inserto correctamente");
                     }
                 }else{
-                    Toast.makeText(getApplicationContext(), "No manches", Toast.LENGTH_LONG).show();
                 }
             }
             @Override
@@ -145,14 +143,14 @@ public class ActivityEntregas extends AppCompatActivity {
             }
         });
     }
-    public void ObtenerAvisoPersonal() {
-        Call<List<AvisoPersonal_retrofit>> call = NetworkAdapter.getApiService().ObtenerAvisoPersonal("avisopersonal_5/gao");
+    public void ObtenerAvisoPersonal(String folio) {
+        Log.i("FOLIO UTILIZADO AVISO",folio);
+        Call<List<AvisoPersonal_retrofit>> call = NetworkAdapter.getApiService().ObtenerAvisoPersonal("avisopersonal_"+folio+"/gao");
         call.enqueue(new Callback<List<AvisoPersonal_retrofit>>() {
             @Override
             public void onResponse(Call<List<AvisoPersonal_retrofit>> call, Response<List<AvisoPersonal_retrofit>> response) {
                     if (response.isSuccessful()){
-                        List<AvisoPersonal_retrofit> respuesta = response.body();
-                        Log.i("AQUI", "Se mando");
+                       Log.i("EJECUCION URL","Se ejecuto correctamente");
                     }
             }
             @Override

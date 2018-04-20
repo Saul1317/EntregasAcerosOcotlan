@@ -90,10 +90,36 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
                             && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         ActivityCompat.requestPermissions(activity, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
                     }else{
-                        DialogodeConfirmacion();
+                        //METODOS SHARED PREFERENCE
+                        Log.i("FOLIO QUE SE ALMACENARA",entregascamionInstancia.getFolioEntrega());
+                        MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregascamionInstancia.getFolioEntrega());
+                        Log.i("FOLIO ALMACENADO",MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences));
+                        MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences, entregascamionInstancia.getFechaLlegada());
+                        //INSTANCIAS ACTIVIDADES
+                        ActivityEntregas activityEntregasInstancia = new ActivityEntregas();
+                        //METODO PARA INSERTAR
+                        activityEntregasInstancia.InsertarFormulario(MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences),
+                                localizacionInstancia.ObtenerLatitud(activity, context),
+                                localizacionInstancia.ObtenerLongitud(activity, context));
+                        activityEntregasInstancia.ObtenerAvisoPersonal(MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences));
+                        Intent i = new Intent(context, DescargaEntregaActivity.class);
+                        activity.startActivity(i);
                     }
                 }else {
-                    DialogodeConfirmacion();
+                    //METODOS SHARED PREFERENCE
+                    Log.i("FOLIO QUE SE ALMACENARA",entregascamionInstancia.getFolioEntrega());
+                    MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregascamionInstancia.getFolioEntrega());
+                    Log.i("FOLIO ALMACENADO",MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences));
+                    MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences, entregascamionInstancia.getFechaLlegada());
+                    //INSTANCIAS ACTIVIDADES
+                    ActivityEntregas activityEntregasInstancia = new ActivityEntregas();
+                    //METODO PARA INSERTAR
+                    activityEntregasInstancia.InsertarFormulario(MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences),
+                            localizacionInstancia.ObtenerLatitud(activity, context),
+                            localizacionInstancia.ObtenerLongitud(activity, context));
+                    activityEntregasInstancia.ObtenerAvisoPersonal(MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences));
+                    Intent i = new Intent(context, DescargaEntregaActivity.class);
+                    activity.startActivity(i);
                 }
             }
         });
@@ -119,34 +145,5 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
     }
     public void DialogodeConfirmacion(){
         //Codigo de confirmación
-        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-        alert.setTitle("Aviso de confirmación");
-        alert.setMessage("Esta a punto de inicializar esta entrega, ¿Desea continuar?");
-        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int whichButton) {
-                //METODOS SHARED PREFERENCE
-                MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregascamionInstancia.getFolioEntrega().toString());
-                MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences,
-                        entregascamionInstancia.getFechaInicio().toString(),
-                        entregascamionInstancia.getFechaLlegada().toString(),
-                        entregascamionInstancia.getFechaSalida().toString());
-                //INSTANCIAS ACTIVIDADES
-                ActivityEntregas activityEntregasInstancia = new ActivityEntregas();
-                //METODO PARA INSERTAR
-                activityEntregasInstancia.InsertarFormulario(
-                        MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences),
-                        localizacionInstancia.ObtenerLatitud(activity, context),
-                        localizacionInstancia.ObtenerLongitud(activity, context));
-                Intent i = new Intent(context, DescargaEntregaActivity.class);
-                activity.startActivity(i);
-            }
-        });
-
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-            }
-        });
-        alert.show();
-
     }
 }

@@ -12,29 +12,9 @@ public class ConvertidorFecha {
         String fechaTotal = fechaHoraTotal[0];
         String[] fecha = fechaTotal.split("-");
         ano = fecha[0];
-        dia = fecha[1];
-        mes = fecha[2];
-        if(dia.equals("01")){
-            diaTexto= "Lunes";
-        }
-        else if(dia.equals("02")){
-            diaTexto= "Martes";
-        }
-        else if(dia.equals("03")){
-            diaTexto= "Miercoles";
-        }
-        else if(dia.equals("04")){
-            diaTexto= "Jueves";
-        }
-        else if(dia.equals("05")){
-            diaTexto= "Viernes";
-        }
-        else if(dia.equals("06")){
-            diaTexto= "Sabado";
-        }
-        else if(dia.equals("07")){
-            diaTexto= "Domingo";
-        }
+        mes = fecha[1];
+        dia = fecha[2];
+
         if(mes.equals("01")){
             mes= "Enero";
         }
@@ -71,6 +51,6 @@ public class ConvertidorFecha {
         else if(mes.equals("12")){
             mes= "Diciembre";
         }
-        return diaTexto+" "+dia+" de "+mes+" del "+ano;
+        return dia+" de "+mes+" del "+ano;
     }
 }

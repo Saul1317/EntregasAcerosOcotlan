@@ -47,17 +47,10 @@ public class MetodosSharedPreference {
         return prs.getString("folio_entrega",null);
     }
 
-    public static String ObtenerFechaInicioPref(SharedPreferences prs){
-        return prs.getString("fecha_entrega_inicio",null);
-    }
-
     public static String ObtenerFechaLlegadaPref(SharedPreferences prs){
         return prs.getString("fecha_entrega_llegada",null);
     }
 
-    public static String ObtenerFechaSalidaPref(SharedPreferences prs){
-        return prs.getString("fecha_entrega_salida",null);
-    }
     public static void GuardarUsuarioCamion(SharedPreferences prs,String placas, String nombre,
                                            String apellido, String foto, String clave_chofer, String peso, String peso_maximo){
         SharedPreferences.Editor editor = prs.edit();
@@ -76,17 +69,16 @@ public class MetodosSharedPreference {
         editor.putString("folio_ruta", folio);
         editor.apply();
     }
+
     public static void GuardarFolioEntrega(SharedPreferences prs,String folio){
         SharedPreferences.Editor editor = prs.edit();
         editor.putString("folio_entrega", folio);
         editor.apply();
     }
 
-    public static void GuardarFechasEntrega(SharedPreferences prs, String inicio,String llegada, String salida){
+    public static void GuardarFechasEntrega(SharedPreferences prs,String llegada){
         SharedPreferences.Editor editor = prs.edit();
-        editor.putString("fecha_entrega_inicio", inicio);
         editor.putString("fecha_entrega_llegada", llegada);
-        editor.putString("fecha_entrega_salida", salida);
         editor.apply();
     }
 }

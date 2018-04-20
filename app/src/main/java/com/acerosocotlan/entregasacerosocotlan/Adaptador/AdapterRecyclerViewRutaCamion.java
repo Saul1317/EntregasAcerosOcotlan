@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,7 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
     public void onBindViewHolder(RutasAdapterRecyclerHolder holder, int position) {
         final RutaCamion_retrofit rutascamionInstancia = rutasArrayList.get(position);
         String fechahora = rutascamionInstancia.getProgramadaPara();
+        Log.i("FECHA",fechahora);
         ConvertidorFecha confecha= new ConvertidorFecha();
         String fecha = confecha.ConvertirFecha(fechahora);
         holder.fecha_programada.setText(fecha);
