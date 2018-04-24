@@ -254,8 +254,9 @@ public class FormularioActivity extends AppCompatActivity {
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0).toString();
                    if (valor.equals("iniciada")){
-                        Toast.makeText(getApplicationContext(),valor, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(),"Información guardada", Toast.LENGTH_LONG).show();
                         ObtenerListaAvisos();
+                        NuevaActividad();
                     }
                 }else{
                     Toast.makeText(getApplicationContext(), "No manches", Toast.LENGTH_LONG).show();
@@ -274,17 +275,16 @@ public class FormularioActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<InformacionAvisos_retrofit>> call, Response<List<InformacionAvisos_retrofit>> response) {
                 if(response.isSuccessful()){
-                    List<InformacionAvisos_retrofit> respuesta = response.body();
-                    Toast.makeText(FormularioActivity.this, respuesta.get(0).toString(), Toast.LENGTH_SHORT).show();
                     Log.i("FORMULARIO",response.body().toString());
-                    NuevaActividad();
                 }else{
+                    Log.i("FORMULARIO","Mensaje no reconocido");
                 }
             }
 
             @Override
             public void onFailure(Call<List<InformacionAvisos_retrofit>> call, Throwable t) {
-
+                Log.i("FORMULARIO","Fallo la conexion");
+                Toast.makeText(FormularioActivity.this, "Problema con el socket", Toast.LENGTH_SHORT).show();
             }
         });
     }

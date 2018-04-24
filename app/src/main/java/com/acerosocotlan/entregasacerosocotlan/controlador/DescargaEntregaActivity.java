@@ -173,7 +173,7 @@ public class DescargaEntregaActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 if(response.isSuccessful()){
-                    List<String> respuesta = response.body();
+                    Toast.makeText(getApplicationContext(),"Información guardada", Toast.LENGTH_LONG).show();
                 }else{
                 }
             }

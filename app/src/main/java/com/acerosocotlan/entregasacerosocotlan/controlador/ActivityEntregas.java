@@ -59,6 +59,7 @@ public class ActivityEntregas extends AppCompatActivity {
     private double longitud;
     //SHARED PREFERENCE
     private SharedPreferences prs;
+    String folio;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,8 +123,9 @@ public class ActivityEntregas extends AppCompatActivity {
         AdapterRecyclerViewEntregaCamion arv = new AdapterRecyclerViewEntregaCamion(camion,R.layout.cardview_entregas, ActivityEntregas.this, getApplicationContext());
         entregaRecycler.setAdapter(arv);
     }
-    public void InsertarFormulario(String folio, String latitud, String longitud){
+    public void InsertarFormulario(String folio2, String latitud, String longitud){
         //Log.i("FOLIO UTILIZADO INSERT",folio);
+        folio=folio2;
         Call<List<String>> call = NetworkAdapter.getApiService().IniciaEntrega(
                 "iniciarentrega_"+folio+"_inicio/gao",
                  ObtenerFecha(),
@@ -136,7 +138,7 @@ public class ActivityEntregas extends AppCompatActivity {
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0).toString();
                     if (valor.equals("correcto")){
-                        //Log.i("EJECUCION INSERT","Se inserto correctamente");
+                        //ObtenerAvisoPersonal(folio);
                     }
                 }else{
                 }
@@ -148,14 +150,15 @@ public class ActivityEntregas extends AppCompatActivity {
         });
     }
     public void ObtenerAvisoPersonal(String folio) {
-        Log.i("FOLIO UTILIZADO AVISO",folio);
         Call<List<AvisoPersonal_retrofit>> call = NetworkAdapter.getApiService().ObtenerAvisoPersonal("avisopersonal_"+folio+"/gao");
         call.enqueue(new Callback<List<AvisoPersonal_retrofit>>() {
             @Override
             public void onResponse(Call<List<AvisoPersonal_retrofit>> call, Response<List<AvisoPersonal_retrofit>> response) {
-                    if (response.isSuccessful()){
-                       Log.i("EJECUCION URL","Se ejecuto correctamente");
-                    }
+                if(response.isSuccessful()){
+                    Log.i("FORMULARIO",response.body().toString());
+                }else{
+                    Log.i("FORMULARIO","Mensaje no reconocido");
+                }
             }
             @Override
             public void onFailure(Call<List<AvisoPersonal_retrofit>> call, Throwable t) {
