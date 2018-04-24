@@ -73,15 +73,15 @@ public class ActivityEntregas extends AppCompatActivity {
             }
         });
     }
-
     //ACTIVITY
     public void Inicializador(){
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
+        MetodosSharedPreference.BorrarFolioEntrega(prs);
         entregaRecycler = (RecyclerView) findViewById(R.id.entregas_recycler);
         btn_finalizar_ruta = (Button) findViewById(R.id.btn_finalizar_ruta);
+        btn_finalizar_ruta.setEnabled(false);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
     }
     public void NuevaActividad(){
         Intent i = new Intent(ActivityEntregas.this, FinalizarRutaActivity.class);
@@ -101,7 +101,11 @@ public class ActivityEntregas extends AppCompatActivity {
             public void onResponse(Call<List<EntregasCamion_retrofit>> call, Response<List<EntregasCamion_retrofit>> response) {
                 if (response.isSuccessful()){
                     List<EntregasCamion_retrofit> entrega_retrofit = response.body();
-                    LlenarRecyclerView(entrega_retrofit);
+                    if(entrega_retrofit.isEmpty()){
+                        btn_finalizar_ruta.setEnabled(true);
+                    }else{
+                        LlenarRecyclerView(entrega_retrofit);
+                    }
                 }
             }
 
@@ -119,7 +123,7 @@ public class ActivityEntregas extends AppCompatActivity {
         entregaRecycler.setAdapter(arv);
     }
     public void InsertarFormulario(String folio, String latitud, String longitud){
-        Log.i("FOLIO UTILIZADO INSERT",folio);
+        //Log.i("FOLIO UTILIZADO INSERT",folio);
         Call<List<String>> call = NetworkAdapter.getApiService().IniciaEntrega(
                 "iniciarentrega_"+folio+"_inicio/gao",
                  ObtenerFecha(),
@@ -132,7 +136,7 @@ public class ActivityEntregas extends AppCompatActivity {
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0).toString();
                     if (valor.equals("correcto")){
-                        Log.i("EJECUCION INSERT","Se inserto correctamente");
+                        //Log.i("EJECUCION INSERT","Se inserto correctamente");
                     }
                 }else{
                 }

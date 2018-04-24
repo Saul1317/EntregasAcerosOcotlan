@@ -79,6 +79,13 @@ public class MetodosSharedPreference {
     public static void GuardarFechasEntrega(SharedPreferences prs,String llegada){
         SharedPreferences.Editor editor = prs.edit();
         editor.putString("fecha_entrega_llegada", llegada);
+        editor.remove("KeyName").commit();
+        editor.apply();
+    }
+
+    public static void BorrarFolioEntrega(SharedPreferences prs){
+        SharedPreferences.Editor editor = prs.edit();
+        editor.remove("folio_entrega").commit();
         editor.apply();
     }
 }

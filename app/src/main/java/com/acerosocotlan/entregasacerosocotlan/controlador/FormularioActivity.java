@@ -275,9 +275,10 @@ public class FormularioActivity extends AppCompatActivity {
             public void onResponse(Call<List<InformacionAvisos_retrofit>> call, Response<List<InformacionAvisos_retrofit>> response) {
                 if(response.isSuccessful()){
                     List<InformacionAvisos_retrofit> respuesta = response.body();
+                    Toast.makeText(FormularioActivity.this, respuesta.get(0).toString(), Toast.LENGTH_SHORT).show();
+                    Log.i("FORMULARIO",response.body().toString());
                     NuevaActividad();
                 }else{
-                    Log.i("LOL", "NO ENTRA");
                 }
             }
 
