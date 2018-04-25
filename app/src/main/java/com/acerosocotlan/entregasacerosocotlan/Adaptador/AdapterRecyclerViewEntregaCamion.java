@@ -79,7 +79,7 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
     public void onBindViewHolder(EntregasAdapterRecyclerHolder holder, final int position) {
         entregascamionInstancia = entregaArrayList.get(position);
         if (entregascamionInstancia.getEstatus().toString().equals("Proximo")||entregascamionInstancia.getEstatus().toString().equals("Descargando")){
-            holder.linearLayout_entregas.setBackgroundColor(Color.parseColor("#FFD600"));
+            holder.linearLayout_entregas.setBackgroundColor(Color.parseColor("#DD2C00"));
             //Log.i("COMPROVACION","Existe una entrega en estado proximo o descargando");
             validacion= true;
             posicion= position;

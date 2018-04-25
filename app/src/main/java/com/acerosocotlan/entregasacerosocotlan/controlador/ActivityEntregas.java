@@ -14,6 +14,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -50,6 +51,7 @@ public class ActivityEntregas extends AppCompatActivity {
     //VIEWS
     private RecyclerView entregaRecycler;
     private Button btn_finalizar_ruta;
+    FloatingActionButton fab;
     //DATOS EXTERNOS
     private Location location;
     private LocationManager locationManager;
@@ -67,7 +69,7 @@ public class ActivityEntregas extends AppCompatActivity {
         setContentView(R.layout.activity_entregas);
         Inicializador();
         ObtenerRuta();
-        btn_finalizar_ruta.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 NuevaActividad();
@@ -79,8 +81,9 @@ public class ActivityEntregas extends AppCompatActivity {
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         MetodosSharedPreference.BorrarFolioEntrega(prs);
         entregaRecycler = (RecyclerView) findViewById(R.id.entregas_recycler);
-        btn_finalizar_ruta = (Button) findViewById(R.id.btn_finalizar_ruta);
-        btn_finalizar_ruta.setEnabled(false);
+        fab = (FloatingActionButton) findViewById(R.id.fab_finalizar_ruta);
+        //btn_finalizar_ruta = (Button) findViewById(R.id.btn_finalizar_ruta);
+        fab.setEnabled(false);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
@@ -118,8 +121,9 @@ public class ActivityEntregas extends AppCompatActivity {
     }
     public void LlenarRecyclerView(List<EntregasCamion_retrofit> camion){
         LinearLayoutManager l = new LinearLayoutManager(getApplicationContext());
-        l.setOrientation(LinearLayoutManager.VERTICAL);
-        entregaRecycler.setLayoutManager(l);
+        //l.setOrientation(LinearLayoutManager.VERTICAL);
+        //entregaRecycler.setLayoutManager(l);
+        entregaRecycler.setLayoutManager(new GridLayoutManager(this, 2));
         AdapterRecyclerViewEntregaCamion arv = new AdapterRecyclerViewEntregaCamion(camion,R.layout.cardview_entregas, ActivityEntregas.this, getApplicationContext());
         entregaRecycler.setAdapter(arv);
     }
