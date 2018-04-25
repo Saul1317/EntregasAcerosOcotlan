@@ -6,7 +6,7 @@
     <string name="sociedad">Sociedad</string>
     <string name="sucursal">Sucursal</string>
     <string name="title_activity_selector">Aceros Ocotlan</string>
-    <string name="title_activity_entrega">Chofer</string>
+    <string name="title_activity_entrega">Seleccione su entrega</string>
     <string name="title_activity_descarga_entrega">Seleccione el proceso</string>
     <string name="title_activity_evidencias">Introduzca el kilometraje actual</string>
     <string name="title_activity_scrolling_rutas"> </string>

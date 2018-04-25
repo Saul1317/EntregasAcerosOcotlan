@@ -18,44 +18,52 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".controlador.SplashV2"
-            android:theme="@style/Splash">
+            android:theme="@style/Splash"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".controlador.MainActivity"
             android:theme="@style/CatalogoCamiones"
+            android:screenOrientation="portrait"
             android:label="Selecciona tu unidad"/>
         <activity
             android:name=".controlador.SelectorActivity"
             android:label="@string/title_activity_selector"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".controlador.DescargaEntregaActivity"
             android:label="@string/title_activity_descarga_entrega"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".controlador.EvidenciasActivity"
             android:label="@string/title_activity_evidencias"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".controlador.ScrollingRutasActivity"
             android:label=" "
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".controlador.FormularioActivity"
             android:label="@string/title_activity_formulario"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".controlador.ActivityEntregas"
-            android:label="Seleccione su entrega"
+            android:label="@string/title_activity_entrega"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".controlador.FinalizarRutaActivity"
             android:label="@string/title_activity_finalizar_ruta"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme"></activity>
         <provider
             android:name="android.support.v4.content.FileProvider"

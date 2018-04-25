@@ -4,8 +4,8 @@
     android:id="@+id/cardview_rutas"
     android:layout_width="match_parent"
     android:layout_height="110dp"
-    android:layout_marginVertical="1dp"
-    cardview:cardCornerRadius="@dimen/cardview_radius_choferes">
+    android:layout_marginVertical="0.1dp"
+    cardview:cardCornerRadius="1dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
