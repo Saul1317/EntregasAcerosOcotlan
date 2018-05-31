@@ -10,4 +10,6 @@
     <color name="divider">#BDBDBD</color>
     <color name="colorFondo">#E0E0E0</color>
     <color name="texto_blanco">#FFFFFF</color>
+    <color name="colorCardviewFondo">#4CAF50</color>
+    <color name="texto_rojo">#E57373</color>
 </resources>

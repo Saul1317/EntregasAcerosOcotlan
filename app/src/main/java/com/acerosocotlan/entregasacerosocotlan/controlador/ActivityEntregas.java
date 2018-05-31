@@ -96,7 +96,7 @@ public class ActivityEntregas extends AppCompatActivity {
     //RETROFIT2
     public void ObtenerRuta(){
         Call<List<EntregasCamion_retrofit>> call = NetworkAdapter.getApiService().EntregasCamiones(
-                "http://entregas.dyndns.org/web/entregas/entregasmovil_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/gao");
+                "entregasmovil_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/gao");
         call.enqueue(new Callback<List<EntregasCamion_retrofit>>() {
             @Override
             public void onResponse(Call<List<EntregasCamion_retrofit>> call, Response<List<EntregasCamion_retrofit>> response) {
@@ -138,7 +138,6 @@ public class ActivityEntregas extends AppCompatActivity {
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0).toString();
                     if (valor.equals("correcto")){
-                        //ObtenerAvisoPersonal(folio);
                     }
                 }else{
                 }
@@ -165,8 +164,8 @@ public class ActivityEntregas extends AppCompatActivity {
                 Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getLocalizedMessage());
             }
         });
-
     }
+
     @Override
     public void onBackPressed()
     {

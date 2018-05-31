@@ -32,7 +32,7 @@ public class SplashV2 extends AppCompatActivity {
             public void run() {
                 CargarActivity();
             }
-        },3000);
+        },4000);
     }
     public void CargarActivity(){
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
@@ -43,6 +43,7 @@ public class SplashV2 extends AppCompatActivity {
                 && !TextUtils.isEmpty(MetodosSharedPreference.getSucursalPref(prs))
                 && !TextUtils.isEmpty(MetodosSharedPreference.ObtenerPlacasPref(prs))){
             startActivity(intentRutas);
+
         }else{
             startActivity(intentSelector);
         }

@@ -97,7 +97,6 @@ public class FinalizarRutaActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     //Inicializador de componentes
@@ -216,8 +215,8 @@ public class FinalizarRutaActivity extends AppCompatActivity {
         Call<List<String>> call = NetworkAdapter.getApiService().LlegadaRuta(
                 "finalizarruta_"+ MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/gao",
                 ObtenerFecha(),
-                localizacion.ObtenerLatitud(FinalizarRutaActivity.this, getApplicationContext()),
-                localizacion.ObtenerLongitud(FinalizarRutaActivity.this, getApplicationContext()),
+                localizacion.ObtenerLatitud(getApplicationContext()),
+                localizacion.ObtenerLongitud(getApplicationContext()),
                 txt_kilometraje.getText().toString());
         call.enqueue(new Callback<List<String>>() {
             @Override
@@ -268,10 +267,5 @@ public class FinalizarRutaActivity extends AppCompatActivity {
             }
         });
         alert.show();
-    }
-    public void NuevaActividad(){
-        Intent i = new Intent(FinalizarRutaActivity.this, ScrollingRutasActivity.class);
-        //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(i);
     }
 }

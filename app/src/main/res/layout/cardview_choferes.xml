@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/cardview_choferes"
     cardview:cardCornerRadius="@dimen/cardview_radius_choferes"
-    android:layout_marginBottom="5dp"
+    android:layout_marginBottom="@dimen/cardview_margin_bottom_choferes"
     cardview:cardBackgroundColor="@color/colorPrimary">
     <FrameLayout
         android:layout_width="match_parent"
@@ -16,19 +16,19 @@
             android:scaleType="centerCrop"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="90dp"
+            android:layout_height="@dimen/linearlayout_cardview_altura"
             android:orientation="horizontal"
-            android:layout_marginVertical="8dp"
+            android:layout_marginVertical="@dimen/linearlayout_cardview_margenVertical"
             android:layout_gravity="bottom">
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent">
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/foto_perfil_chofer"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:elevation="10dp"
-                    android:padding="10dp"
+                    android:layout_width="@dimen/imagen_perfil_circular_ancho"
+                    android:layout_height="@dimen/imagen_perfil_circular_altura"
+                    android:elevation="@dimen/imagen_perfil_circular_elevacion"
+                    android:padding="@dimen/imagen_perfil_circular_padding"
                     android:src="@drawable/obrero"/>
             </LinearLayout>
             <LinearLayout
@@ -40,25 +40,25 @@
                     android:id="@+id/txt_nombre_chofer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nombre"
-                    android:textColor="@android:color/white"
-                    android:textSize="23sp"
+                    android:text="@string/texto_cardview_nombre_chofer"
+                    android:textColor="@color/texto_blanco"
+                    android:textSize="@dimen/texto_cardview_nombre_chofer"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/txt_modelo_camion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Modelo"
-                    android:textColor="@android:color/white"
-                    android:textSize="11sp"
+                    android:text="@string/texto_cardview_modelo_camion"
+                    android:textColor="@color/texto_blanco"
+                    android:textSize="@dimen/texto_cardview_modelo_camion"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/txt_placas_camion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Placas"
-                    android:textColor="@android:color/white"
-                    android:textSize="11sp"
+                    android:text="@string/texto_cardview_placas_camion"
+                    android:textColor="@color/texto_blanco"
+                    android:textSize="@dimen/texto_cardview_placas_camion"
                     android:textStyle="bold"/>
             </LinearLayout>
         </LinearLayout>

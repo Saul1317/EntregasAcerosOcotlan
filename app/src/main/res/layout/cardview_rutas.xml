@@ -3,24 +3,24 @@
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardview_rutas"
     android:layout_width="match_parent"
-    android:layout_height="110dp"
-    android:layout_marginVertical="0.1dp"
-    cardview:cardCornerRadius="1dp">
+    android:layout_height="@dimen/cardview_rutas_altura"
+    android:layout_marginVertical="@dimen/cardview_rutas_marginVertical"
+    cardview:cardCornerRadius="@dimen/cardview_rutas_radio">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
             <LinearLayout
                 android:id="@+id/linearLayout_rutas"
-                android:layout_width="90dp"
+                android:layout_width="@dimen/cardview_ruta_linearlayout_folio"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:background="#4CAF50">
+                android:background="@color/colorCardviewFondo">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ruta"
+                    android:text="@string/cardview_rutas_txt_folio"
                     android:textColor="@color/cardview_light_background"
                     android:textSize="@dimen/txt_tamano_cardview_rutas"
                     android:textStyle="bold"/>
@@ -28,7 +28,7 @@
                     android:id="@+id/txt_numero_folio_ruta"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Folio"
+                    android:text="@string/cardview_rutas_txt_folio_respuesta"
                     android:textColor="@color/cardview_light_background"
                     android:textSize="@dimen/txt_tamano_cardview_rutas"
                     android:textStyle="bold"/>
@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:paddingLeft="10dp"
+                android:padding="@dimen/cardview_rutas_padding"
                 android:gravity="center_vertical">
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -47,7 +47,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/txt_tamano_cardview_rutas"
-                        android:text="Entregas Programadas: "
+                        android:text="@string/cardview_rutas_txt_numero_entregas"
                         android:textStyle="bold"/>
                     <TextView
                         android:id="@+id/txt_numero_entrega"
@@ -59,13 +59,13 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingVertical="12dp"
+                    android:paddingVertical="@dimen/cardview_rutas_paddingVertical"
                     android:orientation="vertical">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/txt_tamano_cardview_rutas"
-                        android:text="Fecha de Entrega"
+                        android:text="@string/cardview_rutas_txt_fecha_entrega"
                         android:textStyle="bold"/>
 
                     <TextView
@@ -73,7 +73,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/txt_tamano_cardview_rutas"
-                        android:textColor="#E57373"
+                        android:textColor="@color/texto_rojo"
                         android:textStyle="bold"/>
                 </LinearLayout>
             </LinearLayout>

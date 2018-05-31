@@ -42,6 +42,9 @@ public class MetodosSharedPreference {
     public static String ObtenerFolioRutaPref(SharedPreferences prs){
         return prs.getString("folio_ruta",null);
     }
+    public static String ObtenerEstatusEntregaPref(SharedPreferences prs){
+        return prs.getString("estatus_entrega",null);
+    }
 
     public static String ObtenerFolioEntregaPref(SharedPreferences prs){
         return prs.getString("folio_entrega",null);
@@ -52,7 +55,7 @@ public class MetodosSharedPreference {
     }
 
     public static void GuardarUsuarioCamion(SharedPreferences prs,String placas, String nombre,
-                                           String apellido, String foto, String clave_chofer, String peso, String peso_maximo){
+                                            String apellido, String foto, String clave_chofer, String peso, String peso_maximo){
         SharedPreferences.Editor editor = prs.edit();
         editor.putString("placas_camion", placas);
         editor.putString("nombre_camion", nombre);
@@ -80,6 +83,12 @@ public class MetodosSharedPreference {
         SharedPreferences.Editor editor = prs.edit();
         editor.putString("fecha_entrega_llegada", llegada);
         editor.remove("KeyName").commit();
+        editor.apply();
+    }
+
+    public static void GuardarEstatusEntrega(SharedPreferences prs,String estatus){
+        SharedPreferences.Editor editor = prs.edit();
+        editor.putString("estatus_entrega", estatus);
         editor.apply();
     }
 

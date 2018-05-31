@@ -42,6 +42,7 @@ import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
 import com.acerosocotlan.entregasacerosocotlan.modelo.InformacionAvisos_retrofit;
+import com.acerosocotlan.entregasacerosocotlan.modelo.Localizacion;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
 import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
@@ -75,6 +76,8 @@ public class FormularioActivity extends AppCompatActivity {
     private LocationManager locationManager;
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private Calendar calendar;
+    //INSTANCIA
+    private Localizacion localizacion;
     private double latitude;
     private double longitud;
     //RUTAS DE LA CAMARA
@@ -178,7 +181,6 @@ public class FormularioActivity extends AppCompatActivity {
         imagen = new File(path);
         Intent intent=null;
         intent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
         {
             String authorities=getApplicationContext().getPackageName()+".provider";
@@ -239,13 +241,14 @@ public class FormularioActivity extends AppCompatActivity {
     }
     //Retrofit2
     public void InsertarFormulario(){
-        Log.i("Latitud",String.valueOf(latitude));
-        Log.i("Longitud",String.valueOf(longitud));
+        localizacion = new Localizacion();
+        Log.i("Latitud",localizacion.ObtenerLatitud(getApplicationContext()));
+        Log.i("Longitud",localizacion.ObtenerLongitud(getApplicationContext()));
         Call<List<String>> call = NetworkAdapter.getApiService().MandarFormularioPost(
                 "iniciarruta_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/gao",
                 ObtenerFecha(),
-                String.valueOf(latitude),
-                String.valueOf(longitud),
+                localizacion.ObtenerLatitud(getApplicationContext()),
+                localizacion.ObtenerLongitud(getApplicationContext()),
                 txt_kilometraje.getText().toString());
         call.enqueue(new Callback<List<String>>() {
             @Override
@@ -295,7 +298,6 @@ public class FormularioActivity extends AppCompatActivity {
         alert.setMessage("Esta a punto de comenzar una ruta, desea continuar?");
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
-                ObtenerLocalizacionCamion();
                 InsertarFormulario();
             }
         });

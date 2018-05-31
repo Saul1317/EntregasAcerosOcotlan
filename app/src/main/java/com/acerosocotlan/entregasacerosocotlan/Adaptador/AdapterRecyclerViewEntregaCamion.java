@@ -78,9 +78,10 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
     @Override
     public void onBindViewHolder(EntregasAdapterRecyclerHolder holder, final int position) {
         entregascamionInstancia = entregaArrayList.get(position);
-        if (entregascamionInstancia.getEstatus().toString().equals("Proximo")||entregascamionInstancia.getEstatus().toString().equals("Descargando")){
+        if (entregascamionInstancia.getEstatus().toString().equals("Proximo")
+                ||entregascamionInstancia.getEstatus().toString().equals("Descargando")
+                ||entregascamionInstancia.getEstatus().toString().equals("En sitio")){
             holder.linearLayout_entregas.setBackgroundColor(Color.parseColor("#FFD600"));
-            //Log.i("COMPROVACION","Existe una entrega en estado proximo o descargando");
             validacion= true;
             posicion= position;
         }
@@ -93,59 +94,26 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
             public void onClick(View view) {
                 if (validacion==true){
                     if(entregaArrayList.get(position).getEstatus().equals("En Ruta")||entregaArrayList.get(position).getEstatus().equals("En Ruta")){
-                        Toast.makeText(activity, "No se puede abrir una nueva entrega", Toast.LENGTH_SHORT).show();
+
                     }else{
                         //METODOS SHARED PREFERENCE
                         //Log.i("FOLIO QUE SE ALMACENARA",entregaArrayList.get(position).getFolioEntrega());
-                        MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregaArrayList.get(position).getFolioEntrega());
                         //Log.i("FOLIO ALMACENADO",entregaArrayList.get(position).getFolioEntrega());
+                        MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregaArrayList.get(position).getFolioEntrega());
                         MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences, entregaArrayList.get(position).getFechaLlegada());
-
-                        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-                        alert.setTitle("Aviso de confirmación");
-                        alert.setMessage("Esta entrega ya fue iniciada, ¿Desea continuar?");
-
-                        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                Intent i = new Intent(context, DescargaEntregaActivity.class);
-                                activity.startActivity(i);
-
-                            }
-                        });
-                        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                            }
-                        });
-                        alert.show();
+                        MetodosSharedPreference.GuardarEstatusEntrega(sharedPreferences, entregaArrayList.get(position).getEstatus());
+                        DialogoConfirmacionContinuarEntrega();
                     }
                  }else{
-                        Toast.makeText(activity, "Se puede abrir cualquier entrega", Toast.LENGTH_SHORT).show();
-                        //METODOS SHARED PREFERENCE
-                        //Log.i("FOLIO QUE SE ALMACENARA",entregaArrayList.get(position).getFolioEntrega());
                         MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregaArrayList.get(position).getFolioEntrega());
-                        //Log.i("FOLIO ALMACENADO",entregaArrayList.get(position).getFolioEntrega());
                         MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences, entregaArrayList.get(position).getFechaLlegada());
+                        MetodosSharedPreference.GuardarEstatusEntrega(sharedPreferences, entregaArrayList.get(position).getEstatus());
+                        DialogoConfirmacionComenzarEntrega();
 
-                        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-                        alert.setTitle("Aviso de confirmación");
-                        alert.setMessage("Esta a punto de comenzar esta entrega, ¿Desea continuar?");
-
-                        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                DialogodeConfirmacionInsercion();
-                            }
-                        });
-
-                        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                            }
-                        });
-                        alert.show();
                   }
                 }
             });
     }
-
     @Override
     public int getItemCount() {
         return entregaArrayList.size();
@@ -176,8 +144,8 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
                 ActivityEntregas activityEntregasInstancia = new ActivityEntregas();
                 //METODO PARA INSERTAR
                 activityEntregasInstancia.InsertarFormulario(MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences),
-                        localizacionInstancia.ObtenerLatitud(activity, context),
-                        localizacionInstancia.ObtenerLongitud(activity, context));
+                        localizacionInstancia.ObtenerLatitud(context),
+                        localizacionInstancia.ObtenerLongitud(context));
                 //Log.i("FOLIO UTILIZADO",entregascamionInstancia.getFolioEntrega());
                 //activityEntregasInstancia.ObtenerAvisoPersonal(MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences));
                 Intent i = new Intent(context, DescargaEntregaActivity.class);
@@ -188,12 +156,48 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
             ActivityEntregas activityEntregasInstancia = new ActivityEntregas();
             //METODO PARA INSERTAR
             activityEntregasInstancia.InsertarFormulario(MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences),
-                    localizacionInstancia.ObtenerLatitud(activity, context),
-                    localizacionInstancia.ObtenerLongitud(activity, context));
+                    localizacionInstancia.ObtenerLatitud(context),
+                    localizacionInstancia.ObtenerLongitud(context));
             //Log.i("FOLIO UTILIZADO",entregascamionInstancia.getFolioEntrega());
             activityEntregasInstancia.ObtenerAvisoPersonal(MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences));
             Intent i = new Intent(context, DescargaEntregaActivity.class);
             activity.startActivity(i);
         }
+    }
+    private void DialogoConfirmacionContinuarEntrega() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+        alert.setTitle("Aviso de confirmación");
+        alert.setMessage("Esta entrega ya fue iniciada, ¿Desea continuar?");
+
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+                Intent i = new Intent(context, DescargaEntregaActivity.class);
+                activity.startActivity(i);
+
+            }
+        });
+        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
+
+    }
+    private void DialogoConfirmacionComenzarEntrega() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+        alert.setTitle("Aviso de confirmación");
+        alert.setMessage("Esta a punto de comenzar esta entrega, ¿Desea continuar?");
+
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+                DialogodeConfirmacionInsercion();
+            }
+        });
+
+        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
     }
 }

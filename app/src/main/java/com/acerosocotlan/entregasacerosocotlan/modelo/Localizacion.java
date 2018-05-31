@@ -28,7 +28,7 @@ public class Localizacion {
     private double latitude;
     private double longitud;
 
-    public String ObtenerLatitud(Activity activity, Context context){
+    public String ObtenerLatitud(Context context){
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -42,7 +42,7 @@ public class Localizacion {
         }
         return String.valueOf(latitude);
     }
-    public String ObtenerLongitud(Activity activity, Context context){
+    public String ObtenerLongitud(Context context){
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -56,6 +56,7 @@ public class Localizacion {
         }
         return String.valueOf(longitud);
     }
+
     public boolean ValidarPermisosGPS(Activity activity){
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED

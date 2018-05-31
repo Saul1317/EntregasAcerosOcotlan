@@ -1,4 +1,4 @@
-package com.acerosocotlan.entregasacerosocotlan;
+package com.acerosocotlan.entregasacerosocotlan.test;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -16,11 +16,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
@@ -41,7 +44,10 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class DescargaEntregaActivity extends AppCompatActivity {
 
-    ImageButton btn_descarga_camion, btn_finalizacion_camion;
+    //VIEWS
+    ImageButton btn_descarga_camion, btn_finalizacion_camion, btn_ensitio_camion;
+    LinearLayout  linear_layout_filtro_llegada, linear_layout_filtro_descarga, linear_layout_filtro_salida;
+    TextView txt_filtro_llegada, txt_filtro_descarga, txt_filtro_salida;
     //DATOS EXTERNOS
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private Calendar calendar;
@@ -54,15 +60,7 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_descarga_entrega);
         Inicializador();
-        if(MetodosSharedPreference.ObtenerFechaLlegadaPref(prs).isEmpty()){
-            btn_finalizacion_camion.setEnabled(false);
-            btn_descarga_camion.setEnabled(true);
-        }else{
-            btn_finalizacion_camion.setEnabled(true);
-            btn_descarga_camion.setEnabled(false);
-        }
-
-        btn_descarga_camion.setOnClickListener(new View.OnClickListener() {
+        btn_ensitio_camion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (ValidarPermisosGPS()==true){
@@ -72,10 +70,190 @@ public class DescargaEntregaActivity extends AppCompatActivity {
                 }
             }
         });
+        btn_descarga_camion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogoConfirmacionDescargarEntrega();
+            }
+        });
         btn_finalizacion_camion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 NuevaActividad();
+            }
+        });
+    }
+    public boolean ValidarPermisosGPS(){
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }else{
+                return true;
+            }
+        }else {
+            return true;
+        }
+    }
+    private void ValidacionEstadoBoton() {
+        switch (MetodosSharedPreference.ObtenerEstatusEntregaPref(prs)) {
+            case "Proximo":
+                btn_ensitio_camion.setEnabled(true);
+                btn_descarga_camion.setEnabled(false);
+                btn_finalizacion_camion.setEnabled(false);
+                Log.i("ESTADO DE LA ENTREGA", "TODO HABILITADO");
+                break;
+            case "En sitio":
+                btn_ensitio_camion.setEnabled(false);
+                btn_descarga_camion.setEnabled(true);
+                btn_finalizacion_camion.setEnabled(false);
+                //si esta bloqueado el primer boton entonces se habilita el filtro de finalizado
+                linear_layout_filtro_llegada.setVisibility(View.VISIBLE);
+                txt_filtro_llegada.setVisibility(View.VISIBLE);
+                btn_ensitio_camion.setEnabled(false);
+                Log.i("ESTADO DE LA ENTREGA", "ESTAS EN SITIO, YA PUEDES DESCARGAR");
+                break;
+            case "Descargando":
+                btn_ensitio_camion.setEnabled(false);
+                btn_descarga_camion.setEnabled(false);
+                btn_finalizacion_camion.setEnabled(true);
+                //si esta bloqueado los dos primeros boton entonces se habilita el filtro de finalizado
+                //boton en sitio
+                linear_layout_filtro_llegada.setVisibility(View.VISIBLE);
+                txt_filtro_llegada.setVisibility(View.VISIBLE);
+                btn_ensitio_camion.setEnabled(false);
+                //boton descargando
+                linear_layout_filtro_descarga.setVisibility(View.VISIBLE);
+                txt_filtro_descarga.setVisibility(View.VISIBLE);
+                btn_descarga_camion.setEnabled(false);
+                Log.i("ESTADO DE LA ENTREGA", "ESTAS DESCARGANDO, YA PUEDES FINALIZAR");
+                break;
+            case "Entregado":
+                btn_ensitio_camion.setEnabled(false);
+                btn_descarga_camion.setEnabled(false);
+                btn_finalizacion_camion.setEnabled(false);
+                //si la entrega fue completada se habilita el filtro en todos los botones
+                //boton en sitio
+                linear_layout_filtro_llegada.setVisibility(View.VISIBLE);
+                txt_filtro_llegada.setVisibility(View.VISIBLE);
+                btn_ensitio_camion.setEnabled(false);
+                //boton descargando
+                linear_layout_filtro_descarga.setVisibility(View.VISIBLE);
+                txt_filtro_descarga.setVisibility(View.VISIBLE);
+                btn_descarga_camion.setEnabled(false);
+                //boton salida
+                linear_layout_filtro_salida.setVisibility(View.VISIBLE);
+                txt_filtro_salida.setVisibility(View.VISIBLE);
+                btn_finalizacion_camion.setEnabled(false);
+                break;
+            default:
+                break;
+        }
+    }
+    public void NuevaActividad(){
+        Intent i = new Intent(DescargaEntregaActivity.this, EvidenciasActivity.class);
+        //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+    }
+    //Dialogos de Confirmación
+    public void DialogoConfirmacion(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Aviso de confirmación");
+        alert.setMessage("Esta a punto de informar su llegada con el cliente, desea continuar?");
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+                InsertarLlegadaCamion();
+                linear_layout_filtro_llegada.setVisibility(View.VISIBLE);
+                txt_filtro_llegada.setVisibility(View.VISIBLE);
+                btn_ensitio_camion.setEnabled(false);
+                btn_descarga_camion.setEnabled(true);
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
+    }
+    public void DialogoConfirmacionDescargarEntrega(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Aviso de confirmación");
+        alert.setMessage("Esta a punto de informar que esta descargando la entrega, desea continuar?");
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+                InsertarDescargaCamion();
+                linear_layout_filtro_descarga.setVisibility(View.VISIBLE);
+                txt_filtro_descarga.setVisibility(View.VISIBLE);
+                btn_descarga_camion.setEnabled(false);
+                btn_finalizacion_camion.setEnabled(true);
+
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
+    }
+    public void DialogoConfirmacionPosponerEntrega(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Aviso de confirmación");
+        alert.setMessage("Esta a punto de posponer la entrega, desea continuar?");
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+                InsertarLlegadaCamion();
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
+    }
+    //OBTENER DATOS
+    public String ObtenerFecha(){
+        calendar = Calendar.getInstance();
+        return simpleDateFormat.format(calendar.getTime()).toString();
+    }
+    //RETROFIT2
+    public void InsertarLlegadaCamion(){
+        localizacion = new Localizacion();
+        Call<List<String>> call = NetworkAdapter.getApiService().LlegadaEntrega(
+                "iniciarentrega_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_ensitio/gao",//llegada
+                ObtenerFecha(),
+                localizacion.ObtenerLatitud(getApplicationContext()),
+                localizacion.ObtenerLongitud(getApplicationContext()));
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                if(response.isSuccessful()){
+                    Toast.makeText(getApplicationContext(),"Información guardada", Toast.LENGTH_LONG).show();
+                }else{
+                }
+            }
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getMessage());
+            }
+        });
+    }
+    public void InsertarDescargaCamion(){
+        Call<List<String>> call = NetworkAdapter.getApiService().DescargarEntrega(
+                "iniciarentrega_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_llegada/gao",
+                "","","");
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                if(response.isSuccessful()){
+                    Toast.makeText(getApplicationContext(),"Descargando", Toast.LENGTH_LONG).show();
+                }else{
+                }
+            }
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getMessage());
             }
         });
     }
@@ -94,100 +272,38 @@ public class DescargaEntregaActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-    public void Inicializador(){
-        prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        btn_descarga_camion = (ImageButton) findViewById(R.id.boton_descarga_camion);
-        btn_finalizacion_camion = (ImageButton) findViewById(R.id.boton_finalizacion_descarga);
-        btn_finalizacion_camion.setEnabled(false);
-    }
-    public void NuevaActividad(){
-        Intent i = new Intent(DescargaEntregaActivity.this, EvidenciasActivity.class);
-        //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(i);
-    }
-    public void DialogoConfirmacion(){
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Aviso de confirmación");
-        alert.setMessage("Esta a punto de informar su llegada con el cliente, desea continuar?");
-        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int whichButton) {
-                InsertarLlegadaCamion();
-                btn_finalizacion_camion.setEnabled(true);
-                btn_descarga_camion.setEnabled(false);
-
-            }
-        });
-
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-            }
-        });
-        alert.show();
-    }
-    public void DialogoConfirmacionPosponerEntrega(){
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Aviso de confirmación");
-        alert.setMessage("Esta a punto de posponer la entrega, desea continuar?");
-        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int whichButton) {
-                InsertarLlegadaCamion();
-                btn_finalizacion_camion.setEnabled(true);
-                btn_descarga_camion.setEnabled(false);
-
-            }
-        });
-
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-            }
-        });
-        alert.show();
-    }
-    //OBTENER DATOS
-    public String ObtenerFecha(){
-        calendar = Calendar.getInstance();
-        return simpleDateFormat.format(calendar.getTime()).toString();
-    }
-    public boolean ValidarPermisosGPS(){
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }else{
-                return true;
-            }
-        }else {
-            return true;
-        }
-    }
-    //RETROFIT2
-    public void InsertarLlegadaCamion(){
-        localizacion = new Localizacion();
-        Call<List<String>> call = NetworkAdapter.getApiService().LlegadaEntrega(
-                "iniciarentrega_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_llegada/gao",
-                ObtenerFecha(),
-                localizacion.ObtenerLatitud(DescargaEntregaActivity.this, getApplicationContext()),
-                localizacion.ObtenerLongitud(DescargaEntregaActivity.this, getApplicationContext()));
-        call.enqueue(new Callback<List<String>>() {
-            @Override
-            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                if(response.isSuccessful()){
-                    Toast.makeText(getApplicationContext(),"Información guardada", Toast.LENGTH_LONG).show();
-                }else{
-                }
-            }
-            @Override
-            public void onFailure(Call<List<String>> call, Throwable t) {
-                Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getMessage());
-            }
-        });
-    }
     @Override
     public void onBackPressed()
     {
         Intent i = new Intent(DescargaEntregaActivity.this, ActivityEntregas.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
+    }
+    public void Inicializador(){
+        prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        btn_descarga_camion = (ImageButton) findViewById(R.id.boton_descarga_camion);
+        btn_finalizacion_camion = (ImageButton) findViewById(R.id.boton_finalizacion_descarga);
+        btn_ensitio_camion= (ImageButton) findViewById(R.id.boton_ensitio_camion);
+
+        linear_layout_filtro_llegada= (LinearLayout) findViewById(R.id.linear_layout_filtro_llegada);
+        linear_layout_filtro_descarga= (LinearLayout) findViewById(R.id.linear_layout_filtro_descarga);
+        linear_layout_filtro_salida= (LinearLayout) findViewById(R.id.linear_layout_filtro_salida);
+
+        txt_filtro_llegada= (TextView) findViewById(R.id.txt_filtro_llegada);
+        txt_filtro_descarga= (TextView) findViewById(R.id.txt_filtro_descarga);
+        txt_filtro_salida= (TextView) findViewById(R.id.txt_filtro_salida);
+
+        //VISIBILIDAD FILTRO
+        linear_layout_filtro_llegada.setVisibility(View.INVISIBLE);
+        linear_layout_filtro_descarga.setVisibility(View.INVISIBLE);
+        linear_layout_filtro_salida.setVisibility(View.INVISIBLE);
+        //VISIBILIDAD TEXTO Del filtro
+        txt_filtro_llegada.setVisibility(View.INVISIBLE);
+        txt_filtro_descarga.setVisibility(View.INVISIBLE);
+        txt_filtro_salida.setVisibility(View.INVISIBLE);
+        ValidacionEstadoBoton();
     }
 }

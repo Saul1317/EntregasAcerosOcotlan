@@ -58,6 +58,12 @@ public interface NetworkService {
                                      @Field("fecha") String fecha,
                                      @Field("latitud") String latitud,
                                      @Field("longitud") String longitud);
+    @FormUrlEncoded
+    @POST
+    Call<List<String>> DescargarEntrega(@Url String url,
+                                        @Field("fecha") String fecha,
+                                        @Field("latitud") String latitud,
+                                        @Field("longitud") String longitud);
 
     @FormUrlEncoded
     @POST

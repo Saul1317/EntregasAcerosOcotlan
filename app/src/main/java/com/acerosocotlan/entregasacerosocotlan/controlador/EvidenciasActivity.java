@@ -227,8 +227,8 @@ public class EvidenciasActivity extends AppCompatActivity {
         Call<List<String>> call = NetworkAdapter.getApiService().SalidaEntrega(
                 "iniciarentrega_"+ MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_salida/gao",
                 ObtenerFecha(),
-                localizacion.ObtenerLatitud(EvidenciasActivity.this, getApplicationContext()),
-                localizacion.ObtenerLongitud(EvidenciasActivity.this, getApplicationContext()),
+                localizacion.ObtenerLatitud(getApplicationContext()),
+                localizacion.ObtenerLongitud(getApplicationContext()),
                 edit_txt_comentarios.getText().toString());
         call.enqueue(new Callback<List<String>>() {
             @Override

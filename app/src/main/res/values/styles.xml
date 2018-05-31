@@ -46,7 +46,7 @@
         <item name="android:textColor">@color/icons</item>
     </style>
 
-    <style name="Boton_descargar_camion" parent="Theme.AppCompat.Light">
+    <style name="Boton_llegada_camion" parent="Theme.AppCompat.Light">
         <item name="colorButtonNormal">#ff5252</item>
         <item name="colorControlHighlight">#FFCDD2</item>
     </style>
@@ -54,6 +54,11 @@
     <style name="Boton_finalizar_descarga_camion" parent="Theme.AppCompat.Light">
         <item name="colorButtonNormal">#00C853</item>
         <item name="colorControlHighlight">#C8E6C9</item>
+    </style>
+
+    <style name="Boton_descargar_descarga_camion" parent="Theme.AppCompat.Light">
+        <item name="colorButtonNormal">#ffd600</item>
+        <item name="colorControlHighlight">#fff59d</item>
     </style>
 
     <style name="Boton_tomar_foto" parent="Theme.AppCompat.Light">

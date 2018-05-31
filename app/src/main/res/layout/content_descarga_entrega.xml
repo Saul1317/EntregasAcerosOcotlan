@@ -11,28 +11,123 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:weightSum="1">
+        android:weightSum="9">
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.5">
+            android:layout_weight="3">
             <ImageButton
-                android:id="@+id/boton_descarga_camion"
+                android:id="@+id/boton_ensitio_camion"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:theme="@style/Boton_descargar_camion"
-                android:src="@drawable/camiondescargarsinfondo"/>
+                android:src="@drawable/llegada"
+                android:theme="@style/Boton_llegada_camion"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:text="En sitio"
+                android:textStyle="bold"
+                android:textColor="@color/texto_blanco"/>
+            <LinearLayout
+                android:id="@+id/linear_layout_filtro_llegada"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="#9e9e9e"
+                android:alpha="0.6"
+                android:visibility="invisible">
+            </LinearLayout>
+            <TextView
+                android:id="@+id/txt_filtro_llegada"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                android:textSize="60sp"
+                android:layout_gravity="center"
+                android:text="Listo"
+                android:textStyle="bold"
+                android:textColor="@color/texto_blanco"/>
         </FrameLayout>
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.5">
+            android:layout_weight="3">
+            <ImageButton
+                android:id="@+id/boton_descarga_camion"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/descargando"
+                android:theme="@style/Boton_descargar_descarga_camion" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:layout_gravity="center_horizontal"
+                android:text="Descargando"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:textColor="@color/texto_blanco"/>
+            <LinearLayout
+                android:id="@+id/linear_layout_filtro_descarga"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="#9e9e9e"
+                android:visibility="invisible"
+                android:alpha="0.6">
+            </LinearLayout>
+            <TextView
+                android:id="@+id/txt_filtro_descarga"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="60sp"
+                android:layout_gravity="center"
+                android:text="Listo"
+                android:textStyle="bold"
+                android:visibility="invisible"
+                android:textColor="@color/texto_blanco"/>
+        </FrameLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3">
             <ImageButton
                 android:id="@+id/boton_finalizacion_descarga"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:theme="@style/Boton_finalizar_descarga_camion"
-                android:src="@drawable/camionfinalizadosinfondo"/>
+                android:src="@drawable/salida"
+                android:theme="@style/Boton_finalizar_descarga_camion" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:text="Salida"
+                android:textStyle="bold"
+                android:textColor="@color/texto_blanco"/>
+            <LinearLayout
+                android:id="@+id/linear_layout_filtro_salida"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="#9e9e9e"
+                android:visibility="invisible"
+                android:alpha="0.6">
+            </LinearLayout>
+            <TextView
+                android:id="@+id/txt_filtro_salida"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="60sp"
+                android:layout_gravity="center"
+                android:text="Listo"
+                android:textStyle="bold"
+                android:visibility="invisible"
+                android:textColor="@color/texto_blanco"/>
         </FrameLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
