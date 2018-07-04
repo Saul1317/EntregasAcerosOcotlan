@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,20 +13,19 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.acerosocotlan.entregasacerosocotlan.Adaptador.AdapterRecyclerView;
 import com.acerosocotlan.entregasacerosocotlan.Adaptador.AdapterRecyclerViewRutaCamion;
 import com.acerosocotlan.entregasacerosocotlan.R;
-import com.acerosocotlan.entregasacerosocotlan.modelo.Camion_retrofit;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
 import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
@@ -125,7 +123,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
     }
     public void ObtenerRuta(){
         Call<List<RutaCamion_retrofit>> call = NetworkAdapter.getApiService().RutasCamiones(
-                "rutasmovil_"+MetodosSharedPreference.ObtenerPlacasPref(prs)+"/gao");
+                "rutasmovil_"+MetodosSharedPreference.ObtenerPlacasPref(prs)+"/" +MetodosSharedPreference.getSociedadPref(prs));
         call.enqueue(new Callback<List<RutaCamion_retrofit>>() {
             @Override
             public void onResponse(Call<List<RutaCamion_retrofit>> call, Response<List<RutaCamion_retrofit>> response) {
@@ -137,6 +135,9 @@ public class ScrollingRutasActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<RutaCamion_retrofit>> call, Throwable t) {
+                Intent intentErrorConexion = new Intent(ScrollingRutasActivity.this, ErrorConexion.class);
+                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intentErrorConexion);
             }
         });
     }

@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -18,18 +20,19 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".controlador.SplashV2"
-            android:theme="@style/Splash"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".controlador.MainActivity"
-            android:theme="@style/CatalogoCamiones"
+            android:label="Selecciona tu unidad"
             android:screenOrientation="portrait"
-            android:label="Selecciona tu unidad"/>
+            android:theme="@style/CatalogoCamiones" />
         <activity
             android:name=".controlador.SelectorActivity"
             android:label="@string/title_activity_selector"
@@ -64,7 +67,8 @@
             android:name=".controlador.FinalizarRutaActivity"
             android:label="@string/title_activity_finalizar_ruta"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -74,6 +78,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <activity
+            android:name=".controlador.ErrorConexion"
+            android:label="@string/title_activity_error_conexion"
+            android:screenOrientation="portrait"
+            android:theme="@style/pantalla_completa" />
     </application>
 
 </manifest>

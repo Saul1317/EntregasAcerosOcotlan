@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,7 +67,7 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
         }
         holder.fecha_programada.setText(fecha);
         holder.numero_folio.setText(rutascamionInstancia.getIdRuta());
-        holder.numero_entrega.setText(rutascamionInstancia.getNumEntregas());
+        holder.numero_entrega.setText(" "+rutascamionInstancia.getNumEntregas());
         holder.cardViewRutas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,7 +76,6 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
                         Toast.makeText(activity, "No se puede abrir una nueva ruta", Toast.LENGTH_SHORT).show();
                     }else{
                         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-                        alert.setTitle("Aviso de confirmación");
                         alert.setMessage("Esta ruta ya fue inicializada, ¿Desea continuar?");
                         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -92,9 +92,7 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
                         alert.show();
                     }
                 }else{
-                    Toast.makeText(activity, "Se puede abrir cualquier ruta", Toast.LENGTH_SHORT).show();
                     AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-                    alert.setTitle("Aviso de confirmación");
                     alert.setMessage("Esta a punto de iniciar una ruta, ¿Desea continuar?");
                     alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
                         public void onClick(DialogInterface dialog, int whichButton) {
@@ -130,7 +128,5 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
             cardViewRutas = (CardView) itemView.findViewById(R.id.cardview_rutas);
             linearLayout_rutas = (LinearLayout) itemView.findViewById(R.id.linearLayout_rutas);
         }
-    }
-    public void ValidacionRutas(){
     }
 }

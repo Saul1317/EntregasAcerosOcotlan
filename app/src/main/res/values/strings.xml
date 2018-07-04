@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Entregas Aceros Ocotlan</string>
+    <string name="app_name">Choferes Aceros Ocotlan</string>
     <string name="cerrar_sesion">Cerrar Sesión</string>
     <string name="title_activity_rutas">RutasActivity</string>
     <string name="title_activity_entregas">Entregas Activity</string>
@@ -8,12 +8,13 @@
     <string name="title_activity_selector">Aceros Ocotlan</string>
     <string name="title_activity_entrega">Seleccione su entrega</string>
     <string name="title_activity_descarga_entrega">Seleccione el proceso</string>
-    <string name="title_activity_evidencias">Introduzca el kilometraje actual</string>
+    <string name="title_activity_evidencias">Introduzca un comentario</string>
     <string name="title_activity_scrolling_rutas"> </string>
     <string name="titulo_toolbar_rutas">Rutas</string>
     <string name="title_activity_referencia">Referencia</string>
     <string name="title_activity_formulario">Introduzca el kilometraje actual</string>
     <string name="hint_edittext_km_camion">Introduzca el kilometraje final</string>
+    <string name="hint_edittext_km_actual_camion">Introduzca el kilometraje actual</string>
     <string name="title_activity_finalizacion_ruta">ActivityFinalizacionRuta</string>
     <string name="title_activity_finalizar_ruta">Introducir el kilometraje actual</string>
     <string name="instrucciones_selector_sucursal">Seleccione la sucursal y sociedad a la que pertenece.</string>
@@ -30,4 +31,9 @@
     <string name="cardview_rutas_txt_folio_respuesta">folio</string>
     <string name="cardview_rutas_txt_numero_entregas">Entregas Programadas: </string>
     <string name="cardview_rutas_txt_fecha_entrega">Fecha de Entrega</string>
+    <string name="title_activity_error_conexion">ErrorConexion</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="dialog_error_conexion_txt_titulo">¡Error de conexión!</string>
+    <string name="dialog_error_conexion_txt_descripcion">Al parecer ocurrio un problema al establecer la conexión, intente de nuevo</string>
+    <string name="btn_dialog_txt_nombre">Entendido</string>
 </resources>

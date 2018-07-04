@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.Adaptador.Spinner_Adaptador;
 import com.acerosocotlan.entregasacerosocotlan.R;
@@ -32,7 +33,7 @@ public class SelectorActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     Spinner_Adaptador SA;
 
-    String [] sociedad= {"Pruebas","Arandas","Autlan","Ayotlan","Bajio","DAO","GAO","Ixtapa","La Cienega","DAO",
+    String [] sociedad= {"Pruebas","Arandas","Autlan","Ayotlan","Bajio","DAO","GAO","Ixtapa","La Cienega",
             "Laminas del Norte","Los Altos","Mucha Lamina","Pacifico","Pega","Saabsa","Tepa", "Tijuana","Zula"};
 
     String [] adapter_arandas= {"Arandas"};
@@ -145,14 +146,16 @@ public class SelectorActivity extends AppCompatActivity {
             public void onClick(View view) {
                 text_sucursal = spinner_sucursal.getSelectedItem().toString();
                 text_sociedad = spinner_local.getSelectedItem().toString();
-                //  Toast.makeText(LoginActivity.this, text_sucursal +" "+ text_sociedad, Toast.LENGTH_SHORT).show();
-                GuardarPreferencias(text_sociedad, text_sucursal);
+                String nuevaSociedad  = text_sociedad.replace(" ","_");
+                Toast.makeText(SelectorActivity.this, text_sucursal +" "+ nuevaSociedad, Toast.LENGTH_SHORT).show();
+
+                GuardarPreferencias(text_sociedad, nuevaSociedad);
                 NuevaActividad();
             }
         });
     }
 
-    private void GuardarPreferencias(String sociedad, String sucursal){
+    private void GuardarPreferencias(String sucursal,String sociedad){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("sociedad", sociedad);
         editor.putString("sucursal", sucursal);

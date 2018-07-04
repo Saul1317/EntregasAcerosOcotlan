@@ -2,15 +2,19 @@ package com.acerosocotlan.entregasacerosocotlan.Adaptador;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -27,6 +31,7 @@ import android.widget.Toast;
 import com.acerosocotlan.entregasacerosocotlan.R;
 import com.acerosocotlan.entregasacerosocotlan.controlador.ActivityEntregas;
 import com.acerosocotlan.entregasacerosocotlan.controlador.DescargaEntregaActivity;
+import com.acerosocotlan.entregasacerosocotlan.controlador.EvidenciasActivity;
 import com.acerosocotlan.entregasacerosocotlan.controlador.FinalizarRutaActivity;
 import com.acerosocotlan.entregasacerosocotlan.controlador.FormularioActivity;
 import com.acerosocotlan.entregasacerosocotlan.modelo.EntregasCamion_retrofit;
@@ -58,10 +63,12 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
     private SharedPreferences sharedPreferences;
     private Activity activity;
     private Context context;
-    private Localizacion localizacionInstancia = new Localizacion();
     private EntregasCamion_retrofit entregascamionInstancia;
     private int posicion;
     boolean validacion = false;
+    private double longitudeBest =0, latitudeBest=0;
+    private LocationManager locationManager;
+    private ProgressDialog progressDoalog;
 
     public AdapterRecyclerViewEntregaCamion(List<EntregasCamion_retrofit> entregaArrayList , int resource, Activity activity, Context context) {
         this.resource = resource;
@@ -104,15 +111,15 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
                         MetodosSharedPreference.GuardarEstatusEntrega(sharedPreferences, entregaArrayList.get(position).getEstatus());
                         DialogoConfirmacionContinuarEntrega();
                     }
-                 }else{
-                        MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregaArrayList.get(position).getFolioEntrega());
-                        MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences, entregaArrayList.get(position).getFechaLlegada());
-                        MetodosSharedPreference.GuardarEstatusEntrega(sharedPreferences, entregaArrayList.get(position).getEstatus());
-                        DialogoConfirmacionComenzarEntrega();
+                }else{
+                    MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregaArrayList.get(position).getFolioEntrega());
+                    MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences, entregaArrayList.get(position).getFechaLlegada());
+                    MetodosSharedPreference.GuardarEstatusEntrega(sharedPreferences, entregaArrayList.get(position).getEstatus());
+                    DialogoConfirmacionComenzarEntrega();
 
-                  }
                 }
-            });
+            }
+        });
     }
     @Override
     public int getItemCount() {
@@ -133,7 +140,9 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
             linearLayout_entregas= (LinearLayout) itemView.findViewById(R.id.linear_layout_entregas_cardview);
         }
     }
+
     public void DialogodeConfirmacionInsercion(){
+        Log.i("AQUI",MetodosSharedPreference.getSociedadPref(sharedPreferences));
         //Codigo de confirmación
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -143,11 +152,12 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
                 //INSTANCIAS ACTIVIDADES
                 ActivityEntregas activityEntregasInstancia = new ActivityEntregas();
                 //METODO PARA INSERTAR
-                activityEntregasInstancia.InsertarFormulario(MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences),
-                        localizacionInstancia.ObtenerLatitud(context),
-                        localizacionInstancia.ObtenerLongitud(context));
-                //Log.i("FOLIO UTILIZADO",entregascamionInstancia.getFolioEntrega());
-                //activityEntregasInstancia.ObtenerAvisoPersonal(MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences));
+                activityEntregasInstancia.InsertarFormulario(
+                        MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences),
+                        String.valueOf(latitudeBest),
+                        String.valueOf(longitudeBest),
+                        progressDoalog,
+                        MetodosSharedPreference.getSociedadPref(sharedPreferences));
                 Intent i = new Intent(context, DescargaEntregaActivity.class);
                 activity.startActivity(i);
             }
@@ -156,19 +166,17 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
             ActivityEntregas activityEntregasInstancia = new ActivityEntregas();
             //METODO PARA INSERTAR
             activityEntregasInstancia.InsertarFormulario(MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences),
-                    localizacionInstancia.ObtenerLatitud(context),
-                    localizacionInstancia.ObtenerLongitud(context));
-            //Log.i("FOLIO UTILIZADO",entregascamionInstancia.getFolioEntrega());
-            activityEntregasInstancia.ObtenerAvisoPersonal(MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences));
+                    String.valueOf(latitudeBest),
+                    String.valueOf(longitudeBest),
+                    progressDoalog,
+                    MetodosSharedPreference.getSociedadPref(sharedPreferences));
             Intent i = new Intent(context, DescargaEntregaActivity.class);
             activity.startActivity(i);
         }
     }
     private void DialogoConfirmacionContinuarEntrega() {
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-        alert.setTitle("Aviso de confirmación");
         alert.setMessage("Esta entrega ya fue iniciada, ¿Desea continuar?");
-
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
                 Intent i = new Intent(context, DescargaEntregaActivity.class);
@@ -185,12 +193,16 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
     }
     private void DialogoConfirmacionComenzarEntrega() {
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-        alert.setTitle("Aviso de confirmación");
         alert.setMessage("Esta a punto de comenzar esta entrega, ¿Desea continuar?");
 
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
-                DialogodeConfirmacionInsercion();
+                progressDoalog = new ProgressDialog(activity);
+                progressDoalog.setMessage("Preparando los datos");
+                progressDoalog.setCancelable(false);
+                progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDoalog.show();
+                ObtenerMejorLocalizacion();
             }
         });
 
@@ -200,4 +212,41 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
         });
         alert.show();
     }
+    //LOCALIZACION
+    private void ObtenerMejorLocalizacion(){
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setAltitudeRequired(false);
+        criteria.setBearingRequired(false);
+        criteria.setCostAllowed(true);
+        criteria.setPowerRequirement(Criteria.POWER_LOW);
+        String provider = locationManager.getBestProvider(criteria, true);
+        if (provider != null) {
+            locationManager.requestLocationUpdates(provider, 1000, 5, LocalizacionListener);
+        }
+    }
+    private final LocationListener LocalizacionListener = new LocationListener() {
+        public void onLocationChanged(Location location) {
+            longitudeBest = location.getLongitude();
+            latitudeBest = location.getLatitude();
+            locationManager.removeUpdates(LocalizacionListener);
+            DialogodeConfirmacionInsercion();
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+        }
+    };
 }

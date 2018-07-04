@@ -49,9 +49,6 @@ public interface NetworkService {
                                                      @Field("fecha") String fecha,
                                                      @Field("latitud") String latitud,
                                                      @Field("longitud") String longitud);
-    @POST
-    Call<List<AvisoPersonal_retrofit>> ObtenerAvisoPersonal(@Url String url);
-
     @FormUrlEncoded
     @POST
     Call<List<String>> LlegadaEntrega(@Url String url,
@@ -72,4 +69,11 @@ public interface NetworkService {
                                      @Field("latitud") String latitud,
                                      @Field("longitud") String longitud,
                                      @Field("comentarios") String comentario);
+
+    @FormUrlEncoded
+    @POST
+    Call<List<String>> PosponerEntrega(@Url String url,
+                                       @Field("fecha") String fecha,
+                                       @Field("latitud") String latitud,
+                                       @Field("longitud") String longitud);
 }

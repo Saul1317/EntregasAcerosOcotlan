@@ -1,6 +1,7 @@
 package com.acerosocotlan.entregasacerosocotlan.controlador;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -76,10 +78,6 @@ public class FormularioActivity extends AppCompatActivity {
     private LocationManager locationManager;
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private Calendar calendar;
-    //INSTANCIA
-    private Localizacion localizacion;
-    private double latitude;
-    private double longitud;
     //RUTAS DE LA CAMARA
     private String CARPETA_RAIZ="acerosOcotlan/";
     private String RUTA_IMAGEN = CARPETA_RAIZ+"evidencia";
@@ -89,6 +87,9 @@ public class FormularioActivity extends AppCompatActivity {
     File imagen;
     //SHARED PREFERENCE
     private SharedPreferences prs;
+    //LOCATION
+    private double longitudeBest =0, latitudeBest=0;
+    private ProgressDialog progressDoalog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,30 +117,17 @@ public class FormularioActivity extends AppCompatActivity {
             }
         });
     }
-    //Inicializador de componentes
     public void Inicializador(){
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         imagenEvidencia =(ImageView) findViewById(R.id.imagen_formulario);
         botonEnviar= (Button) findViewById(R.id.btn_enviar_formulario);
         txt_kilometraje = (EditText)findViewById(R.id.text_input_layout_kilometraje);
+
     }
     //OBTENER DATOS
-    public void ObtenerLocalizacionCamion(){
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            }else{
-                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                latitude = location.getLatitude();
-                longitud = location.getLongitude();
-            }
-        }else {
-            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            latitude = location.getLatitude();
-            longitud = location.getLongitude();
-        }
-    }
     public boolean ValidarPermisosGPS(){
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -241,18 +229,13 @@ public class FormularioActivity extends AppCompatActivity {
     }
     //Retrofit2
     public void InsertarFormulario(){
-        localizacion = new Localizacion();
-        Log.i("Latitud",localizacion.ObtenerLatitud(getApplicationContext()));
-        Log.i("Longitud",localizacion.ObtenerLongitud(getApplicationContext()));
         Call<List<String>> call = NetworkAdapter.getApiService().MandarFormularioPost(
-                "iniciarruta_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/gao",
-                ObtenerFecha(),
-                localizacion.ObtenerLatitud(getApplicationContext()),
-                localizacion.ObtenerLongitud(getApplicationContext()),
-                txt_kilometraje.getText().toString());
+                "iniciarruta_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/"+MetodosSharedPreference.getSociedadPref(prs),
+                ObtenerFecha(), String.valueOf(latitudeBest), String.valueOf(longitudeBest), txt_kilometraje.getText().toString());
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                progressDoalog.dismiss();
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0).toString();
@@ -262,6 +245,7 @@ public class FormularioActivity extends AppCompatActivity {
                         NuevaActividad();
                     }
                 }else{
+                    progressDoalog.dismiss();
                     Toast.makeText(getApplicationContext(), "No manches", Toast.LENGTH_LONG).show();
                 }
             }
@@ -273,7 +257,7 @@ public class FormularioActivity extends AppCompatActivity {
     }
     public void ObtenerListaAvisos(){
         Call<List<InformacionAvisos_retrofit>> call = NetworkAdapter.getApiService().ObtenerInformacionParaAviso(
-                "avisogeneral_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/gao");
+                "avisogeneral_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs) +"/"+MetodosSharedPreference.getSociedadPref(prs));
         call.enqueue(new Callback<List<InformacionAvisos_retrofit>>() {
             @Override
             public void onResponse(Call<List<InformacionAvisos_retrofit>> call, Response<List<InformacionAvisos_retrofit>> response) {
@@ -294,11 +278,15 @@ public class FormularioActivity extends AppCompatActivity {
     //ACTIVITY
     public void DialogoConfirmacion(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Aviso de confirmación");
         alert.setMessage("Esta a punto de comenzar una ruta, desea continuar?");
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
-                InsertarFormulario();
+                progressDoalog = new ProgressDialog(FormularioActivity.this);
+                progressDoalog.setMessage("Preparando los datos");
+                progressDoalog.setCancelable(false);
+                progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDoalog.show();
+                ObtenerMejorLocalizacion();
             }
         });
 
@@ -310,7 +298,6 @@ public class FormularioActivity extends AppCompatActivity {
     }
     public void DialogoValidacion(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Aviso de validación");
         alert.setMessage("Falta ingresar el kilometraje actual del camión");
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
@@ -324,62 +311,43 @@ public class FormularioActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    //NO UTILIZABLES
-    private void cargarDialogoRecomendacion() {
-        AlertDialog.Builder dialogo=new AlertDialog.Builder(FormularioActivity.this);
-        dialogo.setTitle("Permisos Desactivados");
-        dialogo.setMessage("Debe aceptar los permisos para el correcto funcionamiento de la App");
-        dialogo.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                ActivityCompat.requestPermissions(FormularioActivity.this, new String[]{WRITE_EXTERNAL_STORAGE,CAMERA},100);
-            }
-        });
-        dialogo.show();
+    //LOCALIZACION
+    private void ObtenerMejorLocalizacion(){
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setAltitudeRequired(false);
+        criteria.setBearingRequired(false);
+        criteria.setCostAllowed(true);
+        criteria.setPowerRequirement(Criteria.POWER_LOW);
+        String provider = locationManager.getBestProvider(criteria, true);
+        if (provider != null) {
+            locationManager.requestLocationUpdates(provider, 1000, 5, LocalizacionListener);
+        }
     }
-    private void solicitarPermisosManual() {
-        final CharSequence[] opciones={"si","no"};
-        final AlertDialog.Builder alertOpciones=new AlertDialog.Builder(FormularioActivity.this);
-        alertOpciones.setTitle("¿Desea configurar los permisos de forma manual?");
-        alertOpciones.setItems(opciones, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if (opciones[i].equals("si")){
-                    Intent intent=new Intent();
-                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    Uri uri=Uri.fromParts("package",getPackageName(),null);
-                    intent.setData(uri);
-                    startActivity(intent);
-                }else{
-                    Toast.makeText(getApplicationContext(),"Los permisos no fueron aceptados",Toast.LENGTH_SHORT).show();
-                    dialogInterface.dismiss();
-                }
-            }
-        });
-        alertOpciones.show();
-    }
-    //CAMARA NO UTILIZADO
-    private void MenuCamara(){
-        final CharSequence[] opciones = {"Tomar Foto", "Cargar Imagen","Cancelar"};
-        AlertDialog.Builder alertOpciones = new AlertDialog.Builder(FormularioActivity.this);
-        alertOpciones.setTitle("Selecciona una opción");
-        alertOpciones.setItems(opciones, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if(opciones[i].equals("Tomar Foto")){
-                    EjecutarPermisosCamara();
-                }else if (opciones[i].equals("Cargar Imagen")){
-                    Toast.makeText(FormularioActivity.this, "Cargar Foto", Toast.LENGTH_SHORT).show();
-                }else if (opciones[i].equals("Cancelar")){
-                    dialogInterface.dismiss();
-                }
-            }
-        });
-        alertOpciones.show();
-    }
-    private void CargarImagenes(){
-        Intent intent=new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intent.setType("image/");
-        startActivityForResult(intent.createChooser(intent,"Seleccione la Aplicación"),COD_SELECCIONA_FOTO);
-    }
+    private final LocationListener LocalizacionListener = new LocationListener() {
+
+        public void onLocationChanged(Location location) {
+            longitudeBest = location.getLongitude();
+            latitudeBest = location.getLatitude();
+            Log.i("LOCALIZACION",String.valueOf(longitudeBest)+" "+String.valueOf(latitudeBest));
+            locationManager.removeUpdates(LocalizacionListener);
+            InsertarFormulario();
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+        }
+    };
 }

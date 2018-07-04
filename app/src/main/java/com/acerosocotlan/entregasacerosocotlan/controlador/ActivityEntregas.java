@@ -2,6 +2,7 @@ package com.acerosocotlan.entregasacerosocotlan.controlador;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -51,22 +52,20 @@ public class ActivityEntregas extends AppCompatActivity {
     private RecyclerView entregaRecycler;
     private Button btn_finalizar_ruta;
     //DATOS EXTERNOS
-    private Location location;
-    private LocationManager locationManager;
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private Calendar calendar;
     private double latitude;
     private double longitud;
     //SHARED PREFERENCE
     private SharedPreferences prs;
-    String folio;
+    private ProgressDialog progressDoalog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entregas);
         Inicializador();
-        ObtenerRuta();
+        ObtenerEntrega();
         btn_finalizar_ruta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,9 +93,9 @@ public class ActivityEntregas extends AppCompatActivity {
         return simpleDateFormat.format(calendar.getTime()).toString();
     }
     //RETROFIT2
-    public void ObtenerRuta(){
+    public void ObtenerEntrega(){
         Call<List<EntregasCamion_retrofit>> call = NetworkAdapter.getApiService().EntregasCamiones(
-                "entregasmovil_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/gao");
+                "entregasmovil_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/"+MetodosSharedPreference.getSociedadPref(prs));
         call.enqueue(new Callback<List<EntregasCamion_retrofit>>() {
             @Override
             public void onResponse(Call<List<EntregasCamion_retrofit>> call, Response<List<EntregasCamion_retrofit>> response) {
@@ -112,7 +111,9 @@ public class ActivityEntregas extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<EntregasCamion_retrofit>> call, Throwable t) {
-                Log.i("ESTADO", "NO ENTRA");
+                Intent intentErrorConexion = new Intent(ActivityEntregas.this, ErrorConexion.class);
+                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intentErrorConexion);
             }
         });
     }
@@ -123,45 +124,29 @@ public class ActivityEntregas extends AppCompatActivity {
         AdapterRecyclerViewEntregaCamion arv = new AdapterRecyclerViewEntregaCamion(camion,R.layout.cardview_entregas, ActivityEntregas.this, getApplicationContext());
         entregaRecycler.setAdapter(arv);
     }
-    public void InsertarFormulario(String folio2, String latitud, String longitud){
-        //Log.i("FOLIO UTILIZADO INSERT",folio);
-        folio=folio2;
+    public void InsertarFormulario(String folio2, String latitud, String longitud, final ProgressDialog progressDialog, String sociedad){
+        Log.i("AQUI2",sociedad);
         Call<List<String>> call = NetworkAdapter.getApiService().IniciaEntrega(
-                "iniciarentrega_"+folio+"_inicio/gao",
-                 ObtenerFecha(),
-                latitud,
-                longitud);
+                "iniciarentrega_"+folio2+"_inicio/"+sociedad, ObtenerFecha(), latitud, longitud);
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                progressDialog.dismiss();
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0).toString();
-                    if (valor.equals("correcto")){
+                    Log.i("RESPUESTA ENTREGA",valor.toString());
+                    if(valor.equals("correcto")) {
                     }
-                }else{
                 }
             }
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
-                Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getLocalizedMessage());
-            }
-        });
-    }
-    public void ObtenerAvisoPersonal(String folio) {
-        Call<List<AvisoPersonal_retrofit>> call = NetworkAdapter.getApiService().ObtenerAvisoPersonal("avisopersonal_"+folio+"/gao");
-        call.enqueue(new Callback<List<AvisoPersonal_retrofit>>() {
-            @Override
-            public void onResponse(Call<List<AvisoPersonal_retrofit>> call, Response<List<AvisoPersonal_retrofit>> response) {
-                if(response.isSuccessful()){
-                    Log.i("FORMULARIO",response.body().toString());
-                }else{
-                    Log.i("FORMULARIO","Mensaje no reconocido");
-                }
-            }
-            @Override
-            public void onFailure(Call<List<AvisoPersonal_retrofit>> call, Throwable t) {
-                Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getLocalizedMessage());
+                /*Intent intentErrorConexion = new Intent(ActivityEntregas.this, ErrorConexion.class);
+                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intentErrorConexion);*/
+                progressDialog.dismiss();
+                Log.i("ERRORSERVIDOR","ERROR" + t.toString());
             }
         });
     }

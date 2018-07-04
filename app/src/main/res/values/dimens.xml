@@ -21,7 +21,7 @@
     <dimen name="texto_cardview_modelo_camion">11sp</dimen>
     <dimen name="texto_cardview_placas_camion">11sp</dimen>
     <dimen name="cardview_entregas_radio">0dp</dimen>
-    <dimen name="cardview_entregas_altura">140dp</dimen>
+    <dimen name="cardview_entregas_altura">150dp</dimen>
     <dimen name="cardview_entregas_padding">10dp</dimen>
     <dimen name="cardview_entregas_marginBotton">5dp</dimen>
     <dimen name="txt_tamano_cardview_entrega">12sp</dimen>
@@ -29,8 +29,8 @@
     <dimen name="txt_respuesta_tamano_cardview_entrega">10sp</dimen>
     <dimen name="cardview_rutas_altura">110dp</dimen>
     <dimen name="cardview_rutas_radio">0dp</dimen>
-    <dimen name="cardview_entregas_marginVertical">1dp</dimen>
-    <dimen name="cardview_rutas_marginVertical">1dp</dimen>
+    <dimen name="cardview_entregas_marginVertical">0.1dp</dimen>
+    <dimen name="cardview_rutas_marginVertical">0.1dp</dimen>
     <dimen name="cardview_ruta_linearlayout_folio">100dp</dimen>
     <dimen name="cardview_rutas_padding">10dp</dimen>
     <dimen name="cardview_rutas_paddingVertical">12dp</dimen>
