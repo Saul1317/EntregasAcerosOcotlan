@@ -13,6 +13,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -37,56 +38,15 @@ public class Localizacion {
     private LocationManager locationManager;
     double longitudeBest, latitudeBest;
     private Context context;
-    private double latitude;
-    private double longitud;
 
     public Localizacion(Context context) {
         this.context = context;
     }
-
     public double getLatitude() {
-        return latitude;
+        return latitudeBest;
     }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
     public double getLongitud() {
-        return longitud;
-    }
-
-    public void setLongitud(double longitud) {
-        this.longitud = longitud;
-    }
-
-    public String ObtenerLatitud(Context context){
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            }else{
-                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                latitude = location.getLatitude();
-            }
-        }else {
-            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            latitude = location.getLatitude();
-        }
-        return String.valueOf(latitude);
-    }
-    public String ObtenerLongitud(Context context){
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            }else{
-                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                longitud = location.getLongitude();
-            }
-        }else {
-            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            longitud = location.getLongitude();
-        }
-        return String.valueOf(longitud);
+        return longitudeBest;
     }
 
     public void ObtenerMejorLocalizacion(){
@@ -102,15 +62,18 @@ public class Localizacion {
         criteria.setPowerRequirement(Criteria.POWER_LOW);
         String provider = locationManager.getBestProvider(criteria, true);
         if (provider != null) {
-            locationManager.requestLocationUpdates(provider, 1000, 5, LocalizacionListener);
+            locationManager.requestLocationUpdates(provider, 0, 0, LocalizacionListener);
          }
     }
-
+    public void  cancelarLocalizacion(){
+        Log.i("LOCALIZACION","FINAL: "+"LATITUD: "+latitudeBest+"LONGITUD: "+longitudeBest);
+        //Toast.makeText(context,"LATITUD: "+latitudeBest+"LONGITUD: "+longitudeBest, Toast.LENGTH_LONG).show();
+        locationManager.removeUpdates(LocalizacionListener);
+    }
     private final LocationListener LocalizacionListener = new LocationListener() {
         public void onLocationChanged(Location location) {
             longitudeBest = location.getLongitude();
             latitudeBest = location.getLatitude();
-            Log.i("LOCALIZACION",String.valueOf(longitudeBest)+" "+String.valueOf(latitudeBest));
             locationManager.removeUpdates(LocalizacionListener);
         }
 
@@ -124,6 +87,9 @@ public class Localizacion {
 
         @Override
         public void onProviderDisabled(String s) {
+            longitudeBest = 0;
+            latitudeBest = 0;
+            locationManager.removeUpdates(LocalizacionListener);
         }
     };
 }

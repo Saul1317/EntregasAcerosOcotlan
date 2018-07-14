@@ -57,24 +57,23 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 public class EvidenciasActivity extends AppCompatActivity {
 
     //VIEWS
-    ImageView imagenEvidencia;
-    EditText edit_txt_comentarios;
-    Button boton_finalizar_entrega_camion;
+    private ImageView imagenEvidencia;
+    private EditText edit_txt_comentarios;
+    private Button boton_finalizar_entrega_camion;
     //RUTAS DE LA CAMARA
     private String CARPETA_RAIZ="acerosOcotlan/";
     private String RUTA_IMAGEN = CARPETA_RAIZ+"evidencia";
     private String path;
     private final int COD_TOMAR_FOTO=20;
     private final int COD_SELECCIONA_FOTO=10;
-    File imagen;
+    private File imagen;
     //DATOS EXTERNOS
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private Calendar calendar;
     //SHARED PREFERENCE
     private SharedPreferences prs;
     //INSTANCIA
-    private LocationManager locationManager;
-    double longitudeBest =0, latitudeBest=0;
+    private Localizacion localizacion;
     private ProgressDialog progressDoalog;
 
     @Override
@@ -208,8 +207,15 @@ public class EvidenciasActivity extends AppCompatActivity {
                 progressDoalog.setCancelable(false);
                 progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDoalog.show();
-                ObtenerMejorLocalizacion();
-
+                localizacion = new Localizacion(getApplicationContext());
+                localizacion.ObtenerMejorLocalizacion();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        localizacion.cancelarLocalizacion();
+                        InsertarSalidaCamion();
+                    }
+                },6000);
             }
         });
 
@@ -239,7 +245,7 @@ public class EvidenciasActivity extends AppCompatActivity {
     private void InsertarSalidaCamion(){
         Call<List<String>> call = NetworkAdapter.getApiService().SalidaEntrega(
                 "iniciarentrega_"+ MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_salida/"+MetodosSharedPreference.getSociedadPref(prs),
-                ObtenerFecha(), String.valueOf(latitudeBest), String.valueOf(longitudeBest), edit_txt_comentarios.getText().toString());
+                ObtenerFecha(), String.valueOf(localizacion.getLatitude()), String.valueOf(localizacion.getLongitud()), edit_txt_comentarios.getText().toString());
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
@@ -247,59 +253,21 @@ public class EvidenciasActivity extends AppCompatActivity {
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0).toString();
-                    Toast.makeText(getApplicationContext(),valor, Toast.LENGTH_LONG).show();
                     if (valor.equals("correcto")){
+                        Toast.makeText(getApplicationContext(),"Se completo la entrega", Toast.LENGTH_LONG).show();
                         NuevaActividad();
                     }
                 }else{
-                    Toast.makeText(getApplicationContext(), "No manches", Toast.LENGTH_LONG).show();
                 }
             }
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDoalog.dismiss();
                 Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getMessage());
+                Intent intentErrorConexion = new Intent(EvidenciasActivity.this, ErrorConexion.class);
+                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intentErrorConexion);
             }
         });
     }
-
-    //LOCALIZACION
-    private void ObtenerMejorLocalizacion(){
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        }
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setAltitudeRequired(false);
-        criteria.setBearingRequired(false);
-        criteria.setCostAllowed(true);
-        criteria.setPowerRequirement(Criteria.POWER_LOW);
-        String provider = locationManager.getBestProvider(criteria, true);
-        if (provider != null) {
-            locationManager.requestLocationUpdates(provider, 1000, 5, LocalizacionListener);
-        }
-    }
-    private final LocationListener LocalizacionListener = new LocationListener() {
-        public void onLocationChanged(Location location) {
-            longitudeBest = location.getLongitude();
-            latitudeBest = location.getLatitude();
-            Log.i("LOCALIZACION",String.valueOf(longitudeBest)+" "+String.valueOf(latitudeBest));
-            Toast.makeText(EvidenciasActivity.this,String.valueOf(longitudeBest)+" "+String.valueOf(latitudeBest), Toast.LENGTH_SHORT).show();
-            locationManager.removeUpdates(LocalizacionListener);
-            InsertarSalidaCamion();
-        }
-
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-        }
-    };
 }

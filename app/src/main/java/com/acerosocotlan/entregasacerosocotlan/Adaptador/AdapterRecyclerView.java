@@ -55,7 +55,7 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
         holder.nombre_chofer_Cardview.setText(camionInstancia.getNombre()+" "+camionInstancia.getApellidoPaterno());
         holder.modelo_camion_carview.setText(camionInstancia.getDescripcion());
         holder.placas_camion_carview.setText("Placas "+camionInstancia.getPlacas());
-        Picasso.with(context).load(camionInstancia.getFotoCamion().toString()).fit().into(holder.foto_fondo_Cardview);
+        Picasso.with(context).load(camionInstancia.getFotoCamion()).fit().into(holder.foto_fondo_Cardview);
         Picasso.with(context).load(camionInstancia.getFotoChofer()).fit().placeholder(R.drawable.obrero).into(holder.foto_perfil_Cardview);
         holder.foto_fondo_Cardview.setOnClickListener(new View.OnClickListener() {
             @Override

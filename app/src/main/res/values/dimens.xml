@@ -1,7 +1,7 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="cardview_choferes">165dp</dimen>
-    <dimen name="cardview_radius_choferes">4dp</dimen>
+    <dimen name="cardview_choferes">170dp</dimen>
+    <dimen name="cardview_radius_choferes">1dp</dimen>
     <dimen name="texto_principal">17sp</dimen>
     <dimen name="margen_componentes">16dp</dimen>
     <dimen name="margen_ventana">16dp</dimen>
@@ -10,7 +10,7 @@
     <dimen name="txt_tamano_cardview_rutas">15sp</dimen>
     <dimen name="texto_intrucciones">17dp</dimen>
     <dimen name="texto_intrucciones_formulario">17dp</dimen>
-    <dimen name="cardview_margin_bottom_choferes">5dp</dimen>
+    <dimen name="cardview_margin_bottom_choferes">1dp</dimen>
     <dimen name="linearlayout_cardview_altura">90dp</dimen>
     <dimen name="linearlayout_cardview_margenVertical">8dp</dimen>
     <dimen name="imagen_perfil_circular_altura">100dp</dimen>
@@ -21,7 +21,7 @@
     <dimen name="texto_cardview_modelo_camion">11sp</dimen>
     <dimen name="texto_cardview_placas_camion">11sp</dimen>
     <dimen name="cardview_entregas_radio">0dp</dimen>
-    <dimen name="cardview_entregas_altura">150dp</dimen>
+    <dimen name="cardview_entregas_altura">160dp</dimen>
     <dimen name="cardview_entregas_padding">10dp</dimen>
     <dimen name="cardview_entregas_marginBotton">5dp</dimen>
     <dimen name="txt_tamano_cardview_entrega">12sp</dimen>

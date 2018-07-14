@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -69,12 +70,11 @@ public class FinalizarRutaActivity extends AppCompatActivity {
     private String path;
     private final int COD_TOMAR_FOTO=20;
     private final int COD_SELECCIONA_FOTO=10;
-    File imagen;
+    private File imagen;
     //SHARED PREFERENCE
     private SharedPreferences prs;
     //INSTANCIA
-    private LocationManager locationManager;
-    private double longitudeBest =0, latitudeBest=0;
+    private Localizacion localizacion;
     private ProgressDialog progressDoalog;
 
     @Override
@@ -218,8 +218,8 @@ public class FinalizarRutaActivity extends AppCompatActivity {
         Call<List<String>> call = NetworkAdapter.getApiService().LlegadaRuta(
                 "finalizarruta_"+ MetodosSharedPreference.ObtenerFolioRutaPref(prs) +"/"+MetodosSharedPreference.getSociedadPref(prs),
                 ObtenerFecha(),
-                String.valueOf(latitudeBest),
-                String.valueOf(longitudeBest),
+                String.valueOf(localizacion.getLatitude()),
+                String.valueOf(localizacion.getLongitud()),
                 txt_kilometraje.getText().toString());
         call.enqueue(new Callback<List<String>>() {
             @Override
@@ -228,7 +228,6 @@ public class FinalizarRutaActivity extends AppCompatActivity {
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0).toString();
-                    Toast.makeText(getApplicationContext(),valor, Toast.LENGTH_LONG).show();
                     if (valor.equals("finalizada")){
                         Toast.makeText(getApplicationContext(),"Se completo la ruta", Toast.LENGTH_LONG).show();
                         Intent i = new Intent(FinalizarRutaActivity.this, ScrollingRutasActivity.class);
@@ -243,6 +242,9 @@ public class FinalizarRutaActivity extends AppCompatActivity {
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDoalog.dismiss();
                 Log.i("LOL", "onFailure: ERROR"+t.getMessage());
+                Intent intentErrorConexion = new Intent(FinalizarRutaActivity.this, ErrorConexion.class);
+                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intentErrorConexion);
             }
         });
     }
@@ -257,7 +259,15 @@ public class FinalizarRutaActivity extends AppCompatActivity {
                 progressDoalog.setCancelable(false);
                 progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDoalog.show();
-                ObtenerMejorLocalizacion();
+                localizacion = new Localizacion(getApplicationContext());
+                localizacion.ObtenerMejorLocalizacion();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        localizacion.cancelarLocalizacion();
+                        InsertarFormulario();
+                    }
+                },6000);
             }
         });
 
@@ -276,44 +286,4 @@ public class FinalizarRutaActivity extends AppCompatActivity {
         });
         alert.show();
     }
-
-    //LOCALIZACION
-    private void ObtenerMejorLocalizacion(){
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        }
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setAltitudeRequired(false);
-        criteria.setBearingRequired(false);
-        criteria.setCostAllowed(true);
-        criteria.setPowerRequirement(Criteria.POWER_LOW);
-        String provider = locationManager.getBestProvider(criteria, true);
-        if (provider != null) {
-            locationManager.requestLocationUpdates(provider, 1000, 5, LocalizacionListener);
-        }
-    }
-    private final LocationListener LocalizacionListener = new LocationListener() {
-        public void onLocationChanged(Location location) {
-            longitudeBest = location.getLongitude();
-            latitudeBest = location.getLatitude();
-            Log.i("LOCALIZACION",String.valueOf(longitudeBest)+" "+String.valueOf(latitudeBest));
-            Toast.makeText(FinalizarRutaActivity.this,String.valueOf(longitudeBest)+" "+String.valueOf(latitudeBest), Toast.LENGTH_SHORT).show();
-            locationManager.removeUpdates(LocalizacionListener);
-            InsertarFormulario();
-        }
-
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-        }
-    };
 }

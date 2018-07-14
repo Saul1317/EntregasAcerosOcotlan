@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -52,13 +54,11 @@ public class ActivityEntregas extends AppCompatActivity {
     private RecyclerView entregaRecycler;
     private Button btn_finalizar_ruta;
     //DATOS EXTERNOS
-    static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-    private Calendar calendar;
     private double latitude;
     private double longitud;
     //SHARED PREFERENCE
     private SharedPreferences prs;
-    private ProgressDialog progressDoalog;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +72,12 @@ public class ActivityEntregas extends AppCompatActivity {
                 NuevaActividad();
             }
         });
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ObtenerEntrega();
+            }
+        });
     }
     //ACTIVITY
     public void Inicializador(){
@@ -80,17 +86,14 @@ public class ActivityEntregas extends AppCompatActivity {
         entregaRecycler = (RecyclerView) findViewById(R.id.entregas_recycler);
         btn_finalizar_ruta = (Button) findViewById(R.id.btn_finalizar_ruta);
         btn_finalizar_ruta.setEnabled(false);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeLayout);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAzulGoogle);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
     public void NuevaActividad(){
         Intent i = new Intent(ActivityEntregas.this, FinalizarRutaActivity.class);
         startActivity(i);
-    }
-    //OBTENER DATOS
-    public String ObtenerFecha(){
-        calendar = Calendar.getInstance();
-        return simpleDateFormat.format(calendar.getTime()).toString();
     }
     //RETROFIT2
     public void ObtenerEntrega(){
@@ -100,6 +103,7 @@ public class ActivityEntregas extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<EntregasCamion_retrofit>> call, Response<List<EntregasCamion_retrofit>> response) {
                 if (response.isSuccessful()){
+                    swipeRefreshLayout.setRefreshing(false);
                     List<EntregasCamion_retrofit> entrega_retrofit = response.body();
                     if(entrega_retrofit.isEmpty()){
                         btn_finalizar_ruta.setEnabled(true);
@@ -111,6 +115,7 @@ public class ActivityEntregas extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<EntregasCamion_retrofit>> call, Throwable t) {
+                swipeRefreshLayout.setRefreshing(false);
                 Intent intentErrorConexion = new Intent(ActivityEntregas.this, ErrorConexion.class);
                 intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intentErrorConexion);
@@ -123,32 +128,6 @@ public class ActivityEntregas extends AppCompatActivity {
         entregaRecycler.setLayoutManager(l);
         AdapterRecyclerViewEntregaCamion arv = new AdapterRecyclerViewEntregaCamion(camion,R.layout.cardview_entregas, ActivityEntregas.this, getApplicationContext());
         entregaRecycler.setAdapter(arv);
-    }
-    public void InsertarFormulario(String folio2, String latitud, String longitud, final ProgressDialog progressDialog, String sociedad){
-        Log.i("AQUI2",sociedad);
-        Call<List<String>> call = NetworkAdapter.getApiService().IniciaEntrega(
-                "iniciarentrega_"+folio2+"_inicio/"+sociedad, ObtenerFecha(), latitud, longitud);
-        call.enqueue(new Callback<List<String>>() {
-            @Override
-            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                progressDialog.dismiss();
-                if(response.isSuccessful()){
-                    List<String> respuesta = response.body();
-                    String valor = respuesta.get(0).toString();
-                    Log.i("RESPUESTA ENTREGA",valor.toString());
-                    if(valor.equals("correcto")) {
-                    }
-                }
-            }
-            @Override
-            public void onFailure(Call<List<String>> call, Throwable t) {
-                /*Intent intentErrorConexion = new Intent(ActivityEntregas.this, ErrorConexion.class);
-                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intentErrorConexion);*/
-                progressDialog.dismiss();
-                Log.i("ERRORSERVIDOR","ERROR" + t.toString());
-            }
-        });
     }
 
     @Override

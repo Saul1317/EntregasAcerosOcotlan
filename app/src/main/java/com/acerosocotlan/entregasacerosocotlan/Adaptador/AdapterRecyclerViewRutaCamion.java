@@ -61,7 +61,7 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
         ConvertidorFecha confecha= new ConvertidorFecha();
         String fecha = confecha.ConvertirFecha(fechahora);
         if (!rutascamionInstancia.getFechaInicio().toString().isEmpty()){
-            holder.linearLayout_rutas.setBackgroundColor(Color.parseColor("#FFD600"));
+            holder.linearLayout_rutas.setBackgroundColor(Color.parseColor("#FBBC05"));
             //Log.i("COMPROVACION","Existe una entrega en estado proximo o descargando");
             validacion= true;
         }

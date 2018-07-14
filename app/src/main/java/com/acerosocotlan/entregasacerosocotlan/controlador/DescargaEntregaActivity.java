@@ -13,6 +13,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -58,9 +59,9 @@ public class DescargaEntregaActivity extends AppCompatActivity {
     //SHARED PREFERENCE
     private SharedPreferences prs;
     //LOCATION
-    private LocationManager locationManager;
-    private double longitudeBest =0, latitudeBest=0;
     private ProgressDialog progressDoalog;
+    private Localizacion localizacion;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,7 +181,15 @@ public class DescargaEntregaActivity extends AppCompatActivity {
                 progressDoalog.setCancelable(false);
                 progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDoalog.show();
-                ObtenerMejorLocalizacion();
+                localizacion = new Localizacion(getApplicationContext());
+                localizacion.ObtenerMejorLocalizacion();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        localizacion.cancelarLocalizacion();
+                        InsertarLlegadaCamion();
+                    }
+                },6000);
             }
         });
 
@@ -236,33 +245,35 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         Call<List<String>> call = NetworkAdapter.getApiService().LlegadaEntrega(
                 "iniciarentrega_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_ensitio/"+MetodosSharedPreference.getSociedadPref(prs),//llegada
                 ObtenerFecha(),
-                String.valueOf(latitudeBest),
-                String.valueOf(longitudeBest));
+                String.valueOf(localizacion.getLatitude()),
+                String.valueOf(localizacion.getLongitud()));
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 progressDoalog.dismiss();
                 if(response.isSuccessful()){
-                    Toast.makeText(getApplicationContext(),"Información guardada", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"Se guardó la información", Toast.LENGTH_LONG).show();
                     linear_layout_filtro_llegada.setVisibility(View.VISIBLE);
                     txt_filtro_llegada.setVisibility(View.VISIBLE);
                     btn_ensitio_camion.setEnabled(false);
                     btn_descarga_camion.setEnabled(true);
                 }else{
-
                 }
             }
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDoalog.dismiss();
                 Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getMessage());
+                Intent intentErrorConexion = new Intent(DescargaEntregaActivity.this, ErrorConexion.class);
+                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intentErrorConexion);
             }
         });
     }
     public void InsertarDescargaCamion(){
         Call<List<String>> call = NetworkAdapter.getApiService().DescargarEntrega(
                 "iniciarentrega_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_llegada/"+MetodosSharedPreference.getSociedadPref(prs),
-                "","","");
+                ObtenerFecha(),"","");
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
@@ -280,6 +291,9 @@ public class DescargaEntregaActivity extends AppCompatActivity {
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDoalog.dismiss();
                 Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getMessage());
+                Intent intentErrorConexion = new Intent(DescargaEntregaActivity.this, ErrorConexion.class);
+                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intentErrorConexion);
             }
         });
     }
@@ -300,47 +314,13 @@ public class DescargaEntregaActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getMessage());
+                Intent intentErrorConexion = new Intent(DescargaEntregaActivity.this, ErrorConexion.class);
+                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intentErrorConexion);
             }
         });
     }
-    //LOCALIZACION
-    private void ObtenerMejorLocalizacion(){
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        }
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setAltitudeRequired(false);
-        criteria.setBearingRequired(false);
-        criteria.setCostAllowed(true);
-        criteria.setPowerRequirement(Criteria.POWER_LOW);
-        String provider = locationManager.getBestProvider(criteria, true);
-        if (provider != null) {
-            locationManager.requestLocationUpdates(provider, 1000, 5, LocalizacionListener);
-        }
-    }
-    private final LocationListener LocalizacionListener = new LocationListener() {
-        public void onLocationChanged(Location location) {
-            longitudeBest = location.getLongitude();
-            latitudeBest = location.getLatitude();
-            Log.i("LOCALIZACION",String.valueOf(longitudeBest)+" "+String.valueOf(latitudeBest));
-            locationManager.removeUpdates(LocalizacionListener);
-            InsertarLlegadaCamion();
-        }
 
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-        }
-    };
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_entregas, menu);

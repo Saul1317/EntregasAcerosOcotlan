@@ -17,7 +17,7 @@
         android:padding="@dimen/cardview_entregas_padding"
         android:gravity="center"
         android:orientation="vertical"
-        android:background="@color/colorCardviewFondo">
+        android:background="#34a853">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

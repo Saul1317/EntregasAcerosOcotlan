@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -74,8 +75,6 @@ public class FormularioActivity extends AppCompatActivity {
     private Button botonEnviar;
     private EditText txt_kilometraje;
     //DATOS EXTERNOS
-    private Location location;
-    private LocationManager locationManager;
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private Calendar calendar;
     //RUTAS DE LA CAMARA
@@ -88,8 +87,8 @@ public class FormularioActivity extends AppCompatActivity {
     //SHARED PREFERENCE
     private SharedPreferences prs;
     //LOCATION
-    private double longitudeBest =0, latitudeBest=0;
     private ProgressDialog progressDoalog;
+    Localizacion localizacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +120,6 @@ public class FormularioActivity extends AppCompatActivity {
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         imagenEvidencia =(ImageView) findViewById(R.id.imagen_formulario);
         botonEnviar= (Button) findViewById(R.id.btn_enviar_formulario);
         txt_kilometraje = (EditText)findViewById(R.id.text_input_layout_kilometraje);
@@ -231,7 +229,7 @@ public class FormularioActivity extends AppCompatActivity {
     public void InsertarFormulario(){
         Call<List<String>> call = NetworkAdapter.getApiService().MandarFormularioPost(
                 "iniciarruta_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/"+MetodosSharedPreference.getSociedadPref(prs),
-                ObtenerFecha(), String.valueOf(latitudeBest), String.valueOf(longitudeBest), txt_kilometraje.getText().toString());
+                ObtenerFecha(), String.valueOf(localizacion.getLatitude()), String.valueOf(localizacion.getLongitud()), txt_kilometraje.getText().toString());
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
@@ -239,19 +237,22 @@ public class FormularioActivity extends AppCompatActivity {
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0).toString();
-                   if (valor.equals("iniciada")){
+                    if (valor.equals("iniciada")){
                         Toast.makeText(getApplicationContext(),"Información guardada", Toast.LENGTH_LONG).show();
                         ObtenerListaAvisos();
                         NuevaActividad();
                     }
                 }else{
                     progressDoalog.dismiss();
-                    Toast.makeText(getApplicationContext(), "No manches", Toast.LENGTH_LONG).show();
                 }
             }
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
+                progressDoalog.dismiss();
                 Log.i("LOL", "onFailure: ERROR"+t.getMessage());
+                Intent intentErrorConexion = new Intent(FormularioActivity.this, ErrorConexion.class);
+                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intentErrorConexion);
             }
         });
     }
@@ -286,7 +287,15 @@ public class FormularioActivity extends AppCompatActivity {
                 progressDoalog.setCancelable(false);
                 progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDoalog.show();
-                ObtenerMejorLocalizacion();
+                localizacion = new Localizacion(getApplicationContext());
+                localizacion.ObtenerMejorLocalizacion();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        localizacion.cancelarLocalizacion();
+                        InsertarFormulario();
+                    }
+                },6000);
             }
         });
 
@@ -307,47 +316,6 @@ public class FormularioActivity extends AppCompatActivity {
     }
     public void NuevaActividad(){
         Intent i = new Intent(FormularioActivity.this, ActivityEntregas.class);
-        //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
     }
-
-    //LOCALIZACION
-    private void ObtenerMejorLocalizacion(){
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        }
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setAltitudeRequired(false);
-        criteria.setBearingRequired(false);
-        criteria.setCostAllowed(true);
-        criteria.setPowerRequirement(Criteria.POWER_LOW);
-        String provider = locationManager.getBestProvider(criteria, true);
-        if (provider != null) {
-            locationManager.requestLocationUpdates(provider, 1000, 5, LocalizacionListener);
-        }
-    }
-    private final LocationListener LocalizacionListener = new LocationListener() {
-
-        public void onLocationChanged(Location location) {
-            longitudeBest = location.getLongitude();
-            latitudeBest = location.getLatitude();
-            Log.i("LOCALIZACION",String.valueOf(longitudeBest)+" "+String.valueOf(latitudeBest));
-            locationManager.removeUpdates(LocalizacionListener);
-            InsertarFormulario();
-        }
-
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-        }
-    };
 }

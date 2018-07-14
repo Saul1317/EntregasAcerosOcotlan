@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimary">#4285F4</color>
     <color name="colorPrimaryDark">#1976D2</color>
     <color name="primary_light">#BBDEFB</color>
     <color name="colorAccent">#FF4081</color>
@@ -12,5 +12,5 @@
     <color name="texto_blanco">#FFFFFF</color>
     <color name="colorCardviewFondo">#4CAF50</color>
     <color name="texto_rojo">#E57373</color>
-    <color name="colorAzulGoogle">#42B5F4</color>
+    <color name="colorAzulGoogle">#4285F4</color>
 </resources>

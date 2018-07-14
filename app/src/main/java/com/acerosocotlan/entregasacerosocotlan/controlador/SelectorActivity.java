@@ -147,8 +147,6 @@ public class SelectorActivity extends AppCompatActivity {
                 text_sucursal = spinner_sucursal.getSelectedItem().toString();
                 text_sociedad = spinner_local.getSelectedItem().toString();
                 String nuevaSociedad  = text_sociedad.replace(" ","_");
-                Toast.makeText(SelectorActivity.this, text_sucursal +" "+ nuevaSociedad, Toast.LENGTH_SHORT).show();
-
                 GuardarPreferencias(text_sociedad, nuevaSociedad);
                 NuevaActividad();
             }
