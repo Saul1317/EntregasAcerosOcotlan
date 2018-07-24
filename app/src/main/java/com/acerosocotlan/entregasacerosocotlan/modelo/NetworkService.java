@@ -6,12 +6,16 @@ import android.content.SharedPreferences;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Url;
 
 /**
@@ -30,12 +34,21 @@ public interface NetworkService {
     @POST
     Call<List<InformacionAvisos_retrofit>> ObtenerInformacionParaAviso(@Url String url);
     @FormUrlEncoded
+    @Multipart
     @POST
     Call<List<String>> MandarFormularioPost(@Url String url,
                                             @Field("fechainicio") String fecha,
                                             @Field("latinicio") String latitud,
                                             @Field("loninicio") String longitud,
-                                            @Field("kminicio") String km);
+                                            @Field("kminicio") String km,
+                                            @Part MultipartBody.Part file,
+                                            @Part("name") RequestBody name);
+    @Multipart
+    @POST
+    Call<List<String>> foto(@Url String url,
+                            @Part MultipartBody.Part file,
+                            @Part("name") RequestBody name);
+
     @FormUrlEncoded
     @POST
     Call<List<String>> LlegadaRuta(@Url String url,
@@ -76,4 +89,10 @@ public interface NetworkService {
                                        @Field("fecha") String fecha,
                                        @Field("latitud") String latitud,
                                        @Field("longitud") String longitud);
+
+    @FormUrlEncoded
+    @POST
+    Call<Prueba_retrofit> Solicitarprueba(@Url String fileUrl,
+                                          @Field("user") String user,
+                                          @Field("pass") String pass);
 }
