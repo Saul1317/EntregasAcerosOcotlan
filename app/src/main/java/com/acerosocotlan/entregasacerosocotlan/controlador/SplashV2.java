@@ -38,14 +38,12 @@ public class SplashV2 extends AppCompatActivity {
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         Intent intentSelector = new Intent(SplashV2.this,SelectorActivity.class);
         Intent intentRutas = new Intent(SplashV2.this, ScrollingRutasActivity.class);
-
-        if (!TextUtils.isEmpty(MetodosSharedPreference.getSociedadPref(prs))
-                && !TextUtils.isEmpty(MetodosSharedPreference.getSucursalPref(prs))
-                && !TextUtils.isEmpty(MetodosSharedPreference.ObtenerPlacasPref(prs))){
-            startActivity(intentRutas);
-
-        }else{
+        if (TextUtils.isEmpty(MetodosSharedPreference.getSociedadPref(prs))
+                && TextUtils.isEmpty(MetodosSharedPreference.getSucursalPref(prs))
+                && TextUtils.isEmpty(MetodosSharedPreference.ObtenerPlacasPref(prs))){
             startActivity(intentSelector);
+        }else{
+            startActivity(intentRutas);
         }
         finish();
     }

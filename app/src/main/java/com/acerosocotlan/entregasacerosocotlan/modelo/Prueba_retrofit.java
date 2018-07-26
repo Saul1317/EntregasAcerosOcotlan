@@ -1,4 +1,4 @@
-package com.acerosocotlan.progresoacerosocotlan.Modelo;
+package com.acerosocotlan.entregasacerosocotlan.modelo;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

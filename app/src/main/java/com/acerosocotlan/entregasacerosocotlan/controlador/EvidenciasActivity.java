@@ -29,22 +29,33 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
+import com.acerosocotlan.entregasacerosocotlan.modelo.ComprimidorArchivo;
 import com.acerosocotlan.entregasacerosocotlan.modelo.Localizacion;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
+import com.acerosocotlan.entregasacerosocotlan.modelo.ValidacionConexion;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -58,7 +69,6 @@ public class EvidenciasActivity extends AppCompatActivity {
 
     //VIEWS
     private ImageView imagenEvidencia;
-    private EditText edit_txt_comentarios;
     private Button boton_finalizar_entrega_camion;
     //RUTAS DE LA CAMARA
     private String CARPETA_RAIZ="acerosOcotlan/";
@@ -75,6 +85,8 @@ public class EvidenciasActivity extends AppCompatActivity {
     //INSTANCIA
     private Localizacion localizacion;
     private ProgressDialog progressDoalog;
+    private Animation circulo_animacion;
+    private ImageView circulo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,10 +96,14 @@ public class EvidenciasActivity extends AppCompatActivity {
         boton_finalizar_entrega_camion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ValidarPermisosGPS()==true){
-                    DialogoConfirmacion();
+                if (imagen==null){
+                    DialogoValidacionFoto();
+                }else{
+                    if (ValidarPermisosGPS()==true){
+                        DialogoConfirmacion();
                     }else {
-                    ActivityCompat.requestPermissions(EvidenciasActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+                        ActivityCompat.requestPermissions(EvidenciasActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+                    }
                 }
             }
         });
@@ -118,7 +134,7 @@ public class EvidenciasActivity extends AppCompatActivity {
             existencia = fileImagen.mkdirs();
         }
         if (existencia==true){
-            nombreImagen= (System.currentTimeMillis()/1000)+".jpg";
+            nombreImagen= (System.currentTimeMillis()/1000)+".png";
         }
         path = Environment.getExternalStorageDirectory()+File.separator+RUTA_IMAGEN+File.separator+nombreImagen;
         imagen = new File(path);
@@ -145,10 +161,11 @@ public class EvidenciasActivity extends AppCompatActivity {
                 MediaScannerConnection.scanFile(getApplicationContext(), new String[]{path}, null, new MediaScannerConnection.OnScanCompletedListener() {
                     @Override
                     public void onScanCompleted(String s, Uri uri) {
-                        Log.i("Ruta de almacenamiento","Path: "+path);
+
                     }
                 });
                 setPic();
+
                 break;
             case COD_SELECCIONA_FOTO:
                 Uri miPath = data.getData();
@@ -189,12 +206,15 @@ public class EvidenciasActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         imagenEvidencia =(ImageView) findViewById(R.id.imagen_evidencia);
-        edit_txt_comentarios =(EditText) findViewById(R.id.comentarios_evidencia_camion);
         boton_finalizar_entrega_camion= (Button) findViewById(R.id.btn_finalizar_descarga_entrega);
+        circulo = (ImageView) findViewById(R.id.circulo);
+        circulo_animacion = AnimationUtils.loadAnimation(this,R.anim.circulo_animacion);
+        circulo.setVisibility(View.VISIBLE);
+        circulo.startAnimation(circulo_animacion);
+        circulo.setVisibility(View.INVISIBLE);
     }
     private void NuevaActividad(){
         Intent i = new Intent(EvidenciasActivity.this, ActivityEntregas.class);
-        //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
     }
     private void DialogoConfirmacion(){
@@ -215,7 +235,7 @@ public class EvidenciasActivity extends AppCompatActivity {
                         localizacion.cancelarLocalizacion();
                         InsertarSalidaCamion();
                     }
-                },6000);
+                },4000);
             }
         });
 
@@ -243,19 +263,18 @@ public class EvidenciasActivity extends AppCompatActivity {
     }
     //RETROFIT2
     private void InsertarSalidaCamion(){
-        Call<List<String>> call = NetworkAdapter.getApiService().SalidaEntrega(
+        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).SalidaEntrega(
                 "iniciarentrega_"+ MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_salida/"+MetodosSharedPreference.getSociedadPref(prs),
-                ObtenerFecha(), String.valueOf(localizacion.getLatitude()), String.valueOf(localizacion.getLongitud()), edit_txt_comentarios.getText().toString());
+                ObtenerFecha(), String.valueOf(localizacion.getLatitude()), String.valueOf(localizacion.getLongitud()), "-");
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 progressDoalog.dismiss();
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
-                    String valor = respuesta.get(0).toString();
+                    String valor = respuesta.get(0);
                     if (valor.equals("correcto")){
-                        Toast.makeText(getApplicationContext(),"Se completo la entrega", Toast.LENGTH_LONG).show();
-                        NuevaActividad();
+                        InsertarFotoRecibo();
                     }
                 }else{
                 }
@@ -263,11 +282,75 @@ public class EvidenciasActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDoalog.dismiss();
-                Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getMessage());
-                Intent intentErrorConexion = new Intent(EvidenciasActivity.this, ErrorConexion.class);
-                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intentErrorConexion);
+                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
+    private void InsertarFotoRecibo(){
+        RequestBody mFile = RequestBody.create(MediaType.parse("image/*"), ComprimidorArchivo.getCompressedImageFile(imagen));
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", imagen.getName(), mFile);
+        RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), imagen.getName());
+        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).InsertarFoto(
+                "foto_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"_recibo_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"/"+MetodosSharedPreference.getSociedadPref(prs),
+                fileToUpload,
+                filename);
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                progressDoalog.dismiss();
+                if(response.isSuccessful()){
+                    List<String> respuesta = response.body();
+                    String valor = respuesta.get(0);
+                    if (valor.equals("fotoguardada")){
+                        Toast.makeText(getApplicationContext(),"Se completo la entrega", Toast.LENGTH_LONG).show();
+                        NuevaActividad();
+                    }else{
+                        Toast.makeText(EvidenciasActivity.this, valor, Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                }
+            }
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                progressDoalog.dismiss();
+                Log.i("FOTO",t.getMessage());
+                MostrarDialogCustomNoConfiguracion();
+            }
+        });
+    }
+    private void MostrarDialogCustomNoConfiguracion(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.DialogErrorConexion);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialoglayout = inflater.inflate(R.layout.activity_error_conexion, null);
+        alert.setCancelable(false);
+        alert.setView(dialoglayout);
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogErrorConexion;
+        alertDialog.show();
+        final FloatingActionButton botonEntendido = (FloatingActionButton) dialoglayout.findViewById(R.id.fab_recargar_app);
+        botonEntendido.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ValidacionConexion.isConnectedWifi(getApplicationContext())||ValidacionConexion.isConnectedMobile(getApplicationContext())){
+                    if(ValidacionConexion.isOnline(getApplicationContext())){
+                        alertDialog.dismiss();
+                    }else{
+                        Toast.makeText(EvidenciasActivity.this, "No tienes acceso a internet", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(EvidenciasActivity.this, "Esta apagado tu WIFI", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+    private void DialogoValidacionFoto() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage("Falta ingresar la fotografia del acuse de recibo");
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
+    }
+
 }

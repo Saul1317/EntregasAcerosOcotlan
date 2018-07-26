@@ -3,8 +3,12 @@
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/cardview_choferes"
+    cardview:cardElevation="4dp"
     cardview:cardCornerRadius="@dimen/cardview_radius_choferes"
-    android:layout_marginBottom="@dimen/cardview_margin_bottom_choferes"
+    android:layout_marginLeft="@dimen/cardview_margin_horizontal_choferes"
+    android:layout_marginRight="@dimen/cardview_margin_horizontal_choferes"
+    android:layout_marginTop="@dimen/cardview_margin_vertical_choferes"
+    android:layout_marginBottom="@dimen/cardview_margin_vertical_choferes"
     cardview:cardBackgroundColor="@color/colorPrimary">
     <FrameLayout
         android:layout_width="match_parent"

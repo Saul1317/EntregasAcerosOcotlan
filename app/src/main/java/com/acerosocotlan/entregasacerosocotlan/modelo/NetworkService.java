@@ -33,19 +33,17 @@ public interface NetworkService {
     Call<List<EntregasCamion_retrofit>> EntregasCamiones(@Url String url);
     @POST
     Call<List<InformacionAvisos_retrofit>> ObtenerInformacionParaAviso(@Url String url);
+
     @FormUrlEncoded
-    @Multipart
     @POST
     Call<List<String>> MandarFormularioPost(@Url String url,
                                             @Field("fechainicio") String fecha,
                                             @Field("latinicio") String latitud,
                                             @Field("loninicio") String longitud,
-                                            @Field("kminicio") String km,
-                                            @Part MultipartBody.Part file,
-                                            @Part("name") RequestBody name);
+                                            @Field("kminicio") String km);
     @Multipart
     @POST
-    Call<List<String>> foto(@Url String url,
+    Call<List<String>> InsertarFoto(@Url String url,
                             @Part MultipartBody.Part file,
                             @Part("name") RequestBody name);
 

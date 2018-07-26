@@ -8,15 +8,16 @@
     <string name="title_activity_selector">Aceros Ocotlan</string>
     <string name="title_activity_entrega">Seleccione su entrega</string>
     <string name="title_activity_descarga_entrega">Seleccione el proceso</string>
-    <string name="title_activity_evidencias">Introduzca un comentario</string>
+    <string name="title_activity_evidencias">Acuse de recibo</string>
+    <string name="title_activity_evidencias2">2.- Presione finalizar entrega.</string>
     <string name="title_activity_scrolling_rutas"> </string>
     <string name="titulo_toolbar_rutas">Rutas</string>
     <string name="title_activity_referencia">Referencia</string>
     <string name="title_activity_formulario">Introduzca el kilometraje actual</string>
-    <string name="hint_edittext_km_camion">Introduzca el kilometraje final</string>
-    <string name="hint_edittext_km_actual_camion">Introduzca el kilometraje actual</string>
+    <string name="hint_edittext_km_camion">2.- Ingrese el kilometraje final</string>
+    <string name="hint_edittext_km_actual_camion">2.- Ingrese el kilometraje actual</string>
     <string name="title_activity_finalizacion_ruta">ActivityFinalizacionRuta</string>
-    <string name="title_activity_finalizar_ruta">Introducir el kilometraje actual</string>
+    <string name="title_activity_finalizar_ruta">Introducir el kilometraje final</string>
     <string name="instrucciones_selector_sucursal">Seleccione la sucursal y sociedad a la que pertenece.</string>
     <string name="instrucciones_formulario">Tome una foto del kilometraje actual del camión.</string>
     <string name="posponer">Posponer entrega</string>
@@ -36,4 +37,10 @@
     <string name="dialog_error_conexion_txt_titulo">¡Error de conexión!</string>
     <string name="dialog_error_conexion_txt_descripcion">Al parecer ocurrio un problema al establecer la conexión, intente de nuevo</string>
     <string name="btn_dialog_txt_nombre">Entendido</string>
+    <string name="txt_introduzca_codigo">Introduzca código</string>
+    <string name="instrucciones_formulario_paso1">1.-Presione para tomar una foto al acuse de recibo</string>
+    <string name="btn_instrucciones_formulario_paso2">2.-Finalizar Entrega</string>
+    <string name="instrucciones_formulario_ruta_paso1">1.-Presione para tomar una foto al kilometraje inicial</string>
+    <string name="btn_txt_iniciar_ruta">3.- Enviar</string>
+    <string name="instrucciones_finalizar_ruta_paso1">1.-Presione para tomar una foto al kilometraje final-</string>
 </resources>

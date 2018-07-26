@@ -1,23 +1,42 @@
 package com.acerosocotlan.entregasacerosocotlan.controlador;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Base64;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.Adaptador.Spinner_Adaptador;
 import com.acerosocotlan.entregasacerosocotlan.R;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
+import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
+import com.acerosocotlan.entregasacerosocotlan.modelo.Prueba_retrofit;
+import com.acerosocotlan.entregasacerosocotlan.modelo.ValidacionConexion;
+
+import java.io.UnsupportedEncodingException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SelectorActivity extends AppCompatActivity {
 
@@ -28,12 +47,18 @@ public class SelectorActivity extends AppCompatActivity {
 
     /*******variable para boton**********/
     Button boton_ingresar;
+    CardView cardView_bloqueo;
+    TextInputEditText textInputEditText_codigo_seguridad;
 
     /******* variable para preferencias*****/
     private SharedPreferences sharedPreferences;
     Spinner_Adaptador SA;
+    private Animation codigo_animacion;
+    private String txtprueba1;
+    private String txtprueba2;
+    private ProgressDialog progressDoalog;
 
-    String [] sociedad= {"Pruebas","Arandas","Autlan","Ayotlan","Bajio","DAO","GAO","Ixtapa","La Cienega",
+    String [] sociedad= {"Arandas","Autlan","Ayotlan","Bajio","DAO","GAO","Ixtapa","La Cienega",
             "Laminas del Norte","Los Altos","Mucha Lamina","Pacifico","Pega","Saabsa","Tepa", "Tijuana","Zula"};
 
     String [] adapter_arandas= {"Arandas"};
@@ -53,7 +78,6 @@ public class SelectorActivity extends AppCompatActivity {
     String [] adapter_tepa= {"Primeras","Segundas"};
     String [] adapter_tijuna= {"CEDI Tijuana","5 Y 10","Jardin Dorado","Mexicali","Ensenada"};
     String [] adapter_zula= {"Zula Matriz","Ferreteria"};
-    String [] adapter_prueba= {"Pruebas"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,11 +152,6 @@ public class SelectorActivity extends AppCompatActivity {
                     SA = new Spinner_Adaptador(getApplicationContext(),adapter_mucha);
                     spinner_sucursal.setAdapter(SA);
                 }
-                else if (spinner.equals("Pruebas")){
-                    SA = new Spinner_Adaptador(getApplicationContext(),adapter_prueba);
-                    spinner_sucursal.setAdapter(SA);
-                }
-
             }
 
             @Override
@@ -148,7 +167,44 @@ public class SelectorActivity extends AppCompatActivity {
                 text_sociedad = spinner_local.getSelectedItem().toString();
                 String nuevaSociedad  = text_sociedad.replace(" ","_");
                 GuardarPreferencias(text_sociedad, nuevaSociedad);
-                NuevaActividad();
+                prueba();
+            }
+        });
+
+        textInputEditText_codigo_seguridad.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                InputMethodManager keyboard = (InputMethodManager) SelectorActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (hasFocus)
+                    keyboard.showSoftInput(textInputEditText_codigo_seguridad, 0);
+                else
+                    keyboard.hideSoftInputFromWindow(textInputEditText_codigo_seguridad.getWindowToken(), 0);
+            }
+        });
+
+        textInputEditText_codigo_seguridad.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(textInputEditText_codigo_seguridad.getText().length()==4){
+                    if(textInputEditText_codigo_seguridad.getText().toString().equals("0000")){
+                        textInputEditText_codigo_seguridad.setFocusable(false);
+                        cardView_bloqueo.startAnimation(codigo_animacion);
+                        cardView_bloqueo.setVisibility(View.INVISIBLE);
+                        spinner_sucursal.setEnabled(true);
+                        spinner_local.setEnabled(true);
+                        boton_ingresar.setEnabled(true);
+                    }
+                }
             }
         });
     }
@@ -159,17 +215,97 @@ public class SelectorActivity extends AppCompatActivity {
         editor.putString("sucursal", sucursal);
         editor.apply();
     }
-
     /******* metodo identificadores ********/
     private void Identificadores(){
         spinner_sucursal = (Spinner) findViewById(R.id.spinner_sucursal);
         spinner_local = (Spinner) findViewById(R.id.spinner_sociedad);
+        spinner_sucursal.setEnabled(false);
+        spinner_local.setEnabled(false);
         boton_ingresar= (Button) findViewById(R.id.boton_ingresar);
+        boton_ingresar.setEnabled(false);
+        cardView_bloqueo = (CardView) findViewById(R.id.cardview_bloqueo);
+        textInputEditText_codigo_seguridad =  (TextInputEditText) findViewById(R.id.text_input_layout_codigo_seguridad);
+        codigo_animacion = AnimationUtils.loadAnimation(SelectorActivity.this,R.anim.codigo_seguridad_animation);
+        progressDoalog = new ProgressDialog(SelectorActivity.this);
+        encryptar();
     }
-
     /******* metodo para mostrar actividad ********/
     private void NuevaActividad(){
         Intent i = new Intent(SelectorActivity.this, MainActivity.class);
         startActivity(i);
+    }
+    private void encryptar(){
+        String text1 = "codigo";
+        String text2 = "binarioxd";
+        byte[] encrpt1;
+        byte[] encrpt2;
+
+        try {
+            encrpt1 = text1.getBytes("UTF-8");
+            encrpt2 = text2.getBytes("UTF-8");
+            txtprueba1 = Base64.encodeToString(encrpt1, Base64.DEFAULT);
+            txtprueba2 = Base64.encodeToString(encrpt2, Base64.DEFAULT);
+            Log.i("USER", txtprueba1);
+            Log.i("PASS", txtprueba2);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+    private void prueba(){
+        progressDoalog.setMax(100);
+        progressDoalog.setMessage("Validando sus datos");
+        progressDoalog.setCancelable(false);
+        progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDoalog.show();
+        Call<Prueba_retrofit> call = NetworkAdapter.getApiServiceAlternativo().Solicitarprueba("egao.php",txtprueba1,txtprueba2);
+        call.enqueue(new Callback<Prueba_retrofit>() {
+            @Override
+            public void onResponse(Call<Prueba_retrofit> call, Response<Prueba_retrofit> response) {
+                progressDoalog.dismiss();
+                if(response.isSuccessful()) {
+                    Prueba_retrofit  prueba_retrofit= response.body();
+                    if (!prueba_retrofit.getResp().isEmpty()) {
+                        MetodosSharedPreference.GuardarPruebaEntrega(sharedPreferences, prueba_retrofit.getResp());
+                        Log.i("URL", MetodosSharedPreference.ObtenerPruebaEntregaPref(sharedPreferences));
+                        NuevaActividad();
+                    }else{
+                        MostrarDialogCustomNoConfiguracion();
+                    }
+                }else{
+                    MostrarDialogCustomNoConfiguracion();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Prueba_retrofit> call, Throwable t) {
+                MostrarDialogCustomNoConfiguracion();
+                progressDoalog.dismiss();
+            }
+        });
+    }
+    private void MostrarDialogCustomNoConfiguracion(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.DialogErrorConexion);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialoglayout = inflater.inflate(R.layout.activity_error_conexion, null);
+        alert.setCancelable(false);
+        alert.setView(dialoglayout);
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogErrorConexion;
+        alertDialog.show();
+        final FloatingActionButton botonEntendido = (FloatingActionButton) dialoglayout.findViewById(R.id.fab_recargar_app);
+        botonEntendido.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ValidacionConexion.isConnectedWifi(getApplicationContext())||ValidacionConexion.isConnectedMobile(getApplicationContext())){
+                    if(ValidacionConexion.isOnline(getApplicationContext())){
+                        alertDialog.dismiss();
+                    }else{
+                        Toast.makeText(SelectorActivity.this, "No tienes acceso a internet", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(SelectorActivity.this, "Esta apagado tu WIFI", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

@@ -32,7 +32,7 @@
             android:name=".controlador.MainActivity"
             android:label="Selecciona tu unidad"
             android:screenOrientation="portrait"
-            android:theme="@style/CatalogoCamiones" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".controlador.SelectorActivity"
             android:label="@string/title_activity_selector"

@@ -28,24 +28,32 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
+import com.acerosocotlan.entregasacerosocotlan.modelo.ComprimidorArchivo;
 import com.acerosocotlan.entregasacerosocotlan.modelo.InformacionAvisos_retrofit;
 import com.acerosocotlan.entregasacerosocotlan.modelo.Localizacion;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
 import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
+import com.acerosocotlan.entregasacerosocotlan.modelo.ValidacionConexion;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -58,7 +66,8 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 public class FinalizarRutaActivity extends AppCompatActivity {
 
     //VIEWS
-    private ImageView imagenEvidencia;
+    private ImageView imagenEvidencia,circulo_finalizar_ruta;
+    private Animation circulo_animacion;
     private Button botonEnviar;
     private EditText txt_kilometraje;
     //DATOS EXTERNOS
@@ -91,13 +100,17 @@ public class FinalizarRutaActivity extends AppCompatActivity {
         botonEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(txt_kilometraje.getText().toString().isEmpty()){
+                if (imagen==null){
                     DialogoValidacion();
                 }else{
-                    if (ValidarPermisosGPS()==true){
-                        DialogoConfirmacion();
-                    }else {
-                        ActivityCompat.requestPermissions(FinalizarRutaActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+                    if(txt_kilometraje.getText().toString().isEmpty()){
+                        DialogoValidacion();
+                    }else{
+                        if (ValidarPermisosGPS()==true){
+                            DialogoConfirmacion();
+                        }else {
+                            ActivityCompat.requestPermissions(FinalizarRutaActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+                        }
                     }
                 }
             }
@@ -111,6 +124,20 @@ public class FinalizarRutaActivity extends AppCompatActivity {
         imagenEvidencia =(ImageView) findViewById(R.id.imagen_formulario_finalizar);
         botonEnviar= (Button) findViewById(R.id.btn_enviar_formulario_finalizar);
         txt_kilometraje = (EditText)findViewById(R.id.text_input_layout_kilometraje_finalizar);
+        circulo_finalizar_ruta = (ImageView) findViewById(R.id.circulo_finalizar_ruta);
+        circulo_animacion = AnimationUtils.loadAnimation(this,R.anim.circulo_animacion);
+        circulo_finalizar_ruta.setVisibility(View.VISIBLE);
+        circulo_finalizar_ruta.startAnimation(circulo_animacion);
+        circulo_finalizar_ruta.setVisibility(View.INVISIBLE);
+    }
+    private void DialogoValidacionFoto() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage("Falta ingresar la fotografia del acuse de recibo");
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
     }
     //OBTENER DATOS
    public String ObtenerFecha(){
@@ -148,7 +175,7 @@ public class FinalizarRutaActivity extends AppCompatActivity {
             existencia = fileImagen.mkdirs();
         }
         if (existencia==true){
-            nombreImagen= (System.currentTimeMillis()/1000)+".jpg";
+            nombreImagen= (System.currentTimeMillis()/1000)+".png";
         }
         path = Environment.getExternalStorageDirectory()+File.separator+RUTA_IMAGEN+File.separator+nombreImagen;
         imagen = new File(path);
@@ -215,7 +242,7 @@ public class FinalizarRutaActivity extends AppCompatActivity {
     }
     //Retrofit2
     public void InsertarFormulario(){
-        Call<List<String>> call = NetworkAdapter.getApiService().LlegadaRuta(
+        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).LlegadaRuta(
                 "finalizarruta_"+ MetodosSharedPreference.ObtenerFolioRutaPref(prs) +"/"+MetodosSharedPreference.getSociedadPref(prs),
                 ObtenerFecha(),
                 String.valueOf(localizacion.getLatitude()),
@@ -227,12 +254,9 @@ public class FinalizarRutaActivity extends AppCompatActivity {
                 progressDoalog.dismiss();
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
-                    String valor = respuesta.get(0).toString();
+                    String valor = respuesta.get(0);
                     if (valor.equals("finalizada")){
-                        Toast.makeText(getApplicationContext(),"Se completo la ruta", Toast.LENGTH_LONG).show();
-                        Intent i = new Intent(FinalizarRutaActivity.this, ScrollingRutasActivity.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(i);
+                        InsertarFotoFinalizarRuta();
                     }
                 }else{
                     Toast.makeText(getApplicationContext(), "No manches", Toast.LENGTH_LONG).show();
@@ -241,10 +265,41 @@ public class FinalizarRutaActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDoalog.dismiss();
-                Log.i("LOL", "onFailure: ERROR"+t.getMessage());
-                Intent intentErrorConexion = new Intent(FinalizarRutaActivity.this, ErrorConexion.class);
-                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intentErrorConexion);
+                MostrarDialogCustomNoConfiguracion();
+            }
+        });
+    }
+    private void InsertarFotoFinalizarRuta(){
+        RequestBody mFile = RequestBody.create(MediaType.parse("image/*"), ComprimidorArchivo.getCompressedImageFile(imagen));
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", imagen.getName(), mFile);
+        RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), imagen.getName());
+        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).InsertarFoto(
+                "foto_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"_finalizada_0/"+MetodosSharedPreference.getSociedadPref(prs),
+                fileToUpload,
+                filename);
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                progressDoalog.dismiss();
+                if(response.isSuccessful()){
+                    List<String> respuesta = response.body();
+                    String valor = respuesta.get(0);
+                    if (valor.equals("fotoguardada")){
+                        Toast.makeText(getApplicationContext(),"Se completo la ruta", Toast.LENGTH_LONG).show();
+                        Intent i = new Intent(FinalizarRutaActivity.this, ScrollingRutasActivity.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(i);
+                    }else{
+                        Toast.makeText(FinalizarRutaActivity.this, valor, Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                }
+            }
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                progressDoalog.dismiss();
+                Log.i("FOTO",t.getMessage());
+                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
@@ -267,7 +322,7 @@ public class FinalizarRutaActivity extends AppCompatActivity {
                         localizacion.cancelarLocalizacion();
                         InsertarFormulario();
                     }
-                },6000);
+                },4000);
             }
         });
 
@@ -285,5 +340,30 @@ public class FinalizarRutaActivity extends AppCompatActivity {
             }
         });
         alert.show();
+    }
+    private void MostrarDialogCustomNoConfiguracion(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.DialogErrorConexion);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialoglayout = inflater.inflate(R.layout.activity_error_conexion, null);
+        alert.setCancelable(false);
+        alert.setView(dialoglayout);
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogErrorConexion;
+        alertDialog.show();
+        final FloatingActionButton botonEntendido = (FloatingActionButton) dialoglayout.findViewById(R.id.fab_recargar_app);
+        botonEntendido.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ValidacionConexion.isConnectedWifi(getApplicationContext())||ValidacionConexion.isConnectedMobile(getApplicationContext())){
+                    if(ValidacionConexion.isOnline(getApplicationContext())){
+                        alertDialog.dismiss();
+                    }else{
+                        Toast.makeText(FinalizarRutaActivity.this, "No tienes acceso a internet", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(FinalizarRutaActivity.this, "Esta apagado tu WIFI", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

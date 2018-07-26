@@ -1,11 +1,16 @@
 package com.acerosocotlan.entregasacerosocotlan.controlador;
 
+import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,17 +23,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.Adaptador.AdapterRecyclerViewRutaCamion;
 import com.acerosocotlan.entregasacerosocotlan.R;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
 import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
+import com.acerosocotlan.entregasacerosocotlan.modelo.ValidacionConexion;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -37,11 +45,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
 public class ScrollingRutasActivity extends AppCompatActivity {
     private SharedPreferences prs;
     private RecyclerView rutasRecycler;
     private TextView nombre_chofer, peso_camion,peso_maximo_camion, placa_camion;
     private ImageView foto_chofer;
+    private ProgressDialog progressDoalog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +61,6 @@ public class ScrollingRutasActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scrolling_rutas);
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         inicializador();
-        ObtenerRuta();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,22 +133,22 @@ public class ScrollingRutasActivity extends AppCompatActivity {
         startActivity(i);
     }
     public void ObtenerRuta(){
-        Call<List<RutaCamion_retrofit>> call = NetworkAdapter.getApiService().RutasCamiones(
+        progressDoalog.show();
+        Call<List<RutaCamion_retrofit>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).RutasCamiones(
                 "rutasmovil_"+MetodosSharedPreference.ObtenerPlacasPref(prs)+"/" +MetodosSharedPreference.getSociedadPref(prs));
         call.enqueue(new Callback<List<RutaCamion_retrofit>>() {
             @Override
             public void onResponse(Call<List<RutaCamion_retrofit>> call, Response<List<RutaCamion_retrofit>> response) {
+                progressDoalog.dismiss();
                 if (response.isSuccessful()){
                     List<RutaCamion_retrofit> rutas_retrofit = response.body();
                     LlenarRecyclerView(rutas_retrofit);
                 }
             }
-
             @Override
             public void onFailure(Call<List<RutaCamion_retrofit>> call, Throwable t) {
-                Intent intentErrorConexion = new Intent(ScrollingRutasActivity.this, ErrorConexion.class);
-                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intentErrorConexion);
+                progressDoalog.dismiss();
+                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
@@ -147,6 +158,42 @@ public class ScrollingRutasActivity extends AppCompatActivity {
         rutasRecycler.setLayoutManager(l);
         AdapterRecyclerViewRutaCamion arv = new AdapterRecyclerViewRutaCamion(camion,R.layout.cardview_rutas, ScrollingRutasActivity.this, getApplicationContext());
         rutasRecycler.setAdapter(arv);
+    }
+    public boolean ValidarPermisosGPS(){
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }else{
+                return true;
+            }
+        }else {
+            return true;
+        }
+    }
+    private void MostrarDialogCustomNoConfiguracion(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.DialogErrorConexion);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialoglayout = inflater.inflate(R.layout.activity_error_conexion, null);
+        alert.setCancelable(false);
+        alert.setView(dialoglayout);
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogErrorConexion;
+        alertDialog.show();
+        FloatingActionButton botonEntendido = (FloatingActionButton) dialoglayout.findViewById(R.id.fab_recargar_app);
+        botonEntendido.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ValidacionConexion.isConnectedWifi(getApplicationContext())||ValidacionConexion.isConnectedMobile(getApplicationContext())){
+                    if(ValidacionConexion.isOnline(getApplicationContext())){
+                        alertDialog.dismiss();
+                    }else{
+                        Toast.makeText(ScrollingRutasActivity.this, "No tienes acceso a internet", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(ScrollingRutasActivity.this, "Esta apagado tu WIFI", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
     public void inicializador(){
         rutasRecycler = (RecyclerView) findViewById(R.id.rutas_recycler);
@@ -167,5 +214,14 @@ public class ScrollingRutasActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_rutas);
         setSupportActionBar(toolbar);
+
+        if(ValidarPermisosGPS()==false){
+            ActivityCompat.requestPermissions(ScrollingRutasActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+        }
+        progressDoalog = new ProgressDialog(ScrollingRutasActivity.this);
+        progressDoalog.setMessage("Preparando los datos");
+        progressDoalog.setCancelable(false);
+        progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        ObtenerRuta();
     }
 }

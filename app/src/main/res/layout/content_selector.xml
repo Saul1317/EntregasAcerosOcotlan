@@ -28,56 +28,106 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_weight="0.4">
-            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:cardview="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/cardview_entregas"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                cardview:cardBackgroundColor="@color/colorPrimaryDark"
-                cardview:cardElevation="16dp"
-                cardview:cardCornerRadius="@dimen/cardview_radius_choferes">
-                <LinearLayout
+                android:layout_height="match_parent">
+                <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:cardview="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/cardview_entregas"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_margin="10dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/instrucciones_selector_sucursal"
-                        android:textSize="@dimen/texto_intrucciones"
-                        android:textStyle="normal"
-                        android:textColor="@color/texto_blanco"
-                        android:layout_marginBottom="20dp"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/sociedad"
-                        android:textSize="@dimen/texto_principal"
-                        android:textStyle="bold"
-                        android:textColor="@color/texto_blanco"/>
-                    <Spinner
-                        android:id="@+id/spinner_sociedad"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:visibility="visible"
+                    cardview:cardBackgroundColor="@color/colorPrimaryDark"
+                    cardview:cardElevation="4dp"
+                    cardview:cardCornerRadius="@dimen/cardview_radius_choferes">
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginVertical="16dp">
-                    </Spinner>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/sucursal"
-                        android:textSize="@dimen/texto_principal"
-                        android:textStyle="bold"
-                        android:textColor="@color/texto_blanco"/>
-                    <Spinner
-                        android:id="@+id/spinner_sucursal"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:layout_margin="10dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/instrucciones_selector_sucursal"
+                            android:textSize="@dimen/texto_intrucciones"
+                            android:textStyle="normal"
+                            android:textColor="@color/texto_blanco"
+                            android:layout_marginBottom="20dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/sociedad"
+                            android:textSize="@dimen/texto_principal"
+                            android:textStyle="bold"
+                            android:textColor="@color/texto_blanco"/>
+                        <Spinner
+                            android:id="@+id/spinner_sociedad"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginVertical="16dp">
+                        </Spinner>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/sucursal"
+                            android:textSize="@dimen/texto_principal"
+                            android:textStyle="bold"
+                            android:textColor="@color/texto_blanco"/>
+                        <Spinner
+                            android:id="@+id/spinner_sucursal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginVertical="16dp">
+                        </Spinner>
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+                <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:cardview="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/cardview_bloqueo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:alpha="0.9"
+                    cardview:cardBackgroundColor="@color/colorPrimaryDark"
+                    cardview:cardElevation="4dp"
+                    android:visibility="visible"
+                    cardview:cardCornerRadius="@dimen/cardview_radius_choferes">
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginVertical="16dp">
-                    </Spinner>
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:background="@drawable/ic_lock"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Codigo"
+                            android:textColor="@color/texto_blanco"
+                            android:textStyle="bold"
+                            android:textSize="23sp" />
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/text_input_layout_codigo_seguridad"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="40dp"
+                            android:layout_marginRight="50dp"
+                            android:layout_marginLeft="50dp"
+                            android:maxLength="4"
+                            android:textAlignment="center"
+                            android:textSize="26sp"
+                            android:theme="@style/Edit_txt_codigo_seguridad"
+                            android:inputType="number">
+                        </android.support.design.widget.TextInputEditText>
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+            </FrameLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"

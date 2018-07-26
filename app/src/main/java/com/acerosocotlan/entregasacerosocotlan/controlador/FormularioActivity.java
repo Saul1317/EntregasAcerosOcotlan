@@ -33,9 +33,12 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -44,13 +47,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
+import com.acerosocotlan.entregasacerosocotlan.modelo.ComprimidorArchivo;
 import com.acerosocotlan.entregasacerosocotlan.modelo.InformacionAvisos_retrofit;
 import com.acerosocotlan.entregasacerosocotlan.modelo.Localizacion;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
 import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
+import com.acerosocotlan.entregasacerosocotlan.modelo.ValidacionConexion;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -59,6 +66,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,7 +81,8 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class FormularioActivity extends AppCompatActivity {
     //VIEWS
-    private ImageView imagenEvidencia;
+    private ImageView imagenEvidencia,circulo_iniciar_ruta;
+    private Animation circulo_animacion;
     private Button botonEnviar;
     private EditText txt_kilometraje;
     //DATOS EXTERNOS
@@ -83,7 +94,7 @@ public class FormularioActivity extends AppCompatActivity {
     private String path;
     private final int COD_TOMAR_FOTO=20;
     private final int COD_SELECCIONA_FOTO=10;
-    File imagen;
+    File imagen = null;
     //SHARED PREFERENCE
     private SharedPreferences prs;
     //LOCATION
@@ -104,13 +115,17 @@ public class FormularioActivity extends AppCompatActivity {
         botonEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(txt_kilometraje.getText().toString().isEmpty()){
-                    DialogoValidacion();
+                if(imagen==null){
+                    DialogoValidacionFoto();
                 }else{
-                    if (ValidarPermisosGPS()==true){
-                        DialogoConfirmacion();
-                    }else {
-                        ActivityCompat.requestPermissions(FormularioActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+                    if(txt_kilometraje.getText().toString().isEmpty()){
+                        DialogoValidacion();
+                    }else{
+                        if (ValidarPermisosGPS()==true){
+                            DialogoConfirmacion();
+                        }else {
+                            ActivityCompat.requestPermissions(FormularioActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
+                        }
                     }
                 }
             }
@@ -123,24 +138,168 @@ public class FormularioActivity extends AppCompatActivity {
         imagenEvidencia =(ImageView) findViewById(R.id.imagen_formulario);
         botonEnviar= (Button) findViewById(R.id.btn_enviar_formulario);
         txt_kilometraje = (EditText)findViewById(R.id.text_input_layout_kilometraje);
-
+        circulo_iniciar_ruta = (ImageView) findViewById(R.id.circulo_iniciar_ruta);
+        circulo_animacion = AnimationUtils.loadAnimation(this,R.anim.circulo_animacion);
+        circulo_iniciar_ruta.setVisibility(View.VISIBLE);
+        circulo_iniciar_ruta.startAnimation(circulo_animacion);
+        circulo_iniciar_ruta.setVisibility(View.INVISIBLE);
     }
-    //OBTENER DATOS
-    public boolean ValidarPermisosGPS(){
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }else{
-                return true;
+    //Retrofit2
+    private void InsertarFormulario(){
+        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).MandarFormularioPost(
+                "iniciarruta_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/"+MetodosSharedPreference.getSociedadPref(prs),
+                ObtenerFecha(),
+                String.valueOf(localizacion.getLatitude()),
+                String.valueOf(localizacion.getLongitud()),
+                txt_kilometraje.getText().toString());
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                progressDoalog.dismiss();
+                if(response.isSuccessful()){
+                    List<String> respuesta = response.body();
+                    String valor = respuesta.get(0);
+                    Toast.makeText(getApplicationContext(),valor, Toast.LENGTH_LONG).show();
+                    if (valor.equals("iniciada")){
+                        ObtenerListaAvisos();
+                        InsertarFotoInicioRuta();
+                    }
+                }else{
+                    progressDoalog.dismiss();
+                }
             }
-        }else {
-            return true;
-        }
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                progressDoalog.dismiss();
+                MostrarDialogCustomNoConfiguracion();
+            }
+        });
     }
-    public String ObtenerFecha(){
-        calendar = Calendar.getInstance();
-        return simpleDateFormat.format(calendar.getTime()).toString();
+    private void InsertarFotoInicioRuta(){
+        RequestBody mFile = RequestBody.create(MediaType.parse("image/*"), ComprimidorArchivo.getCompressedImageFile(imagen));
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", imagen.getName(), mFile);
+        RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), imagen.getName());
+        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).InsertarFoto(
+                "foto_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"_inicio_0/"+MetodosSharedPreference.getSociedadPref(prs),
+                fileToUpload,
+                filename);
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                progressDoalog.dismiss();
+                if(response.isSuccessful()){
+                    List<String> respuesta = response.body();
+                    String valor = respuesta.get(0);
+                    if (valor.equals("fotoguardada")){
+                        Toast.makeText(getApplicationContext(),"Información guardada", Toast.LENGTH_LONG).show();
+                        AbrirEntregas();
+                    }else{
+                        Toast.makeText(FormularioActivity.this, valor, Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                }
+            }
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                progressDoalog.dismiss();
+                Log.i("FOTO",t.getMessage());
+                MostrarDialogCustomNoConfiguracion();
+            }
+        });
     }
+    public void ObtenerListaAvisos(){
+        Call<List<InformacionAvisos_retrofit>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).ObtenerInformacionParaAviso(
+                "avisogeneral_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs) +"/"+MetodosSharedPreference.getSociedadPref(prs));
+        call.enqueue(new Callback<List<InformacionAvisos_retrofit>>() {
+            @Override
+            public void onResponse(Call<List<InformacionAvisos_retrofit>> call, Response<List<InformacionAvisos_retrofit>> response) {
+                if(response.isSuccessful()){
+                    Log.i("FORMULARIO",response.body().toString());
+                }else{
+                    Log.i("FORMULARIO","Mensaje no reconocido");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<InformacionAvisos_retrofit>> call, Throwable t) {
+                Log.i("FORMULARIO","Fallo la conexion");
+            }
+        });
+    }
+    //ACTIVITY
+    public void DialogoConfirmacion(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage("Esta a punto de comenzar una ruta, desea continuar?");
+
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+                progressDoalog = new ProgressDialog(FormularioActivity.this);
+                progressDoalog.setMessage("Preparando los datos");
+                progressDoalog.setCancelable(false);
+                progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDoalog.show();
+                localizacion = new Localizacion(getApplicationContext());
+                localizacion.ObtenerMejorLocalizacion();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        localizacion.cancelarLocalizacion();
+                        InsertarFormulario();
+                    }
+                },4000);
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
+    }
+    public void DialogoValidacion(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage("Falta ingresar el kilometraje actual del camión");
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
+    }
+    public void DialogoValidacionFoto(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage("Falta ingresar la fotografia del kilometraje del camión");
+        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
+    }
+    private void MostrarDialogCustomNoConfiguracion(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.DialogErrorConexion);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialoglayout = inflater.inflate(R.layout.activity_error_conexion, null);
+        alert.setCancelable(false);
+        alert.setView(dialoglayout);
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogErrorConexion;
+        alertDialog.show();
+        final FloatingActionButton botonEntendido = (FloatingActionButton) dialoglayout.findViewById(R.id.fab_recargar_app);
+        botonEntendido.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ValidacionConexion.isConnectedWifi(getApplicationContext())||ValidacionConexion.isConnectedMobile(getApplicationContext())){
+                    if(ValidacionConexion.isOnline(getApplicationContext())){
+                        alertDialog.dismiss();
+                    }else{
+                        Toast.makeText(FormularioActivity.this, "No tienes acceso a internet", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(FormularioActivity.this, "Esta apagado tu WIFI", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
     //CAMARA
     private void EjecutarPermisosCamara(){
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
@@ -161,7 +320,7 @@ public class FormularioActivity extends AppCompatActivity {
             existencia = fileImagen.mkdirs();
         }
         if (existencia==true){
-            nombreImagen= (System.currentTimeMillis()/1000)+".jpg";
+            nombreImagen= (System.currentTimeMillis()/1000)+".png";
         }
         path = Environment.getExternalStorageDirectory()+File.separator+RUTA_IMAGEN+File.separator+nombreImagen;
         imagen = new File(path);
@@ -200,122 +359,49 @@ public class FormularioActivity extends AppCompatActivity {
         }
     }
     private void setPic() {
-            int targetW = imagenEvidencia.getWidth();
-            int targetH = imagenEvidencia.getHeight();
+        int targetW = imagenEvidencia.getWidth();
+        int targetH = imagenEvidencia.getHeight();
 
-            // Get the dimensions of the bitmap
-            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-            bmOptions.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(path, bmOptions);
-            int photoW = bmOptions.outWidth;
-            int photoH = bmOptions.outHeight;
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
 
-            // Determine how much to scale down the image
-            int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
 
-            // Decode the image file into a Bitmap sized to fill the View
-            bmOptions.inJustDecodeBounds = false;
-            bmOptions.inSampleSize = scaleFactor;
-            bmOptions.inPurgeable = true;
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
 
-            Bitmap bitmap = BitmapFactory.decodeFile(path, bmOptions);
-            if (bitmap!=null) {
-                imagenEvidencia.setImageBitmap(bitmap);
-            }else{
-                return;
-            }
+        Bitmap bitmap = BitmapFactory.decodeFile(path, bmOptions);
+        if (bitmap!=null) {
+            imagenEvidencia.setImageBitmap(bitmap);
+        }else{
+            return;
+        }
     }
-    //Retrofit2
-    public void InsertarFormulario(){
-        Call<List<String>> call = NetworkAdapter.getApiService().MandarFormularioPost(
-                "iniciarruta_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/"+MetodosSharedPreference.getSociedadPref(prs),
-                ObtenerFecha(), String.valueOf(localizacion.getLatitude()), String.valueOf(localizacion.getLongitud()), txt_kilometraje.getText().toString());
-        call.enqueue(new Callback<List<String>>() {
-            @Override
-            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                progressDoalog.dismiss();
-                if(response.isSuccessful()){
-                    List<String> respuesta = response.body();
-                    String valor = respuesta.get(0).toString();
-                    if (valor.equals("iniciada")){
-                        Toast.makeText(getApplicationContext(),"Información guardada", Toast.LENGTH_LONG).show();
-                        ObtenerListaAvisos();
-                        NuevaActividad();
-                    }
-                }else{
-                    progressDoalog.dismiss();
-                }
-            }
-            @Override
-            public void onFailure(Call<List<String>> call, Throwable t) {
-                progressDoalog.dismiss();
-                Log.i("LOL", "onFailure: ERROR"+t.getMessage());
-                Intent intentErrorConexion = new Intent(FormularioActivity.this, ErrorConexion.class);
-                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intentErrorConexion);
-            }
-        });
-    }
-    public void ObtenerListaAvisos(){
-        Call<List<InformacionAvisos_retrofit>> call = NetworkAdapter.getApiService().ObtenerInformacionParaAviso(
-                "avisogeneral_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs) +"/"+MetodosSharedPreference.getSociedadPref(prs));
-        call.enqueue(new Callback<List<InformacionAvisos_retrofit>>() {
-            @Override
-            public void onResponse(Call<List<InformacionAvisos_retrofit>> call, Response<List<InformacionAvisos_retrofit>> response) {
-                if(response.isSuccessful()){
-                    Log.i("FORMULARIO",response.body().toString());
-                }else{
-                    Log.i("FORMULARIO","Mensaje no reconocido");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<InformacionAvisos_retrofit>> call, Throwable t) {
-                Log.i("FORMULARIO","Fallo la conexion");
-                Toast.makeText(FormularioActivity.this, "Problema con el socket", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-    //ACTIVITY
-    public void DialogoConfirmacion(){
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setMessage("Esta a punto de comenzar una ruta, desea continuar?");
-        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int whichButton) {
-                progressDoalog = new ProgressDialog(FormularioActivity.this);
-                progressDoalog.setMessage("Preparando los datos");
-                progressDoalog.setCancelable(false);
-                progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progressDoalog.show();
-                localizacion = new Localizacion(getApplicationContext());
-                localizacion.ObtenerMejorLocalizacion();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        localizacion.cancelarLocalizacion();
-                        InsertarFormulario();
-                    }
-                },6000);
-            }
-        });
-
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-            }
-        });
-        alert.show();
-    }
-    public void DialogoValidacion(){
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setMessage("Falta ingresar el kilometraje actual del camión");
-        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int whichButton) {
-            }
-        });
-        alert.show();
-    }
-    public void NuevaActividad(){
+    private void AbrirEntregas() {
         Intent i = new Intent(FormularioActivity.this, ActivityEntregas.class);
         startActivity(i);
+    }
+    //OBTENER DATOS
+    public boolean ValidarPermisosGPS(){
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }else{
+                return true;
+            }
+        }else {
+            return true;
+        }
+    }
+    public String ObtenerFecha(){
+        calendar = Calendar.getInstance();
+        return simpleDateFormat.format(calendar.getTime()).toString();
     }
 }

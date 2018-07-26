@@ -97,4 +97,13 @@ public class MetodosSharedPreference {
         editor.remove("folio_entrega").commit();
         editor.apply();
     }
+    public static void GuardarPruebaEntrega(SharedPreferences prs,String estado){
+        SharedPreferences.Editor editor = prs.edit();
+        editor.putString("estado_entrega", estado);
+        editor.apply();
+    }
+
+    public static String ObtenerPruebaEntregaPref(SharedPreferences prs){
+        return prs.getString("estado_entrega",null);
+    }
 }

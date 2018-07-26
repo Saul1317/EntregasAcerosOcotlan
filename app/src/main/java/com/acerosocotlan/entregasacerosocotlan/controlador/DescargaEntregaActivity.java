@@ -22,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Layout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +36,7 @@ import com.acerosocotlan.entregasacerosocotlan.modelo.EntregasCamion_retrofit;
 import com.acerosocotlan.entregasacerosocotlan.modelo.Localizacion;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
+import com.acerosocotlan.entregasacerosocotlan.modelo.ValidacionConexion;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -189,7 +191,7 @@ public class DescargaEntregaActivity extends AppCompatActivity {
                         localizacion.cancelarLocalizacion();
                         InsertarLlegadaCamion();
                     }
-                },6000);
+                },4000);
             }
         });
 
@@ -242,7 +244,7 @@ public class DescargaEntregaActivity extends AppCompatActivity {
     }
     //RETROFIT2
     public void InsertarLlegadaCamion(){
-        Call<List<String>> call = NetworkAdapter.getApiService().LlegadaEntrega(
+        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).LlegadaEntrega(
                 "iniciarentrega_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_ensitio/"+MetodosSharedPreference.getSociedadPref(prs),//llegada
                 ObtenerFecha(),
                 String.valueOf(localizacion.getLatitude()),
@@ -263,15 +265,12 @@ public class DescargaEntregaActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDoalog.dismiss();
-                Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getMessage());
-                Intent intentErrorConexion = new Intent(DescargaEntregaActivity.this, ErrorConexion.class);
-                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intentErrorConexion);
+                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
     public void InsertarDescargaCamion(){
-        Call<List<String>> call = NetworkAdapter.getApiService().DescargarEntrega(
+        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).DescargarEntrega(
                 "iniciarentrega_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_llegada/"+MetodosSharedPreference.getSociedadPref(prs),
                 ObtenerFecha(),"","");
         call.enqueue(new Callback<List<String>>() {
@@ -290,15 +289,12 @@ public class DescargaEntregaActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDoalog.dismiss();
-                Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getMessage());
-                Intent intentErrorConexion = new Intent(DescargaEntregaActivity.this, ErrorConexion.class);
-                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intentErrorConexion);
+                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
     public void PosponerEntrega(){
-        Call<List<String>> call = NetworkAdapter.getApiService().PosponerEntrega(
+        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).PosponerEntrega(
                 "iniciarentrega_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_posponer/"+MetodosSharedPreference.getSociedadPref(prs),
                 "","","");
         call.enqueue(new Callback<List<String>>() {
@@ -313,10 +309,7 @@ public class DescargaEntregaActivity extends AppCompatActivity {
             }
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
-                Log.i("ERROR SERVIDOR", "onFailure: ERROR"+t.getMessage());
-                Intent intentErrorConexion = new Intent(DescargaEntregaActivity.this, ErrorConexion.class);
-                intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intentErrorConexion);
+                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
@@ -342,6 +335,31 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         Intent i = new Intent(DescargaEntregaActivity.this, ActivityEntregas.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
+    }
+    private void MostrarDialogCustomNoConfiguracion(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.DialogErrorConexion);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialoglayout = inflater.inflate(R.layout.activity_error_conexion, null);
+        alert.setCancelable(false);
+        alert.setView(dialoglayout);
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogErrorConexion;
+        alertDialog.show();
+        final FloatingActionButton botonEntendido = (FloatingActionButton) dialoglayout.findViewById(R.id.fab_recargar_app);
+        botonEntendido.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ValidacionConexion.isConnectedWifi(getApplicationContext())||ValidacionConexion.isConnectedMobile(getApplicationContext())){
+                    if(ValidacionConexion.isOnline(getApplicationContext())){
+                        alertDialog.dismiss();
+                    }else{
+                        Toast.makeText(DescargaEntregaActivity.this, "No tienes acceso a internet", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(DescargaEntregaActivity.this, "Esta apagado tu WIFI", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
     public void Inicializador(){
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);

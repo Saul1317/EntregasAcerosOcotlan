@@ -16,6 +16,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -41,6 +42,7 @@ import com.acerosocotlan.entregasacerosocotlan.modelo.Localizacion;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
 import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
+import com.acerosocotlan.entregasacerosocotlan.modelo.ValidacionConexion;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -96,26 +98,26 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
             validacion= true;
             posicion= position;
         }
-        holder.folio_entregas.setText(entregascamionInstancia.getFolioEntrega().toString());
-        holder.entrega.setText(entregascamionInstancia.getEntrega().toString());
-        holder.txt_cliente.setText(entregascamionInstancia.getNomcliente().toString());
-        holder.txt_direccion.setText(entregascamionInstancia.getDireccion().toString());
+        holder.folio_entregas.setText(entregascamionInstancia.getFolioEntrega());
+        holder.entrega.setText(entregascamionInstancia.getEntrega());
+        holder.txt_cliente.setText(entregascamionInstancia.getNomcliente());
+        holder.txt_direccion.setText(entregascamionInstancia.getDireccion());
         holder.cardViewEntregas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (validacion==true){
                     if(entregaArrayList.get(position).getEstatus().equals("En Ruta")||entregaArrayList.get(position).getEstatus().equals("En Ruta")){
-
                     }else{
                         //METODOS SHARED PREFERENCE
-                        //Log.i("FOLIO QUE SE ALMACENARA",entregaArrayList.get(position).getFolioEntrega());
                         //Log.i("FOLIO ALMACENADO",entregaArrayList.get(position).getFolioEntrega());
+                        Log.i("FOLIO QUE SE ALMACENARA",entregaArrayList.get(position).getFolioEntrega());
                         MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregaArrayList.get(position).getFolioEntrega());
                         MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences, entregaArrayList.get(position).getFechaLlegada());
                         MetodosSharedPreference.GuardarEstatusEntrega(sharedPreferences, entregaArrayList.get(position).getEstatus());
                         DialogoConfirmacionContinuarEntrega();
                     }
                 }else{
+                    Log.i("FOLIO QUE SE ALMACENARA",entregaArrayList.get(position).getFolioEntrega());
                     MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregaArrayList.get(position).getFolioEntrega());
                     MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences, entregaArrayList.get(position).getFechaLlegada());
                     MetodosSharedPreference.GuardarEstatusEntrega(sharedPreferences, entregaArrayList.get(position).getEstatus());
@@ -158,12 +160,10 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
             }
         });
         alert.show();
-
     }
     private void DialogoConfirmacionComenzarEntrega() {
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
         alert.setMessage("Esta a punto de comenzar esta entrega, ¿Desea continuar?");
-
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
                 progressDoalog = new ProgressDialog(activity);
@@ -179,7 +179,7 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
                         localizacion.cancelarLocalizacion();
                         InsercionDatosEntrega();
                     }
-                },6000);
+                },4000);
             }
         });
 
@@ -197,10 +197,11 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                progressDoalog.dismiss();
                 ActivityCompat.requestPermissions(activity, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
             }else{
-                InsertarFormulario(
-                        MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences), String.valueOf(localizacion.getLatitude()),
+                Log.i("FOLIO QUE SE ALMACENARA",MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences));
+                InsertarFormulario(MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences), String.valueOf(localizacion.getLatitude()),
                         String.valueOf(localizacion.getLongitud()), progressDoalog, MetodosSharedPreference.getSociedadPref(sharedPreferences));
             }
         }else {
@@ -208,9 +209,13 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
                     String.valueOf(localizacion.getLongitud()), progressDoalog, MetodosSharedPreference.getSociedadPref(sharedPreferences));
         }
     }
-
     public void InsertarFormulario(String folio2, String latitud, String longitud, final ProgressDialog progressDialog, String sociedad){
-        Call<List<String>> call = NetworkAdapter.getApiService().IniciaEntrega(
+        Log.i("LOCALIZACION ALMACENADA",latitud+" "+longitud);
+        Log.i("SOCIEDAD",sociedad);
+        Log.i("FECHA QUE SE ALMACENARA",ObtenerFecha());
+        Log.i("FOLIO",folio2);
+
+        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(sharedPreferences)).IniciaEntrega(
                 "iniciarentrega_"+folio2+"_inicio/"+sociedad, ObtenerFecha(), latitud, longitud);
         call.enqueue(new Callback<List<String>>() {
             @Override
@@ -227,18 +232,37 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.i("ERRORSERVIDOR","ERROR" + t.toString());
-                abrirErrorConexion(context);
+                MostrarDialogCustomNoConfiguracion();
+            }
+        });
+    }
+    private void MostrarDialogCustomNoConfiguracion(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(activity, R.style.DialogErrorConexion);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View dialoglayout = inflater.inflate(R.layout.activity_error_conexion, null);
+        alert.setCancelable(false);
+        alert.setView(dialoglayout);
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogErrorConexion;
+        alertDialog.show();
+        final FloatingActionButton botonEntendido = (FloatingActionButton) dialoglayout.findViewById(R.id.fab_recargar_app);
+        botonEntendido.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ValidacionConexion.isConnectedWifi(context)||ValidacionConexion.isConnectedMobile(context)){
+                    if(ValidacionConexion.isOnline(context)){
+                        alertDialog.dismiss();
+                    }else{
+                        Toast.makeText(context, "No tienes acceso a internet", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(context, "Esta apagado tu WIFI", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
     private void abrirDescargas(Context context){
         Intent i = new Intent(context, DescargaEntregaActivity.class);
         activity.startActivity(i);
-    }
-    private void abrirErrorConexion(Context context){
-        Intent intentErrorConexion = new Intent(context, ErrorConexion.class);
-        intentErrorConexion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        activity.startActivity(intentErrorConexion);
     }
 }

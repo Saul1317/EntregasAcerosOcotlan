@@ -16,9 +16,11 @@ import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
 import com.acerosocotlan.entregasacerosocotlan.controlador.DescargaEntregaActivity;
+import com.acerosocotlan.entregasacerosocotlan.controlador.ErrorConexion;
 import com.acerosocotlan.entregasacerosocotlan.controlador.ScrollingRutasActivity;
 import com.acerosocotlan.entregasacerosocotlan.modelo.Camion_retrofit;
 import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
+import com.acerosocotlan.entregasacerosocotlan.modelo.ValidacionConexion;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -60,17 +62,27 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
         holder.foto_fondo_Cardview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MetodosSharedPreference.GuardarUsuarioCamion(sharedPreferences,
-                        camionInstancia.getPlacas().toString(),
-                        camionInstancia.getNombre().toString(),
-                        camionInstancia.getApellidoPaterno().toString(),
-                        camionInstancia.getFotoChofer().toString(),
-                        camionInstancia.getClaveChofer().toString(),
-                        camionInstancia.getPesoUnidad().toString(),
-                        camionInstancia.getPesoMaximo().toString());
-                Intent intent = new Intent(activity, ScrollingRutasActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                activity.startActivity(intent);
+
+                if(ValidacionConexion.isConnectedWifi(context)||ValidacionConexion.isConnectedMobile(context)){
+                    if(ValidacionConexion.isOnline(context)){
+                        MetodosSharedPreference.GuardarUsuarioCamion(sharedPreferences,
+                                camionInstancia.getPlacas(),
+                                camionInstancia.getNombre(),
+                                camionInstancia.getApellidoPaterno(),
+                                camionInstancia.getFotoChofer(),
+                                camionInstancia.getClaveChofer(),
+                                camionInstancia.getPesoUnidad(),
+                                camionInstancia.getPesoMaximo());
+                        Intent intent = new Intent(activity, ScrollingRutasActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        activity.startActivity(intent);
+                    }else{
+                        Toast.makeText(context, "No tienes acceso a internet", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(context, "Esta apagado tu WIFI", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
     }

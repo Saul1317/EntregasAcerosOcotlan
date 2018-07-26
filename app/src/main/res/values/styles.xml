@@ -76,4 +76,22 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
+    <style name="DialogErrorConexion" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowEnterAnimation">@anim/dialog_in</item>
+        <item name="android:windowExitAnimation">@anim/dialog_out</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    <style name="Edit_txt_codigo_seguridad" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorAccent">@color/texto_blanco</item>
+        <item name="colorControlNormal">@color/texto_blanco</item>
+        <item name="colorControlActivated">@color/texto_blanco</item>
+        <item name="android:textColorPrimary">@color/texto_blanco</item>
+        <item name="android:textColorHint">@color/texto_blanco</item>
+    </style>
 </resources>
