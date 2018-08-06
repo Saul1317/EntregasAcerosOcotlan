@@ -107,6 +107,7 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
             public void onClick(View view) {
                 if (validacion==true){
                     if(entregaArrayList.get(position).getEstatus().equals("En Ruta")||entregaArrayList.get(position).getEstatus().equals("En Ruta")){
+                        Toast.makeText(activity, "No se puede iniciar otra entrega", Toast.LENGTH_SHORT).show();
                     }else{
                         //METODOS SHARED PREFERENCE
                         //Log.i("FOLIO ALMACENADO",entregaArrayList.get(position).getFolioEntrega());
@@ -147,7 +148,7 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
     }
     private void DialogoConfirmacionContinuarEntrega() {
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-        alert.setMessage("Esta entrega ya fue iniciada, ¿Desea continuar?");
+        alert.setMessage("La entrega "+MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences)+" ya fue iniciada, ¿Desea continuar?");
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
                 Intent i = new Intent(context, DescargaEntregaActivity.class);
@@ -163,7 +164,7 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
     }
     private void DialogoConfirmacionComenzarEntrega() {
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-        alert.setMessage("Esta a punto de comenzar esta entrega, ¿Desea continuar?");
+        alert.setMessage("Esta a punto de comenzar la entrega "+ MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences)+", ¿Desea continuar?");
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
                 progressDoalog = new ProgressDialog(activity);
@@ -227,11 +228,14 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
                     Log.i("RESPUESTA ENTREGA",valor);
                     Toast.makeText(context,"Entrega inicida", Toast.LENGTH_LONG).show();
                     abrirDescargas(context);
+                }else{
+                    Log.i("RESPUESTA ENTREGA","No entiende respuesta");
                 }
             }
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDialog.dismiss();
+                Log.i("RESPUESTA ENTREGA",t.toString());
                 MostrarDialogCustomNoConfiguracion();
             }
         });

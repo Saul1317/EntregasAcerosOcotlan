@@ -17,6 +17,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -134,6 +135,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
     }
     public void ObtenerRuta(){
         progressDoalog.show();
+        Log.i("SOCIEDAD", MetodosSharedPreference.getSociedadPref(prs));
         Call<List<RutaCamion_retrofit>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).RutasCamiones(
                 "rutasmovil_"+MetodosSharedPreference.ObtenerPlacasPref(prs)+"/" +MetodosSharedPreference.getSociedadPref(prs));
         call.enqueue(new Callback<List<RutaCamion_retrofit>>() {

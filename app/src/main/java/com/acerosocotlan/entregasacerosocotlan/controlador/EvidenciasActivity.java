@@ -269,7 +269,6 @@ public class EvidenciasActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                progressDoalog.dismiss();
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0);

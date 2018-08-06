@@ -43,4 +43,9 @@
     <string name="instrucciones_formulario_ruta_paso1">1.-Presione para tomar una foto al kilometraje inicial</string>
     <string name="btn_txt_iniciar_ruta">3.- Enviar</string>
     <string name="instrucciones_finalizar_ruta_paso1">1.-Presione para tomar una foto al kilometraje final-</string>
+    <string name="title_activity_formulario_posponer_entrega">FormularioPosponerEntrega</string>
+    <string name="txt_posponer_empresa_entrega">Posponer por empresa</string>
+    <string name="txt_posponer_cliente_entrega">Posponer por cliente</string>
+    <string name="txt_posponer_externo_entrega">Posponer por problema externo</string>
+    <string name="txt_cancelar_entrega">Cancelar entrega</string>
 </resources>

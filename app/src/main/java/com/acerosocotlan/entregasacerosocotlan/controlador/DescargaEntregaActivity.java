@@ -63,6 +63,7 @@ public class DescargaEntregaActivity extends AppCompatActivity {
     //LOCATION
     private ProgressDialog progressDoalog;
     private Localizacion localizacion;
+    private TextView txt_id_entregas;
 
 
     @Override
@@ -377,6 +378,8 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         txt_filtro_llegada= (TextView) findViewById(R.id.txt_filtro_llegada);
         txt_filtro_descarga= (TextView) findViewById(R.id.txt_filtro_descarga);
         txt_filtro_salida= (TextView) findViewById(R.id.txt_filtro_salida);
+        txt_id_entregas= (TextView) findViewById(R.id.txt_id_entregas);
+        txt_id_entregas.setText("Esta en la entrega "+MetodosSharedPreference.ObtenerFolioEntregaPref(prs));
 
         //VISIBILIDAD FILTRO
         linear_layout_filtro_llegada.setVisibility(View.INVISIBLE);

@@ -62,6 +62,7 @@ public class ActivityEntregas extends AppCompatActivity {
     //SHARED PREFERENCE
     private SharedPreferences prs;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private TextView txt_id_ruta_entregas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,8 +89,14 @@ public class ActivityEntregas extends AppCompatActivity {
         entregaRecycler = (RecyclerView) findViewById(R.id.entregas_recycler);
         btn_finalizar_ruta = (Button) findViewById(R.id.btn_finalizar_ruta);
         btn_finalizar_ruta.setEnabled(false);
+        txt_id_ruta_entregas = (TextView) findViewById(R.id.txt_id_ruta_entregas);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeLayout);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAzulGoogle);
+
+        progressDoalog = new ProgressDialog(ActivityEntregas.this);
+        progressDoalog.setMessage("Preparando los datos");
+        progressDoalog.setCancelable(false);
+        progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ObtenerEntrega();
@@ -100,10 +107,6 @@ public class ActivityEntregas extends AppCompatActivity {
     }
     //RETROFIT2
     public void ObtenerEntrega(){
-        progressDoalog = new ProgressDialog(ActivityEntregas.this);
-        progressDoalog.setMessage("Preparando los datos");
-        progressDoalog.setCancelable(false);
-        progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDoalog.show();
         Call<List<EntregasCamion_retrofit>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).EntregasCamiones(
                 "entregasmovil_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"/"+MetodosSharedPreference.getSociedadPref(prs));
@@ -117,6 +120,7 @@ public class ActivityEntregas extends AppCompatActivity {
                     if(entrega_retrofit.isEmpty()){
                         btn_finalizar_ruta.setEnabled(true);
                     }else{
+                        txt_id_ruta_entregas.setText("Esta en la ruta "+MetodosSharedPreference.ObtenerFolioRutaPref(prs));
                         LlenarRecyclerView(entrega_retrofit);
                     }
                 }

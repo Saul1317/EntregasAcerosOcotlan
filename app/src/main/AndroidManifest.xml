@@ -84,6 +84,10 @@
             android:label="@string/title_activity_error_conexion"
             android:screenOrientation="portrait"
             android:theme="@style/pantalla_completa" />
+        <activity
+            android:name=".controlador.FormularioPosponerEntrega"
+            android:label="@string/title_activity_formulario_posponer_entrega"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

@@ -155,11 +155,9 @@ public class FormularioActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                progressDoalog.dismiss();
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0);
-                    Toast.makeText(getApplicationContext(),valor, Toast.LENGTH_LONG).show();
                     if (valor.equals("iniciada")){
                         ObtenerListaAvisos();
                         InsertarFotoInicioRuta();

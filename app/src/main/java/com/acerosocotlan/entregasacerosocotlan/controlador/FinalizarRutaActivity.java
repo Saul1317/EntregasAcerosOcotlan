@@ -101,7 +101,7 @@ public class FinalizarRutaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (imagen==null){
-                    DialogoValidacion();
+                    DialogoValidacionFoto();
                 }else{
                     if(txt_kilometraje.getText().toString().isEmpty()){
                         DialogoValidacion();
@@ -251,7 +251,6 @@ public class FinalizarRutaActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                progressDoalog.dismiss();
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0);

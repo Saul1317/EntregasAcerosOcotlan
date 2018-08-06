@@ -58,7 +58,7 @@ public class SelectorActivity extends AppCompatActivity {
     private String txtprueba2;
     private ProgressDialog progressDoalog;
 
-    String [] sociedad= {"Arandas","Autlan","Ayotlan","Bajio","DAO","GAO","Ixtapa","La Cienega",
+    String [] sociedad= {"Arandas","Autlan","Ayotlan","Bajio","DAO","GAO","GAO_resp","Ixtapa","La Cienega",
             "Laminas del Norte","Los Altos","Mucha Lamina","Pacifico","Pega","Saabsa","Tepa", "Tijuana","Zula"};
 
     String [] adapter_arandas= {"Arandas"};
@@ -115,7 +115,11 @@ public class SelectorActivity extends AppCompatActivity {
                 } else if (spinner.equals("GAO")){
                     SA = new Spinner_Adaptador(getApplicationContext(),adapter_gao);
                     spinner_sucursal.setAdapter(SA);
-                } else if (spinner.equals("Ixtapa")){
+                }else if (spinner.equals("GAO_resp")){
+                    SA = new Spinner_Adaptador(getApplicationContext(),adapter_gao);
+                    spinner_sucursal.setAdapter(SA);
+                }
+                else if (spinner.equals("Ixtapa")){
                     SA = new Spinner_Adaptador(getApplicationContext(),adapter_ixtapa);
                     spinner_sucursal.setAdapter(SA);
                 } else if (spinner.equals("La Cienega")){
