@@ -110,7 +110,7 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
                         Toast.makeText(activity, "No se puede iniciar otra entrega", Toast.LENGTH_SHORT).show();
                     }else{
                         //METODOS SHARED PREFERENCE
-                        //Log.i("FOLIO ALMACENADO",entregaArrayList.get(position).getFolioEntrega());
+                        Log.i("ESTATUS",entregaArrayList.get(position).getEstatus());
                         Log.i("FOLIO QUE SE ALMACENARA",entregaArrayList.get(position).getFolioEntrega());
                         MetodosSharedPreference.GuardarFolioEntrega(sharedPreferences, entregaArrayList.get(position).getFolioEntrega());
                         MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences, entregaArrayList.get(position).getFechaLlegada());

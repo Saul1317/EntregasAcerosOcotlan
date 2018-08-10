@@ -43,7 +43,7 @@
                 android:textSize="20sp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
-                android:text="En sitio"
+                android:text="@string/txt_en_sitio"
                 android:textStyle="bold"
                 android:textColor="@color/texto_blanco"/>
             <LinearLayout
@@ -62,7 +62,7 @@
                 android:visibility="invisible"
                 android:textSize="60sp"
                 android:layout_gravity="center"
-                android:text="Listo"
+                android:text="@string/txt_listo"
                 android:textStyle="bold"
                 android:textColor="@color/texto_blanco"/>
         </FrameLayout>
@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:layout_gravity="center_horizontal"
-                android:text="Descargando"
+                android:text="@string/txt_descargando"
                 android:layout_marginTop="10dp"
                 android:textStyle="bold"
                 android:textColor="@color/texto_blanco"/>
@@ -100,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="60sp"
                 android:layout_gravity="center"
-                android:text="Listo"
+                android:text="@string/txt_listo"
                 android:textStyle="bold"
                 android:visibility="invisible"
                 android:textColor="@color/texto_blanco"/>
@@ -121,7 +121,7 @@
                 android:textSize="20sp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
-                android:text="Salida"
+                android:text="@string/txt_salida"
                 android:textStyle="bold"
                 android:textColor="@color/texto_blanco"/>
             <LinearLayout
@@ -139,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="60sp"
                 android:layout_gravity="center"
-                android:text="Listo"
+                android:text="@string/txt_listo"
                 android:textStyle="bold"
                 android:visibility="invisible"
                 android:textColor="@color/texto_blanco"/>

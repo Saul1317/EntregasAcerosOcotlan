@@ -4,28 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.acerosocotlan.entregasacerosocotlan.controlador.ScrollingRutasActivity">
     <item
-        android:id="@+id/posponer_entrega"
-        android:orderInCategory="100"
-        android:title="@string/posponer"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/posponer_empresa_entrega"
-        android:orderInCategory="100"
-        android:title="@string/txt_posponer_empresa_entrega"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/posponer_cliente_entrega"
-        android:orderInCategory="100"
-        android:title="@string/txt_posponer_cliente_entrega"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/posponer_externo_entrega"
-        android:orderInCategory="100"
-        android:title="@string/txt_posponer_externo_entrega"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/cancelar_entrega"
-        android:orderInCategory="100"
-        android:title="@string/txt_cancelar_entrega"
-        app:showAsAction="never" />
+        android:id="@+id/menu_entregas"
+        android:icon="@drawable/ic_menu"
+        android:orderInCategory="3"
+        android:title="Problemas"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/posponer_entrega"
+                android:orderInCategory="100"
+                android:title="@string/txt_posponer_empresa_entrega"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/posponer_cliente_entrega"
+                android:orderInCategory="100"
+                android:title="@string/txt_posponer_cliente_entrega"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/posponer_externo_entrega"
+                android:orderInCategory="100"
+                android:title="@string/txt_posponer_externo_entrega"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/cancelar_entrega"
+                android:orderInCategory="100"
+                android:title="@string/txt_cancelar_entrega"
+                app:showAsAction="never" />
+        </menu>
+    </item>
 </menu>

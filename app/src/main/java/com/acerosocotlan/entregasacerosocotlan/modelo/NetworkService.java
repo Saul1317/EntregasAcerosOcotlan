@@ -16,6 +16,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 /**
@@ -46,6 +47,20 @@ public interface NetworkService {
     Call<List<String>> InsertarFoto(@Url String url,
                             @Part MultipartBody.Part file,
                             @Part("name") RequestBody name);
+    @Multipart
+    @POST
+    Call<List<String>> InsertarFotoEvidencia(@Url String url,
+                                             @Part MultipartBody.Part file,
+                                             @Part("name") RequestBody name);
+
+    @FormUrlEncoded
+    @POST
+    Call<List<String>> InsertarEvidencia(@Url String url,
+                                             @Field("tipo") String Tipo_posponer,
+                                             @Field("ruta") String id_ruta,
+                                             @Field("fecha") String fecha,
+                                             @Field("latitud") String latitud,
+                                             @Field("longitud") String longitud);
 
     @FormUrlEncoded
     @POST
@@ -60,6 +75,13 @@ public interface NetworkService {
                                                      @Field("fecha") String fecha,
                                                      @Field("latitud") String latitud,
                                                      @Field("longitud") String longitud);
+    @FormUrlEncoded
+    @POST
+    Call<List<String>> RegresarEstadoEntrega(@Url String url,
+                                                @Field("identrega") String id_entreg,
+                                                @Field("idchofer") String id_chofer,
+                                                @Field("chofer") String chofer,
+                                                @Field("placas") String placas);
     @FormUrlEncoded
     @POST
     Call<List<String>> LlegadaEntrega(@Url String url,

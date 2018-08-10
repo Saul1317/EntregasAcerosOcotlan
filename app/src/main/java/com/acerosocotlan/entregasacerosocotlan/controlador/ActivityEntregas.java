@@ -99,6 +99,7 @@ public class ActivityEntregas extends AppCompatActivity {
         progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        txt_id_ruta_entregas.setText("Esta en la ruta "+MetodosSharedPreference.ObtenerFolioRutaPref(prs));
         ObtenerEntrega();
     }
     public void NuevaActividad(){
@@ -120,7 +121,6 @@ public class ActivityEntregas extends AppCompatActivity {
                     if(entrega_retrofit.isEmpty()){
                         btn_finalizar_ruta.setEnabled(true);
                     }else{
-                        txt_id_ruta_entregas.setText("Esta en la ruta "+MetodosSharedPreference.ObtenerFolioRutaPref(prs));
                         LlenarRecyclerView(entrega_retrofit);
                     }
                 }

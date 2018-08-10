@@ -65,7 +65,6 @@ public class DescargaEntregaActivity extends AppCompatActivity {
     private Localizacion localizacion;
     private TextView txt_id_entregas;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,18 +105,17 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         }
     }
     private void ValidacionEstadoBoton() {
+        Log.i("ESTADO",MetodosSharedPreference.ObtenerEstatusEntregaPref(prs));
         switch (MetodosSharedPreference.ObtenerEstatusEntregaPref(prs)) {
             case "En Ruta":
                 btn_ensitio_camion.setEnabled(true);
                 btn_descarga_camion.setEnabled(false);
                 btn_finalizacion_camion.setEnabled(false);
-                Log.i("ESTADO DE LA ENTREGA", "TODO HABILITADO: "+ MetodosSharedPreference.ObtenerEstatusEntregaPref(prs));
                 break;
             case "Proximo":
                 btn_ensitio_camion.setEnabled(true);
                 btn_descarga_camion.setEnabled(false);
                 btn_finalizacion_camion.setEnabled(false);
-                Log.i("ESTADO DE LA ENTREGA", "TODO HABILITADO: "+ MetodosSharedPreference.ObtenerEstatusEntregaPref(prs));
                 break;
             case "En sitio":
                 btn_ensitio_camion.setEnabled(false);
@@ -127,7 +125,6 @@ public class DescargaEntregaActivity extends AppCompatActivity {
                 linear_layout_filtro_llegada.setVisibility(View.VISIBLE);
                 txt_filtro_llegada.setVisibility(View.VISIBLE);
                 btn_ensitio_camion.setEnabled(false);
-                Log.i("ESTADO DE LA ENTREGA", "ESTAS EN SITIO, YA PUEDES DESCARGAR: "+ MetodosSharedPreference.ObtenerEstatusEntregaPref(prs));
                 break;
             case "Descargando":
                 btn_ensitio_camion.setEnabled(false);
@@ -142,7 +139,6 @@ public class DescargaEntregaActivity extends AppCompatActivity {
                 linear_layout_filtro_descarga.setVisibility(View.VISIBLE);
                 txt_filtro_descarga.setVisibility(View.VISIBLE);
                 btn_descarga_camion.setEnabled(false);
-                Log.i("ESTADO DE LA ENTREGA", "ESTAS DESCARGANDO, YA PUEDES FINALIZAR: "+ MetodosSharedPreference.ObtenerEstatusEntregaPref(prs));
                 break;
             case "Entregado":
                 btn_ensitio_camion.setEnabled(false);
@@ -161,8 +157,6 @@ public class DescargaEntregaActivity extends AppCompatActivity {
                 linear_layout_filtro_salida.setVisibility(View.VISIBLE);
                 txt_filtro_salida.setVisibility(View.VISIBLE);
                 btn_finalizacion_camion.setEnabled(false);
-                Log.i("ESTADO DE LA ENTREGA", "YA FUE FINALIZADA: "+ MetodosSharedPreference.ObtenerEstatusEntregaPref(prs));
-
                 break;
             default:
                 break;
@@ -228,7 +222,7 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         alert.setMessage("Esta a punto de posponer la entrega, desea continuar?");
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
-                PosponerEntrega();
+                //PosponerEntrega();
             }
         });
 
@@ -237,6 +231,11 @@ public class DescargaEntregaActivity extends AppCompatActivity {
             }
         });
         alert.show();
+    }
+    private void AbrirFormularioPosponer(String valor) {
+        Intent i = new Intent(DescargaEntregaActivity.this, FormularioPosponerEntrega.class);
+        i.putExtra("posponer_razon",valor);
+        startActivity(i);
     }
     //OBTENER DATOS
     public String ObtenerFecha(){
@@ -294,27 +293,6 @@ public class DescargaEntregaActivity extends AppCompatActivity {
             }
         });
     }
-    public void PosponerEntrega(){
-        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).PosponerEntrega(
-                "iniciarentrega_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_posponer/"+MetodosSharedPreference.getSociedadPref(prs),
-                "","","");
-        call.enqueue(new Callback<List<String>>() {
-            @Override
-            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                if(response.isSuccessful()){
-                    Intent i = new Intent(DescargaEntregaActivity.this, ActivityEntregas.class);
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(i);
-                }else{
-                }
-            }
-            @Override
-            public void onFailure(Call<List<String>> call, Throwable t) {
-                MostrarDialogCustomNoConfiguracion();
-            }
-        });
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_entregas, menu);
@@ -324,18 +302,54 @@ public class DescargaEntregaActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.posponer_entrega:
-                DialogoConfirmacionPosponerEntrega();
+                AbrirFormularioPosponer("gao");
+                return true;
+            case R.id.posponer_cliente_entrega:
+                AbrirFormularioPosponer("cliente");
+                return true;
+            case R.id.posponer_externo_entrega:
+                AbrirFormularioPosponer("otros");
+                return true;
+            case R.id.cancelar_entrega:
+                regresarEntrega();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-    @Override
-    public void onBackPressed()
-    {
+    private void regresarEntrega() {
+        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).RegresarEstadoEntrega(
+                "regresarentrega/"+MetodosSharedPreference.getSociedadPref(prs),
+                MetodosSharedPreference.ObtenerFolioEntregaPref(prs),
+                MetodosSharedPreference.ObtenerClaveChoferPref(prs),
+                MetodosSharedPreference.ObtenerNombrePref(prs)+" "+MetodosSharedPreference.ObtenerApellidoPref(prs),
+                MetodosSharedPreference.ObtenerPlacasPref(prs));
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                if(response.isSuccessful()){
+                    List<String> respuesta = response.body();
+                    Log.i("Respuesta_regresar", respuesta.get(0));
+                    AbrirEntregas();
+                }else{
+                }
+            }
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                progressDoalog.dismiss();
+                MostrarDialogCustomNoConfiguracion();
+            }
+        });
+    }
+    private void AbrirEntregas() {
         Intent i = new Intent(DescargaEntregaActivity.this, ActivityEntregas.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
+    }
+    @Override
+    public void onBackPressed()
+    {
+        AbrirEntregas();
     }
     private void MostrarDialogCustomNoConfiguracion(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.DialogErrorConexion);
@@ -366,21 +380,17 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         btn_descarga_camion = (ImageButton) findViewById(R.id.boton_descarga_camion);
         btn_finalizacion_camion = (ImageButton) findViewById(R.id.boton_finalizacion_descarga);
         btn_ensitio_camion= (ImageButton) findViewById(R.id.boton_ensitio_camion);
-
         linear_layout_filtro_llegada= (LinearLayout) findViewById(R.id.linear_layout_filtro_llegada);
         linear_layout_filtro_descarga= (LinearLayout) findViewById(R.id.linear_layout_filtro_descarga);
         linear_layout_filtro_salida= (LinearLayout) findViewById(R.id.linear_layout_filtro_salida);
-
         txt_filtro_llegada= (TextView) findViewById(R.id.txt_filtro_llegada);
         txt_filtro_descarga= (TextView) findViewById(R.id.txt_filtro_descarga);
         txt_filtro_salida= (TextView) findViewById(R.id.txt_filtro_salida);
         txt_id_entregas= (TextView) findViewById(R.id.txt_id_entregas);
         txt_id_entregas.setText("Esta en la entrega "+MetodosSharedPreference.ObtenerFolioEntregaPref(prs));
-
         //VISIBILIDAD FILTRO
         linear_layout_filtro_llegada.setVisibility(View.INVISIBLE);
         linear_layout_filtro_descarga.setVisibility(View.INVISIBLE);

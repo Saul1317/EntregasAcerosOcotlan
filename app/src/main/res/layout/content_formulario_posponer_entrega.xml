@@ -7,5 +7,62 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".controlador.FormularioPosponerEntrega"
     tools:showIn="@layout/activity_formulario_posponer_entrega">
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/margen_ventana"
+        android:weightSum="1">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/instrucciones_formulario_posponer_ruta_paso1"
+                android:textSize="17sp"/>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/img_evidencia_posponer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="16dp"
+                    android:src="@drawable/instagram"/>
+                <ImageView
+                    android:id="@+id/circulo_evidencia_posponer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:src="@drawable/circulo"/>
+            </FrameLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7"
+            android:gravity="bottom"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/instrucciones_formulario_posponer_advertencia"
+                android:textSize="14sp"
+                android:textColor="@color/texto_rojo"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="5dp"/>
+            <Button
+                android:id="@+id/btn_posponer_entrega"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_txt_posponer_ruta"
+                android:layout_gravity="bottom"
+                android:theme="@style/Boton_enviar_formulario" />
+        </LinearLayout>
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

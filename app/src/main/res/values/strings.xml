@@ -43,9 +43,19 @@
     <string name="instrucciones_formulario_ruta_paso1">1.-Presione para tomar una foto al kilometraje inicial</string>
     <string name="btn_txt_iniciar_ruta">3.- Enviar</string>
     <string name="instrucciones_finalizar_ruta_paso1">1.-Presione para tomar una foto al kilometraje final-</string>
-    <string name="title_activity_formulario_posponer_entrega">FormularioPosponerEntrega</string>
-    <string name="txt_posponer_empresa_entrega">Posponer por empresa</string>
+    <string name="title_activity_formulario_posponer_entrega">Posponer entregar</string>
+    <string name="txt_posponer_empresa_entrega">Posponer GAO</string>
     <string name="txt_posponer_cliente_entrega">Posponer por cliente</string>
-    <string name="txt_posponer_externo_entrega">Posponer por problema externo</string>
-    <string name="txt_cancelar_entrega">Cancelar entrega</string>
+    <string name="txt_posponer_externo_entrega">Posponer por otros</string>
+    <string name="txt_cancelar_entrega">Regresar entrega</string>
+    <string name="finalizar_ruta">Finalizar Ruta</string>
+    <string name="txt_en_sitio">En sitio</string>
+    <string name="txt_listo">Listo</string>
+    <string name="txt_descargando">Descargando</string>
+    <string name="txt_salida">Salida</string>
+    <string name="txt_codigo_titulo">Código</string>
+    <string name="txt_ingresar">Ingresar</string>
+    <string name="instrucciones_formulario_posponer_ruta_paso1">1.-Tomar una foto de evidencia para poder posponer la entrega</string>
+    <string name="instrucciones_formulario_posponer_advertencia">ADVERTENCIA: esta foto servirá para evidenciar la razón por la que se pospuso la entrega, la foto no deberá ser inapropiada para el publico</string>
+    <string name="btn_txt_posponer_ruta">2.- Posponer</string>
 </resources>

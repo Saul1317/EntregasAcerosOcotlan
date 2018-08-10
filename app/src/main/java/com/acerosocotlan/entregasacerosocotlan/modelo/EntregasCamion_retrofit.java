@@ -47,8 +47,11 @@ public class EntregasCamion_retrofit {
     @SerializedName("direccion")
     @Expose
     private String direccion;
+    @SerializedName("regresado")
+    @Expose
+    private String regresado;
 
-    public EntregasCamion_retrofit(String folioEntrega, String sucursal, String folioRuta, String entrega, String fechaInicio, String fechaLlegada, String fechaSalida, String comentarios, String estatus, String kgTotal, String pedido) {
+    public EntregasCamion_retrofit(String folioEntrega, String sucursal, String folioRuta, String entrega, String fechaInicio, String fechaLlegada, String fechaSalida, String comentarios, String estatus, String kgTotal, String pedido, String nomcliente, String direccion, String regresado) {
         this.folioEntrega = folioEntrega;
         this.sucursal = sucursal;
         this.folioRuta = folioRuta;
@@ -60,6 +63,9 @@ public class EntregasCamion_retrofit {
         this.estatus = estatus;
         this.kgTotal = kgTotal;
         this.pedido = pedido;
+        this.nomcliente = nomcliente;
+        this.direccion = direccion;
+        this.regresado = regresado;
     }
 
     public String getFolioEntrega() {
@@ -166,6 +172,14 @@ public class EntregasCamion_retrofit {
         this.direccion = direccion;
     }
 
+    public String getRegresado() {
+        return regresado;
+    }
+
+    public void setRegresado(String regresado) {
+        this.regresado = regresado;
+    }
+
     @Override
     public String toString() {
         return "EntregasCamion_retrofit{" +
@@ -182,6 +196,7 @@ public class EntregasCamion_retrofit {
                 ", pedido='" + pedido + '\'' +
                 ", nomcliente='" + nomcliente + '\'' +
                 ", direccion='" + direccion + '\'' +
+                ", regresado='" + regresado + '\'' +
                 '}';
     }
 }
