@@ -40,6 +40,14 @@
                     android:layout_height="wrap_content"
                     android:visibility="invisible"
                     android:src="@drawable/circulo"/>
+                <ImageView
+                    android:id="@+id/img_formulario_recargar_foto1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_close"
+                    android:layout_gravity="center"
+                    android:background="@drawable/boton_redondo"
+                    android:visibility="gone"/>
             </FrameLayout>
         </LinearLayout>
         <LinearLayout
@@ -58,6 +66,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:maxLength="7"
                     android:inputType="number">
                 </android.support.design.widget.TextInputEditText>
             </android.support.design.widget.TextInputLayout>

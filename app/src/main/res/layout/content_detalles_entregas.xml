@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".controlador.DetallesEntregas"
+    tools:showIn="@layout/activity_detalles_entregas">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            app:cardBackgroundColor="@color/colorAzulGoogle">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="bottom"
+                android:layout_margin="15dp">
+                <TextView
+                    android:id="@+id/txt_detalle_folio_entrega"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:text="Folio de Entrega"
+                    android:textSize="30sp"
+                    android:textColor="@color/texto_blanco"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/txt_detalle_entrega_pedido"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="@color/texto_blanco"
+                    android:text="Entrega / Pedido: " />
+                <TextView
+                    android:id="@+id/txt_detalle_ruta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="@color/texto_blanco"
+                    android:text="Pertenece a la Ruta 23" />
+                <TextView
+                    android:id="@+id/txt_detalle_estatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="@color/texto_blanco"
+                    android:text="Estatus: Sin Iniciar" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nombre del cliente"
+                android:textColor="@color/primary_text"
+                android:textStyle="bold"
+                android:textSize="@dimen/dim_txt_titulos_detalles_entrega"/>
+            <TextView
+                android:id="@+id/txt_detalle_cliente"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/dim_txt_contenido_detalles_entrega"
+                android:text="ESTRUCTURAS JAMAR, S.A. DE C.V."
+                android:layout_marginBottom="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/dim_txt_titulos_detalles_entrega"
+                android:text="Dirección del cliente"
+                android:textColor="@color/primary_text"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/txt_detalle_direccion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/dim_txt_contenido_detalles_entrega"
+                android:text="SAN ENRIQUE #1390 VALLE DE LA MISERICORDIA TLAQUEPAQUE,JALISCO,MEXICO"
+                android:layout_marginBottom="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/dim_txt_titulos_detalles_entrega"
+                android:text="Comentarios"
+                android:textColor="@color/primary_text"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/txt_detalle_comentario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/dim_txt_contenido_detalles_entrega"
+                android:text="RECIBE MIRIAM DE 8 A 6PM 333312492420. (PPD)\r\ENTREGAR CERTIFICADOS DE CALIDAD\ USO CFDI (G01)\r\"
+                android:layout_marginBottom="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/dim_txt_titulos_detalles_entrega"
+                android:text="Material"
+                android:textColor="@color/primary_text"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp"/>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/material_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

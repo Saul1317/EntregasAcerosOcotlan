@@ -36,7 +36,7 @@ public class Localizacion {
     //DATOS EXTERNOS
     private Location location;
     private LocationManager locationManager;
-    double longitudeBest, latitudeBest;
+    double longitudeBest = 0.0, latitudeBest = 0.0;
     private Context context;
 
     public Localizacion(Context context) {

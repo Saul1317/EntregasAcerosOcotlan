@@ -79,6 +79,46 @@ public class MetodosSharedPreference {
         editor.apply();
     }
 
+    public static void GuardarClienteEntrega(SharedPreferences prs,String folio){
+        SharedPreferences.Editor editor = prs.edit();
+        editor.putString("cliente_entrega", folio);
+        editor.apply();
+    }
+
+    public static String ObtenerClienteEntregaPref(SharedPreferences prs){
+        return prs.getString("cliente_entrega",null);
+    }
+
+    public static void GuardarDireccionEntrega(SharedPreferences prs,String folio){
+        SharedPreferences.Editor editor = prs.edit();
+        editor.putString("direccion_entrega", folio);
+        editor.apply();
+    }
+
+    public static void GuardarComentarioEntrega(SharedPreferences prs,String folio){
+        SharedPreferences.Editor editor = prs.edit();
+        editor.putString("comentario_entrega", folio);
+        editor.apply();
+    }
+
+    public static String ObtenerComentarioEntregaPref(SharedPreferences prs){
+        return prs.getString("comentario_entrega",null);
+    }
+
+    public static String ObtenerDireccionEntregaPref(SharedPreferences prs){
+        return prs.getString("direccion_entrega",null);
+    }
+
+    public static void GuardarEntregaPedido(SharedPreferences prs,String folio){
+        SharedPreferences.Editor editor = prs.edit();
+        editor.putString("entrega_pedido", folio);
+        editor.apply();
+    }
+
+    public static String ObtenerEntregaPedido(SharedPreferences prs){
+        return prs.getString("entrega_pedido",null);
+    }
+
     public static void GuardarFechasEntrega(SharedPreferences prs,String llegada){
         SharedPreferences.Editor editor = prs.edit();
         editor.putString("fecha_entrega_llegada", llegada);

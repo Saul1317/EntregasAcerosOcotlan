@@ -1,6 +1,7 @@
 package com.acerosocotlan.entregasacerosocotlan.controlador;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,6 +23,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
@@ -35,7 +37,10 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.R;
@@ -49,8 +54,10 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -67,173 +74,228 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class EvidenciasActivity extends AppCompatActivity {
 
-    //VIEWS
-    private ImageView imagenEvidencia;
-    private Button boton_finalizar_entrega_camion;
-    //RUTAS DE LA CAMARA
-    private String CARPETA_RAIZ="acerosOcotlan/";
-    private String RUTA_IMAGEN = CARPETA_RAIZ+"evidencia";
-    private String path;
-    private final int COD_TOMAR_FOTO=20;
-    private final int COD_SELECCIONA_FOTO=10;
-    private File imagen;
-    //DATOS EXTERNOS
-    static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-    private Calendar calendar;
-    //SHARED PREFERENCE
+    private static final int REQUEST_CAMERA = 1;
+    LinearLayout linear_layout_descripcion, linear_layout_descripcion1, linear_layout_descripcion2, linear_layout_descripcion3;
+    FrameLayout foto_acuse_recibo,  foto_evidencia1, foto_evidencia2, foto_evidencia3;
+    ImageView img_acuse_recibo, img_evidecia1, img_evidecia2, img_evidecia3,
+    img_recargar_foto1, img_recargar_foto2, img_recargar_foto3, img_recargar_foto4;
+    TextView txt_evidencia1,txt_evidencia2,txt_evidencia3;
+    TextInputEditText text_comentario_evidencia;
+    Button btn_mandar_fotos_finalizar_entrega;
     private SharedPreferences prs;
-    //INSTANCIA
-    private Localizacion localizacion;
+    private String fotoPathTemp = "";
+    private String pathAcuseRecibo = "";
+    private String pathEvidencia1 = "";
+    private String pathEvidencia2 = "";
+    private String pathEvidencia3 = "";
     private ProgressDialog progressDoalog;
-    private Animation circulo_animacion;
-    private ImageView circulo;
+    private int numEvidencia;
+    private Calendar calendar;
+    static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    private Localizacion localizacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_evidencias);
-        Inicializador();
-        boton_finalizar_entrega_camion.setOnClickListener(new View.OnClickListener() {
+        InicializadorView();
+
+        foto_acuse_recibo.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                if (imagen==null){
-                    DialogoValidacionFoto();
-                }else{
-                    if (ValidarPermisosGPS()==true){
-                        DialogoConfirmacion();
-                    }else {
-                        ActivityCompat.requestPermissions(EvidenciasActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
-                    }
-                }
-            }
-        });
-        imagenEvidencia.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
+                numEvidencia=1;
                 EjecutarPermisosCamara();
             }
         });
+
+        foto_evidencia1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                numEvidencia=2;
+                EjecutarPermisosCamara();
+
+            }
+        });
+
+        foto_evidencia2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                numEvidencia=3;
+                EjecutarPermisosCamara();
+            }
+        });
+
+        foto_evidencia3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                numEvidencia=4;
+                EjecutarPermisosCamara();
+            }
+        });
+
+        btn_mandar_fotos_finalizar_entrega.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!pathAcuseRecibo.isEmpty()){
+                    DialogoConfirmacion();
+                }else{
+                    Toast.makeText(EvidenciasActivity.this, "Necesita tomar la foto del recibo", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
-    //CAMARA
+    private void InicializadorView() {
+        prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
+        foto_acuse_recibo = (FrameLayout) findViewById(R.id.foto_acuse_recibo);
+        text_comentario_evidencia= (TextInputEditText) findViewById(R.id.text_comentario_evidencia);
+        linear_layout_descripcion = (LinearLayout) findViewById(R.id.linear_layout_descripcion);
+        linear_layout_descripcion1 = (LinearLayout) findViewById(R.id.linear_layout_descripcion1);
+        linear_layout_descripcion2 = (LinearLayout) findViewById(R.id.linear_layout_descripcion2);
+        linear_layout_descripcion3 = (LinearLayout) findViewById(R.id.linear_layout_descripcion3);
+        foto_evidencia1 = (FrameLayout) findViewById(R.id.foto_evidencia1);
+        foto_evidencia2 = (FrameLayout) findViewById(R.id.foto_evidencia2);
+        foto_evidencia3 = (FrameLayout) findViewById(R.id.foto_evidencia3);
+        img_acuse_recibo= (ImageView) findViewById(R.id.img_acuse_recibo);
+        img_evidecia1 = (ImageView) findViewById(R.id.img_evidecia1);
+        img_evidecia2 = (ImageView) findViewById(R.id.img_evidecia2);
+        img_evidecia3 = (ImageView) findViewById(R.id.img_evidecia3);
+        img_recargar_foto1 =(ImageView) findViewById(R.id.img_recargar_foto1);
+        img_recargar_foto2 =(ImageView) findViewById(R.id.img_recargar_foto2);
+        img_recargar_foto3 =(ImageView) findViewById(R.id.img_recargar_foto3);
+        img_recargar_foto4 =(ImageView) findViewById(R.id.img_recargar_foto4);
+        txt_evidencia1 = (TextView) findViewById(R.id.txt_evidencia1);
+        txt_evidencia2 = (TextView) findViewById(R.id.txt_evidencia2);
+        txt_evidencia3 = (TextView) findViewById(R.id.txt_evidencia3);
+        btn_mandar_fotos_finalizar_entrega =(Button) findViewById(R.id.btn_mandar_fotos_finalizar_entrega);
+        foto_evidencia1.setEnabled(false);
+        foto_evidencia1.setVisibility(View.INVISIBLE);
+        foto_evidencia2.setEnabled(false);
+        foto_evidencia2.setVisibility(View.INVISIBLE);
+        foto_evidencia3.setEnabled(false);
+        foto_evidencia3.setVisibility(View.INVISIBLE);
+        progressDoalog = new ProgressDialog(EvidenciasActivity.this);
+        progressDoalog.setMessage("Mandando los datos, espere un poco");
+        progressDoalog.setCancelable(false);
+        progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    }
     private void EjecutarPermisosCamara(){
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(EvidenciasActivity.this, new String[]{WRITE_EXTERNAL_STORAGE,CAMERA},100);
             }else{
-                TomarImagen();
+                TomarFoto();
             }
         }else {
-            TomarImagen();
+            TomarFoto();
         }
     }
-    private void TomarImagen(){
-        File fileImagen = new File(Environment.getExternalStorageDirectory(), RUTA_IMAGEN);
-        boolean existencia = fileImagen.exists();
-        String nombreImagen="";
-        if (existencia==false){
-            existencia = fileImagen.mkdirs();
-        }
-        if (existencia==true){
-            nombreImagen= (System.currentTimeMillis()/1000)+".png";
-        }
-        path = Environment.getExternalStorageDirectory()+File.separator+RUTA_IMAGEN+File.separator+nombreImagen;
-        imagen = new File(path);
-        Intent intent=null;
-        intent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    private void TomarFoto() {
+        Intent intentTomarFoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intentTomarFoto.resolveActivity(getApplicationContext().getPackageManager()) != null){
 
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
-        {
-            String authorities=getApplicationContext().getPackageName()+".provider";
-            Uri imageUri= FileProvider.getUriForFile(this,authorities,imagen);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        }else
-        {
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imagen));
+            File archivoFoto = null;
+            try {
+                archivoFoto = crearImagen();
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            if (archivoFoto!= null){
+                String authorities=getApplicationContext().getPackageName()+".provider";
+                Uri imageUri= FileProvider.getUriForFile(this,authorities,archivoFoto);
+                intentTomarFoto.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intentTomarFoto, REQUEST_CAMERA);
+            }
         }
-        startActivityForResult(intent,COD_TOMAR_FOTO);
+    }
+    private File crearImagen() throws IOException {
+        String timeStamp =  new SimpleDateFormat("yyyyMMdd_HH-mm-ss").format(new Date());
+        String archivoNombreImagen = "JPG_" + timeStamp +"_";
+        File storageDir = getApplicationContext().getExternalFilesDir("FotosEvidencias");
+
+        File foto = File.createTempFile(archivoNombreImagen, ".jpg", storageDir);
+        fotoPathTemp = foto.getAbsolutePath();
+        Log.i("PathTemp", fotoPathTemp);
+        return foto;
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==RESULT_OK){}
-        switch (requestCode){
-            case COD_TOMAR_FOTO:
-                MediaScannerConnection.scanFile(getApplicationContext(), new String[]{path}, null, new MediaScannerConnection.OnScanCompletedListener() {
-                    @Override
-                    public void onScanCompleted(String s, Uri uri) {
-
-                    }
-                });
-                setPic();
-
-                break;
-            case COD_SELECCIONA_FOTO:
-                Uri miPath = data.getData();
-                path= miPath.getPath();
-                Toast.makeText(this, path, Toast.LENGTH_SHORT).show();
-                break;
+        //super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode== REQUEST_CAMERA && resultCode == Activity.RESULT_OK){
+            MostrarFoto();
         }
     }
-    private void setPic() {
-        int targetW = imagenEvidencia.getWidth();
-        int targetH = imagenEvidencia.getHeight();
+    private void MostrarFoto() {
+        int targetW = img_acuse_recibo.getWidth();
+        int targetH = img_acuse_recibo.getHeight();
 
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(path, bmOptions);
+        BitmapFactory.decodeFile(fotoPathTemp, bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
 
         // Determine how much to scale down the image
         int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
         bmOptions.inPurgeable = true;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(path, bmOptions);
+        Bitmap bitmap = BitmapFactory.decodeFile(fotoPathTemp, bmOptions);
         if (bitmap!=null) {
-            imagenEvidencia.setImageBitmap(bitmap);
+            switch (numEvidencia)
+            {
+                case 1:
+                    img_acuse_recibo.setImageBitmap(bitmap);
+                    pathAcuseRecibo = fotoPathTemp;
+                    foto_evidencia1.setEnabled(true);
+                    foto_evidencia1.setVisibility(View.VISIBLE);
+                    img_recargar_foto1.setVisibility(View.VISIBLE);
+                    linear_layout_descripcion.setVisibility(View.GONE);
+                    break;
+                case 2:
+                    img_evidecia1.setImageBitmap(bitmap);
+                    pathEvidencia1 = fotoPathTemp;
+                    foto_evidencia2.setEnabled(true);
+                    foto_evidencia2.setVisibility(View.VISIBLE);
+                    img_recargar_foto2.setVisibility(View.VISIBLE);
+                    linear_layout_descripcion1.setVisibility(View.GONE);
+                    break;
+                case 3:
+                    img_evidecia2.setImageBitmap(bitmap);
+                    pathEvidencia2 = fotoPathTemp;
+                    foto_evidencia3.setEnabled(true);
+                    foto_evidencia3.setVisibility(View.VISIBLE);
+                    img_recargar_foto3.setVisibility(View.VISIBLE);
+                    linear_layout_descripcion2.setVisibility(View.GONE);
+                    break;
+                case 4:
+                    img_evidecia3.setImageBitmap(bitmap);
+                    pathEvidencia3 = fotoPathTemp;
+                    img_recargar_foto4.setVisibility(View.VISIBLE);
+                    linear_layout_descripcion3.setVisibility(View.GONE);
+                    break;
+            }
         }else{
             return;
         }
     }
-    //ACTIVITY
-    private void Inicializador(){
-        prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        imagenEvidencia =(ImageView) findViewById(R.id.imagen_evidencia);
-        boton_finalizar_entrega_camion= (Button) findViewById(R.id.btn_finalizar_descarga_entrega);
-        circulo = (ImageView) findViewById(R.id.circulo);
-        circulo_animacion = AnimationUtils.loadAnimation(this,R.anim.circulo_animacion);
-        circulo.setVisibility(View.VISIBLE);
-        circulo.startAnimation(circulo_animacion);
-        circulo.setVisibility(View.INVISIBLE);
-    }
-    private void NuevaActividad(){
-        Intent i = new Intent(EvidenciasActivity.this, ActivityEntregas.class);
-        startActivity(i);
-    }
-    private void DialogoConfirmacion(){
+    public void DialogoConfirmacion(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setMessage("Esta a punto de informar su salida, desea continuar?");
+        alert.setMessage("Esta a punto de finalizar la entrega ¿Desea continuar?");
+
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
-                progressDoalog = new ProgressDialog(EvidenciasActivity.this);
-                progressDoalog.setMessage("Preparando los datos");
-                progressDoalog.setCancelable(false);
-                progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progressDoalog.show();
                 localizacion = new Localizacion(getApplicationContext());
                 localizacion.ObtenerMejorLocalizacion();
+                progressDoalog.show();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        localizacion.cancelarLocalizacion();
                         InsertarSalidaCamion();
+                        localizacion.cancelarLocalizacion();
                     }
                 },4000);
             }
@@ -241,31 +303,20 @@ public class EvidenciasActivity extends AppCompatActivity {
 
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.dismiss();
             }
         });
         alert.show();
     }
-    //OBTENER DATOS
-    private String ObtenerFecha(){
-        calendar = Calendar.getInstance();
-        return simpleDateFormat.format(calendar.getTime()).toString();
-    }
-    private boolean ValidarPermisosGPS(){
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }else{
-                return true;
-            }
-        }else {
-            return true;
-        }
-    }
-    //RETROFIT2
     private void InsertarSalidaCamion(){
+        String comentarios = text_comentario_evidencia.getText().toString();
+        if (comentarios.isEmpty()){
+            comentarios = "-";
+        }
+
         Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).SalidaEntrega(
-                "iniciarentrega_"+ MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_salida/"+MetodosSharedPreference.getSociedadPref(prs),
-                ObtenerFecha(), String.valueOf(localizacion.getLatitude()), String.valueOf(localizacion.getLongitud()), "-");
+                "iniciarentrega_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_salida/"+MetodosSharedPreference.getSociedadPref(prs),
+                ObtenerFecha(), String.valueOf(localizacion.getLatitude()), String.valueOf(localizacion.getLongitud()),comentarios);
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
@@ -273,22 +324,45 @@ public class EvidenciasActivity extends AppCompatActivity {
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0);
                     if (valor.equals("correcto")){
-                        InsertarFotoRecibo();
+                        MandarFotos();
+                    }else{
+                        progressDoalog.dismiss();
                     }
                 }else{
+                    progressDoalog.dismiss();
                 }
             }
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDoalog.dismiss();
-                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
+    private void MandarFotos() {
+        if(!pathAcuseRecibo.isEmpty()){
+            InsertarFotoRecibo();
+            if(!pathEvidencia1.isEmpty()){
+                InsertarFotoEvidencia1();
+            }
+
+            if(!pathEvidencia2.isEmpty()){
+                InsertarFotoEvidencia2();
+            }
+
+            if(!pathEvidencia3.isEmpty()){
+                InsertarFotoEvidencia3();
+            }
+        }else{
+            Toast.makeText(EvidenciasActivity.this, "Necesitas tomar la foto del recibo", Toast.LENGTH_SHORT).show();
+        }
+    }
     private void InsertarFotoRecibo(){
-        RequestBody mFile = RequestBody.create(MediaType.parse("image/*"), ComprimidorArchivo.getCompressedImageFile(imagen));
-        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", imagen.getName(), mFile);
-        RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), imagen.getName());
+        File foto_AcuseRecibo = new File(pathAcuseRecibo);
+
+        RequestBody mFile = RequestBody.create(MediaType.parse("image/*"), ComprimidorArchivo.getCompressedImageFile(foto_AcuseRecibo));
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", foto_AcuseRecibo.getName(), mFile);
+        RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), foto_AcuseRecibo.getName());
+
         Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).InsertarFoto(
                 "foto_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"_recibo_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"/"+MetodosSharedPreference.getSociedadPref(prs),
                 fileToUpload,
@@ -296,26 +370,144 @@ public class EvidenciasActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                if(response.isSuccessful()){
+                    progressDoalog.dismiss();
+                    List<String> respuesta = response.body();
+                    String valor = respuesta.get(0);
+                    if (valor.equals("fotoguardada")){
+                        Toast.makeText(getApplicationContext(),"Se completo la entrega", Toast.LENGTH_LONG).show();
+                        EliminarFoto();
+                        Intent i = new Intent(EvidenciasActivity.this, ActivityEntregas.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(i);
+                    }else{
+                        progressDoalog.dismiss();
+                    }
+                }else{
+                    progressDoalog.dismiss();
+                }
+            }
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                Log.i("FOTO",t.getMessage());
+                MostrarDialogCustomNoConfiguracion();
                 progressDoalog.dismiss();
+            }
+        });
+    }
+    private void InsertarFotoEvidencia1(){
+        File foto_evidencia1 = new File(pathEvidencia1);
+
+        RequestBody mFile = RequestBody.create(MediaType.parse("image/*"), ComprimidorArchivo.getCompressedImageFile(foto_evidencia1));
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", foto_evidencia1.getName(), mFile);
+        RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), foto_evidencia1.getName());
+
+        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).InsertarFoto(
+                "foto_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"_evidencia1_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"/"+MetodosSharedPreference.getSociedadPref(prs),
+                fileToUpload,
+                filename);
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 if(response.isSuccessful()){
                     List<String> respuesta = response.body();
                     String valor = respuesta.get(0);
                     if (valor.equals("fotoguardada")){
                         Toast.makeText(getApplicationContext(),"Se completo la entrega", Toast.LENGTH_LONG).show();
-                        NuevaActividad();
                     }else{
-                        Toast.makeText(EvidenciasActivity.this, valor, Toast.LENGTH_SHORT).show();
+
                     }
                 }else{
                 }
             }
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
-                progressDoalog.dismiss();
                 Log.i("FOTO",t.getMessage());
                 MostrarDialogCustomNoConfiguracion();
             }
         });
+    }
+    private void InsertarFotoEvidencia2(){
+        File foto_evidencia2 = new File(pathEvidencia2);
+
+        RequestBody mFile = RequestBody.create(MediaType.parse("image/*"), ComprimidorArchivo.getCompressedImageFile(foto_evidencia2));
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", foto_evidencia2.getName(), mFile);
+        RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), foto_evidencia2.getName());
+
+        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).InsertarFoto(
+                "foto_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"_evidencia2_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"/"+MetodosSharedPreference.getSociedadPref(prs),
+                fileToUpload,
+                filename);
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                if(response.isSuccessful()){
+                    List<String> respuesta = response.body();
+                    String valor = respuesta.get(0);
+                    if (valor.equals("fotoguardada")){
+                        Toast.makeText(getApplicationContext(),"Se completo la entrega", Toast.LENGTH_LONG).show();
+                    }else{
+
+                    }
+                }else{
+                }
+            }
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                Log.i("FOTO",t.getMessage());
+                MostrarDialogCustomNoConfiguracion();
+            }
+        });
+    }
+    private void InsertarFotoEvidencia3(){
+        File foto_evidencia3 = new File(pathEvidencia3);
+
+        RequestBody mFile = RequestBody.create(MediaType.parse("image/*"), ComprimidorArchivo.getCompressedImageFile(foto_evidencia3));
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", foto_evidencia3.getName(), mFile);
+        RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), foto_evidencia3.getName());
+
+        Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).InsertarFoto(
+                "foto_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"_evidencia3_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"/"+MetodosSharedPreference.getSociedadPref(prs),
+                fileToUpload,
+                filename);
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                if(response.isSuccessful()){
+                    List<String> respuesta = response.body();
+                    String valor = respuesta.get(0);
+                    if (valor.equals("fotoguardada")){
+                        Toast.makeText(getApplicationContext(),"Se completo la entrega", Toast.LENGTH_LONG).show();
+                    }else{
+
+                    }
+                }else{
+                }
+            }
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                Log.i("FOTO",t.getMessage());
+                MostrarDialogCustomNoConfiguracion();
+            }
+        });
+    }
+    private String ObtenerFecha(){
+        calendar = Calendar.getInstance();
+        return simpleDateFormat.format(calendar.getTime()).toString();
+    }
+    public void EliminarFoto(){
+        File dir = getApplicationContext().getExternalFilesDir("FotosEvidencias");
+        //comprueba si es directorio.
+        if (dir.isDirectory())
+        {
+            //obtiene un listado de los archivos contenidos en el directorio.
+            String[] hijos = dir.list();
+            //Elimina los archivos contenidos.
+            for (int i = 0; i < hijos.length; i++)
+            {
+                new File(dir, hijos[i]).delete();
+            }
+        }
     }
     private void MostrarDialogCustomNoConfiguracion(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.DialogErrorConexion);
@@ -342,14 +534,4 @@ public class EvidenciasActivity extends AppCompatActivity {
             }
         });
     }
-    private void DialogoValidacionFoto() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setMessage("Falta ingresar la fotografia del acuse de recibo");
-        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int whichButton) {
-            }
-        });
-        alert.show();
-    }
-
 }

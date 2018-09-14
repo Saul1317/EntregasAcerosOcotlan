@@ -47,6 +47,7 @@
             android:name=".controlador.EvidenciasActivity"
             android:label="@string/title_activity_evidencias"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".controlador.ScrollingRutasActivity"
@@ -68,7 +69,6 @@
             android:label="@string/title_activity_finalizar_ruta"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -78,7 +78,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
         <activity
             android:name=".controlador.ErrorConexion"
             android:label="@string/title_activity_error_conexion"
@@ -87,7 +86,18 @@
         <activity
             android:name=".controlador.FormularioPosponerEntrega"
             android:label="@string/title_activity_formulario_posponer_entrega"
-            android:theme="@style/AppTheme"></activity>
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".controlador.DetallesEntregas"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".controlador.PruebaNuevaGaleria"
+            android:windowSoftInputMode="stateHidden|adjustPan"/>
+        <activity
+            android:name=".controlador.SinEntregasActivity"
+            android:label="@string/title_activity_sin_entregas"
+            android:theme="@style/AppTheme">
+        </activity>
     </application>
-
 </manifest>

@@ -28,6 +28,7 @@
     <string name="cardview_entregas_txt_entrega">Entrega</string>
     <string name="cardview_entregas_txt_cliente">Cliente</string>
     <string name="cardview_entregas_txt_direccion">Dirección</string>
+    <string name="cardview_entregas_txt_telefono">Telefono</string>
     <string name="cardview_rutas_txt_folio">Ruta</string>
     <string name="cardview_rutas_txt_folio_respuesta">folio</string>
     <string name="cardview_rutas_txt_numero_entregas">Entregas Programadas: </string>
@@ -42,9 +43,9 @@
     <string name="btn_instrucciones_formulario_paso2">2.-Finalizar Entrega</string>
     <string name="instrucciones_formulario_ruta_paso1">1.-Presione para tomar una foto al kilometraje inicial</string>
     <string name="btn_txt_iniciar_ruta">3.- Enviar</string>
-    <string name="instrucciones_finalizar_ruta_paso1">1.-Presione para tomar una foto al kilometraje final-</string>
+    <string name="instrucciones_finalizar_ruta_paso1">1.-Cuando este de regreso en la sucursal presione para tomar una foto al kilometraje final</string>
     <string name="title_activity_formulario_posponer_entrega">Posponer entregar</string>
-    <string name="txt_posponer_empresa_entrega">Posponer GAO</string>
+    <string name="txt_posponer_empresa_entrega">Posponer por GAO</string>
     <string name="txt_posponer_cliente_entrega">Posponer por cliente</string>
     <string name="txt_posponer_externo_entrega">Posponer por otros</string>
     <string name="txt_cancelar_entrega">Regresar entrega</string>
@@ -56,6 +57,12 @@
     <string name="txt_codigo_titulo">Código</string>
     <string name="txt_ingresar">Ingresar</string>
     <string name="instrucciones_formulario_posponer_ruta_paso1">1.-Tomar una foto de evidencia para poder posponer la entrega</string>
-    <string name="instrucciones_formulario_posponer_advertencia">ADVERTENCIA: esta foto servirá para evidenciar la razón por la que se pospuso la entrega, la foto no deberá ser inapropiada para el publico</string>
+    <string name="instrucciones_formulario_posponer_advertencia">ADVERTENCIA: esta foto servirá para evidenciar la razón por la que se pospuso la entrega, la foto no deberá ser inapropiada para el público</string>
     <string name="btn_txt_posponer_ruta">2.- Posponer</string>
+    <string name="title_activity_detalles_entregas">DetallesEntregas</string>
+    <string name="txt_recibo">Acuse de recibo</string>
+    <string name="txt_evidencia_foto">Tomar evidencia</string>
+    <string name="txt_nueva_evidencia_foto">Nueva evidencia</string>
+    <string name="comentario_evidencia">Comentarios</string>
+    <string name="title_activity_sin_entregas">SinEntregasActivity</string>
 </resources>

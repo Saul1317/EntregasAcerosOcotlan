@@ -9,6 +9,7 @@ import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
@@ -38,9 +39,8 @@ public class SplashV2 extends AppCompatActivity {
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         Intent intentSelector = new Intent(SplashV2.this,SelectorActivity.class);
         Intent intentRutas = new Intent(SplashV2.this, ScrollingRutasActivity.class);
-        if (TextUtils.isEmpty(MetodosSharedPreference.getSociedadPref(prs))
-                && TextUtils.isEmpty(MetodosSharedPreference.getSucursalPref(prs))
-                && TextUtils.isEmpty(MetodosSharedPreference.ObtenerPlacasPref(prs))){
+        Intent intentPrueba = new Intent(SplashV2.this, SinEntregasActivity.class);
+        if (TextUtils.isEmpty(MetodosSharedPreference.getSucursalPref(prs)) || TextUtils.isEmpty(MetodosSharedPreference.ObtenerPlacasPref(prs))){
             startActivity(intentSelector);
         }else{
             startActivity(intentRutas);

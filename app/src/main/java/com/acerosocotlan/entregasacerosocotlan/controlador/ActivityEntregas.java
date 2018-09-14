@@ -56,7 +56,6 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 public class ActivityEntregas extends AppCompatActivity {
     //VIEWS
     private RecyclerView entregaRecycler;
-    private Button btn_finalizar_ruta;
     //DATOS EXTERNOS
     ProgressDialog progressDoalog;
     //SHARED PREFERENCE
@@ -69,12 +68,6 @@ public class ActivityEntregas extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entregas);
         Inicializador();
-        btn_finalizar_ruta.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NuevaActividad();
-            }
-        });
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -87,8 +80,6 @@ public class ActivityEntregas extends AppCompatActivity {
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         MetodosSharedPreference.BorrarFolioEntrega(prs);
         entregaRecycler = (RecyclerView) findViewById(R.id.entregas_recycler);
-        btn_finalizar_ruta = (Button) findViewById(R.id.btn_finalizar_ruta);
-        btn_finalizar_ruta.setEnabled(false);
         txt_id_ruta_entregas = (TextView) findViewById(R.id.txt_id_ruta_entregas);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeLayout);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAzulGoogle);
@@ -102,8 +93,9 @@ public class ActivityEntregas extends AppCompatActivity {
         txt_id_ruta_entregas.setText("Esta en la ruta "+MetodosSharedPreference.ObtenerFolioRutaPref(prs));
         ObtenerEntrega();
     }
-    public void NuevaActividad(){
-        Intent i = new Intent(ActivityEntregas.this, FinalizarRutaActivity.class);
+    public void AbrirSinEntregas(){
+        Intent i = new Intent(ActivityEntregas.this, SinEntregasActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
     }
     //RETROFIT2
@@ -119,7 +111,7 @@ public class ActivityEntregas extends AppCompatActivity {
                     swipeRefreshLayout.setRefreshing(false);
                     List<EntregasCamion_retrofit> entrega_retrofit = response.body();
                     if(entrega_retrofit.isEmpty()){
-                        btn_finalizar_ruta.setEnabled(true);
+                        AbrirSinEntregas();
                     }else{
                         LlenarRecyclerView(entrega_retrofit);
                     }
@@ -167,8 +159,7 @@ public class ActivityEntregas extends AppCompatActivity {
         });
     }
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         Intent i = new Intent(ActivityEntregas.this, ScrollingRutasActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);

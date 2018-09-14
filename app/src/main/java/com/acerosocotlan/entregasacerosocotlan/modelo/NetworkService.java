@@ -34,6 +34,8 @@ public interface NetworkService {
     Call<List<EntregasCamion_retrofit>> EntregasCamiones(@Url String url);
     @POST
     Call<List<InformacionAvisos_retrofit>> ObtenerInformacionParaAviso(@Url String url);
+    @POST
+    Call<Prueba_retrofit> EjecutarCodigoRastreo(@Url String url);
 
     @FormUrlEncoded
     @POST
@@ -60,7 +62,8 @@ public interface NetworkService {
                                              @Field("ruta") String id_ruta,
                                              @Field("fecha") String fecha,
                                              @Field("latitud") String latitud,
-                                             @Field("longitud") String longitud);
+                                             @Field("longitud") String longitud,
+                                             @Field("comentarios") String comentarios);
 
     @FormUrlEncoded
     @POST
@@ -115,4 +118,7 @@ public interface NetworkService {
     Call<Prueba_retrofit> Solicitarprueba(@Url String fileUrl,
                                           @Field("user") String user,
                                           @Field("pass") String pass);
+    @POST
+    Call<List<Detalles_entregas_retrofit>> MaterialEntrega(@Url String fileUrl);
+
 }

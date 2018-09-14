@@ -1,6 +1,7 @@
 package com.acerosocotlan.entregasacerosocotlan.controlador;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -47,8 +48,10 @@ import com.acerosocotlan.entregasacerosocotlan.modelo.RutaCamion_retrofit;
 import com.acerosocotlan.entregasacerosocotlan.modelo.ValidacionConexion;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -65,26 +68,19 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class FinalizarRutaActivity extends AppCompatActivity {
 
-    //VIEWS
-    private ImageView imagenEvidencia,circulo_finalizar_ruta;
-    private Animation circulo_animacion;
-    private Button botonEnviar;
+    private static final int REQUEST_CAMERA = 1;
+    private ImageView imagenEvidencia,circulo_finalizar_ruta,img_finalizar_recargar_foto1;
     private EditText txt_kilometraje;
-    //DATOS EXTERNOS
+    private Button botonEnviar;
+    private String fotoPathTemp = "";
+    private String pathKilometraje = "";
+    private Animation circulo_animacion;
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private Calendar calendar;
-    //RUTAS DE LA CAMARA
-    private String CARPETA_RAIZ="acerosOcotlan/";
-    private String RUTA_IMAGEN = CARPETA_RAIZ+"evidencia";
-    private String path;
-    private final int COD_TOMAR_FOTO=20;
-    private final int COD_SELECCIONA_FOTO=10;
-    private File imagen;
-    //SHARED PREFERENCE
     private SharedPreferences prs;
-    //INSTANCIA
     private Localizacion localizacion;
     private ProgressDialog progressDoalog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +96,7 @@ public class FinalizarRutaActivity extends AppCompatActivity {
         botonEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (imagen==null){
+                if (pathKilometraje.isEmpty()){
                     DialogoValidacionFoto();
                 }else{
                     if(txt_kilometraje.getText().toString().isEmpty()){
@@ -122,6 +118,7 @@ public class FinalizarRutaActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         imagenEvidencia =(ImageView) findViewById(R.id.imagen_formulario_finalizar);
+        img_finalizar_recargar_foto1 =(ImageView) findViewById(R.id.img_finalizar_recargar_foto1);
         botonEnviar= (Button) findViewById(R.id.btn_enviar_formulario_finalizar);
         txt_kilometraje = (EditText)findViewById(R.id.text_input_layout_kilometraje_finalizar);
         circulo_finalizar_ruta = (ImageView) findViewById(R.id.circulo_finalizar_ruta);
@@ -140,7 +137,7 @@ public class FinalizarRutaActivity extends AppCompatActivity {
         alert.show();
     }
     //OBTENER DATOS
-   public String ObtenerFecha(){
+    public String ObtenerFecha(){
         calendar = Calendar.getInstance();
         return simpleDateFormat.format(calendar.getTime()).toString();
     }
@@ -153,91 +150,6 @@ public class FinalizarRutaActivity extends AppCompatActivity {
             }
         }else {
             return true;
-        }
-    }
-    //CAMARA
-    private void EjecutarPermisosCamara(){
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(FinalizarRutaActivity.this, new String[]{WRITE_EXTERNAL_STORAGE,CAMERA},100);
-            }else{
-                TomarImagen();
-            }
-        }else {
-            TomarImagen();
-        }
-    }
-    private void TomarImagen(){
-        File fileImagen = new File(Environment.getExternalStorageDirectory(), RUTA_IMAGEN);
-        boolean existencia = fileImagen.exists();
-        String nombreImagen="";
-        if (existencia==false){
-            existencia = fileImagen.mkdirs();
-        }
-        if (existencia==true){
-            nombreImagen= (System.currentTimeMillis()/1000)+".png";
-        }
-        path = Environment.getExternalStorageDirectory()+File.separator+RUTA_IMAGEN+File.separator+nombreImagen;
-        imagen = new File(path);
-        Intent intent=null;
-        intent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
-        {
-            String authorities=getApplicationContext().getPackageName()+".provider";
-            Uri imageUri= FileProvider.getUriForFile(this,authorities,imagen);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        }else
-        {
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imagen));
-        }
-        startActivityForResult(intent,COD_TOMAR_FOTO);
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==RESULT_OK){}
-        switch (requestCode){
-            case COD_TOMAR_FOTO:
-                MediaScannerConnection.scanFile(getApplicationContext(), new String[]{path}, null, new MediaScannerConnection.OnScanCompletedListener() {
-                    @Override
-                    public void onScanCompleted(String s, Uri uri) {
-                        Log.i("Ruta de almacenamiento","Path: "+path);
-                    }
-                });
-                setPic();
-                break;
-            case COD_SELECCIONA_FOTO:
-                Uri miPath = data.getData();
-                path= miPath.getPath();
-                Toast.makeText(this, path, Toast.LENGTH_SHORT).show();
-                break;
-        }
-    }
-    private void setPic() {
-        int targetW = imagenEvidencia.getWidth();
-        int targetH = imagenEvidencia.getHeight();
-
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(path, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(path, bmOptions);
-        if (bitmap!=null) {
-            imagenEvidencia.setImageBitmap(bitmap);
-        }else{
-            return;
         }
     }
     //Retrofit2
@@ -269,9 +181,11 @@ public class FinalizarRutaActivity extends AppCompatActivity {
         });
     }
     private void InsertarFotoFinalizarRuta(){
-        RequestBody mFile = RequestBody.create(MediaType.parse("image/*"), ComprimidorArchivo.getCompressedImageFile(imagen));
-        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", imagen.getName(), mFile);
-        RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), imagen.getName());
+        File foto_evidencia = new File(pathKilometraje);
+        RequestBody mFile = RequestBody.create(MediaType.parse("image/*"), ComprimidorArchivo.getCompressedImageFile(foto_evidencia));
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", foto_evidencia.getName(), mFile);
+        RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), foto_evidencia.getName());
+
         Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).InsertarFoto(
                 "foto_"+MetodosSharedPreference.ObtenerFolioRutaPref(prs)+"_finalizada_0/"+MetodosSharedPreference.getSociedadPref(prs),
                 fileToUpload,
@@ -285,6 +199,7 @@ public class FinalizarRutaActivity extends AppCompatActivity {
                     String valor = respuesta.get(0);
                     if (valor.equals("fotoguardada")){
                         Toast.makeText(getApplicationContext(),"Se completo la ruta", Toast.LENGTH_LONG).show();
+                        EliminarFoto();
                         Intent i = new Intent(FinalizarRutaActivity.this, ScrollingRutasActivity.class);
                         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(i);
@@ -364,5 +279,94 @@ public class FinalizarRutaActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    private void EjecutarPermisosCamara(){
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(FinalizarRutaActivity.this, new String[]{WRITE_EXTERNAL_STORAGE,CAMERA},100);
+            }else{
+                TomarFoto();
+            }
+        }else {
+            TomarFoto();
+        }
+    }
+    private void TomarFoto() {
+        Intent intentTomarFoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intentTomarFoto.resolveActivity(getApplicationContext().getPackageManager()) != null){
+
+            File archivoFoto = null;
+            try {
+                archivoFoto = crearImagen();
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            if (archivoFoto!= null){
+                String authorities=getApplicationContext().getPackageName()+".provider";
+                Uri imageUri= FileProvider.getUriForFile(this,authorities,archivoFoto);
+                intentTomarFoto.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intentTomarFoto, REQUEST_CAMERA);
+            }
+        }
+    }
+    private File crearImagen() throws IOException {
+        String timeStamp =  new SimpleDateFormat("yyyyMMdd_HH-mm-ss").format(new Date());
+        String archivoNombreImagen = "JPG_" + timeStamp +"_";
+        File storageDir = getApplicationContext().getExternalFilesDir("FotosEvidencias");
+
+        File foto = File.createTempFile(archivoNombreImagen, ".jpg", storageDir);
+        fotoPathTemp = foto.getAbsolutePath();
+        Log.i("PathTemp", fotoPathTemp);
+        return foto;
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode== REQUEST_CAMERA && resultCode == Activity.RESULT_OK){
+            MostrarFoto();
+        }
+    }
+    private void MostrarFoto() {
+        int targetW = imagenEvidencia.getWidth();
+        int targetH = imagenEvidencia.getHeight();
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(fotoPathTemp, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(fotoPathTemp, bmOptions);
+        if (bitmap!=null) {
+            imagenEvidencia.setImageBitmap(bitmap);
+            pathKilometraje = fotoPathTemp;
+            img_finalizar_recargar_foto1.setVisibility(View.VISIBLE);
+        }else{
+            return;
+        }
+    }
+    public void EliminarFoto(){
+        File dir = getApplicationContext().getExternalFilesDir("FotosEvidencias");
+        //comprueba si es directorio.
+        if (dir.isDirectory())
+        {
+            //obtiene un listado de los archivos contenidos en el directorio.
+            String[] hijos = dir.list();
+            //Elimina los archivos contenidos.
+            for (int i = 0; i < hijos.length; i++)
+            {
+                new File(dir, hijos[i]).delete();
+            }
+        }
     }
 }
