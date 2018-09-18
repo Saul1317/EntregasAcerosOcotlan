@@ -20,9 +20,9 @@ import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 
 public class SplashV2 extends AppCompatActivity {
     private SharedPreferences prs;
-    Animation nubesAnimacion, carroAnimacion, textoAnimacion;
-    LinearLayout textoLayout;
-    FrameLayout nubesLayout, carroLayout;
+    private Animation nubesAnimacion, carroAnimacion, textoAnimacion;
+    private LinearLayout textoLayout;
+    private FrameLayout nubesLayout, carroLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +39,7 @@ public class SplashV2 extends AppCompatActivity {
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         Intent intentSelector = new Intent(SplashV2.this,SelectorActivity.class);
         Intent intentRutas = new Intent(SplashV2.this, ScrollingRutasActivity.class);
-        Intent intentPrueba = new Intent(SplashV2.this, SinEntregasActivity.class);
+        Intent intentPrueba = new Intent(SplashV2.this, DetallesRutas.class);
         if (TextUtils.isEmpty(MetodosSharedPreference.getSucursalPref(prs)) || TextUtils.isEmpty(MetodosSharedPreference.ObtenerPlacasPref(prs))){
             startActivity(intentSelector);
         }else{

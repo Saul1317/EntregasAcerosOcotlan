@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -52,9 +53,9 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 public class DescargaEntregaActivity extends AppCompatActivity {
 
     //VIEWS
-    ImageButton btn_descarga_camion, btn_finalizacion_camion, btn_ensitio_camion;
-    LinearLayout  linear_layout_filtro_llegada, linear_layout_filtro_descarga, linear_layout_filtro_salida;
-    TextView txt_filtro_llegada, txt_filtro_descarga, txt_filtro_salida;
+    private ImageButton btn_descarga_camion, btn_finalizacion_camion, btn_ensitio_camion;
+    private LinearLayout  linear_layout_filtro_llegada, linear_layout_filtro_descarga, linear_layout_filtro_salida;
+    private TextView txt_filtro_llegada, txt_filtro_descarga, txt_filtro_salida;
     //DATOS EXTERNOS
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private Calendar calendar;
@@ -64,6 +65,7 @@ public class DescargaEntregaActivity extends AppCompatActivity {
     private ProgressDialog progressDoalog;
     private Localizacion localizacion;
     private TextView txt_id_entregas;
+    private Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +75,7 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         btn_ensitio_camion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                vibrator.vibrate(50);
                 if (ValidarPermisosGPS()==true){
                     DialogoConfirmacion();
                 }else {
@@ -83,17 +86,45 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         btn_descarga_camion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                vibrator.vibrate(50);
                 DialogoConfirmacionDescargarEntrega();
             }
         });
         btn_finalizacion_camion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                vibrator.vibrate(50);
                 NuevaActividad();
             }
         });
     }
-    public boolean ValidarPermisosGPS(){
+    private void Inicializador(){
+        prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        btn_descarga_camion = (ImageButton) findViewById(R.id.boton_descarga_camion);
+        btn_finalizacion_camion = (ImageButton) findViewById(R.id.boton_finalizacion_descarga);
+        btn_ensitio_camion= (ImageButton) findViewById(R.id.boton_ensitio_camion);
+        linear_layout_filtro_llegada= (LinearLayout) findViewById(R.id.linear_layout_filtro_llegada);
+        linear_layout_filtro_descarga= (LinearLayout) findViewById(R.id.linear_layout_filtro_descarga);
+        linear_layout_filtro_salida= (LinearLayout) findViewById(R.id.linear_layout_filtro_salida);
+        txt_filtro_llegada= (TextView) findViewById(R.id.txt_filtro_llegada);
+        txt_filtro_descarga= (TextView) findViewById(R.id.txt_filtro_descarga);
+        txt_filtro_salida= (TextView) findViewById(R.id.txt_filtro_salida);
+        txt_id_entregas= (TextView) findViewById(R.id.txt_id_entregas);
+        txt_id_entregas.setText("Esta en la entrega "+MetodosSharedPreference.ObtenerFolioEntregaPref(prs));
+        //VISIBILIDAD FILTRO
+        linear_layout_filtro_llegada.setVisibility(View.INVISIBLE);
+        linear_layout_filtro_descarga.setVisibility(View.INVISIBLE);
+        linear_layout_filtro_salida.setVisibility(View.INVISIBLE);
+        //VISIBILIDAD TEXTO Del filtro
+        txt_filtro_llegada.setVisibility(View.INVISIBLE);
+        txt_filtro_descarga.setVisibility(View.INVISIBLE);
+        txt_filtro_salida.setVisibility(View.INVISIBLE);
+        ValidacionEstadoBoton();
+    }
+    private boolean ValidarPermisosGPS(){
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return false;
@@ -174,7 +205,7 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
                 progressDoalog = new ProgressDialog(DescargaEntregaActivity.this);
-                progressDoalog.setMessage("Preparando los datos");
+                progressDoalog.setMessage("Mandando la información");
                 progressDoalog.setCancelable(false);
                 progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDoalog.show();
@@ -243,7 +274,7 @@ public class DescargaEntregaActivity extends AppCompatActivity {
         return simpleDateFormat.format(calendar.getTime()).toString();
     }
     //RETROFIT2
-    public void InsertarLlegadaCamion(){
+    private void InsertarLlegadaCamion(){
         Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).LlegadaEntrega(
                 "iniciarentrega_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_ensitio/"+MetodosSharedPreference.getSociedadPref(prs),//llegada
                 ObtenerFecha(),
@@ -269,7 +300,7 @@ public class DescargaEntregaActivity extends AppCompatActivity {
             }
         });
     }
-    public void InsertarDescargaCamion(){
+    private void InsertarDescargaCamion(){
         Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).DescargarEntrega(
                 "iniciarentrega_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_llegada/"+MetodosSharedPreference.getSociedadPref(prs),
                 ObtenerFecha(),"","");
@@ -375,30 +406,5 @@ public class DescargaEntregaActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-    public void Inicializador(){
-        prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        btn_descarga_camion = (ImageButton) findViewById(R.id.boton_descarga_camion);
-        btn_finalizacion_camion = (ImageButton) findViewById(R.id.boton_finalizacion_descarga);
-        btn_ensitio_camion= (ImageButton) findViewById(R.id.boton_ensitio_camion);
-        linear_layout_filtro_llegada= (LinearLayout) findViewById(R.id.linear_layout_filtro_llegada);
-        linear_layout_filtro_descarga= (LinearLayout) findViewById(R.id.linear_layout_filtro_descarga);
-        linear_layout_filtro_salida= (LinearLayout) findViewById(R.id.linear_layout_filtro_salida);
-        txt_filtro_llegada= (TextView) findViewById(R.id.txt_filtro_llegada);
-        txt_filtro_descarga= (TextView) findViewById(R.id.txt_filtro_descarga);
-        txt_filtro_salida= (TextView) findViewById(R.id.txt_filtro_salida);
-        txt_id_entregas= (TextView) findViewById(R.id.txt_id_entregas);
-        txt_id_entregas.setText("Esta en la entrega "+MetodosSharedPreference.ObtenerFolioEntregaPref(prs));
-        //VISIBILIDAD FILTRO
-        linear_layout_filtro_llegada.setVisibility(View.INVISIBLE);
-        linear_layout_filtro_descarga.setVisibility(View.INVISIBLE);
-        linear_layout_filtro_salida.setVisibility(View.INVISIBLE);
-        //VISIBILIDAD TEXTO Del filtro
-        txt_filtro_llegada.setVisibility(View.INVISIBLE);
-        txt_filtro_descarga.setVisibility(View.INVISIBLE);
-        txt_filtro_salida.setVisibility(View.INVISIBLE);
-        ValidacionEstadoBoton();
     }
 }

@@ -65,4 +65,7 @@
     <string name="txt_nueva_evidencia_foto">Nueva evidencia</string>
     <string name="comentario_evidencia">Comentarios</string>
     <string name="title_activity_sin_entregas">SinEntregasActivity</string>
+    <string name="title_activity_detalles_rutas">DetallesRutas</string>
+    <string name="txt_instrucciones_detalle_ruta">Esta ruta contiene las siguientes 6 entregas, para comenzar esta ruta presione el botón verde que dice iniciar si quiere regresar a la pantalla de las rutas presione el botón rojo</string>
+    <string name="txt_boton_redondo_iniciar">Iniciar</string>
 </resources>

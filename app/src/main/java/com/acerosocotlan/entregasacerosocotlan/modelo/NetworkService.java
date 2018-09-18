@@ -33,6 +33,8 @@ public interface NetworkService {
     @POST
     Call<List<EntregasCamion_retrofit>> EntregasCamiones(@Url String url);
     @POST
+    Call<List<Detalles_Ruta_retrofit>> EntregasDisponibles(@Url String url);
+    @POST
     Call<List<InformacionAvisos_retrofit>> ObtenerInformacionParaAviso(@Url String url);
     @POST
     Call<Prueba_retrofit> EjecutarCodigoRastreo(@Url String url);

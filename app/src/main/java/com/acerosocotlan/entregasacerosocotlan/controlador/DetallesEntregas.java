@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -46,10 +47,11 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 public class DetallesEntregas extends AppCompatActivity {
 
     private RecyclerView material_recycler;
-    FloatingActionButton fab, fab_regresar;
+    private FloatingActionButton fab, fab_regresar;
     private SharedPreferences prs;
     private ProgressDialog progressDoalog;
     private Localizacion localizacion;
+    private Vibrator vibrator;
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private Calendar calendar;
     private TextView txt_detalle_folio_entrega, txt_detalle_entrega_pedido,
@@ -64,6 +66,7 @@ public class DetallesEntregas extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                vibrator.vibrate(50);
                 if (ValidarPermisosGPS()==true){
                     if(MetodosSharedPreference.ObtenerEstatusEntregaPref(prs).equals("En Ruta")
                             || MetodosSharedPreference.ObtenerEstatusEntregaPref(prs).equals("Programada")){
@@ -81,6 +84,7 @@ public class DetallesEntregas extends AppCompatActivity {
         fab_regresar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                vibrator.vibrate(50);
                 Intent i = new Intent(DetallesEntregas.this, ActivityEntregas.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(i);
@@ -88,6 +92,49 @@ public class DetallesEntregas extends AppCompatActivity {
         });
     }
 
+    private void IncializadorView() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        material_recycler= (RecyclerView) findViewById(R.id.material_recycler);
+        txt_detalle_folio_entrega= (TextView) findViewById(R.id.txt_detalle_folio_entrega);
+        txt_detalle_entrega_pedido= (TextView) findViewById(R.id.txt_detalle_entrega_pedido);
+        txt_detalle_ruta= (TextView) findViewById(R.id.txt_detalle_ruta);
+        txt_detalle_estatus= (TextView) findViewById(R.id.txt_detalle_estatus);
+        txt_detalle_cliente= (TextView) findViewById(R.id.txt_detalle_cliente);
+        txt_detalle_direccion= (TextView) findViewById(R.id.txt_detalle_direccion);
+        txt_detalle_comentario= (TextView) findViewById(R.id.txt_detalle_comentario);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab_regresar = (FloatingActionButton) findViewById(R.id.fab_regresar);
+
+        txt_detalle_folio_entrega.setText("Folio "+MetodosSharedPreference.ObtenerFolioEntregaPref(prs));
+        Log.i("FOLIO", MetodosSharedPreference.ObtenerFolioEntregaPref(prs));
+
+        txt_detalle_entrega_pedido.setText(MetodosSharedPreference.ObtenerEntregaPedido(prs));
+        Log.i("ENTREGA", MetodosSharedPreference.ObtenerEntregaPedido(prs));
+
+        txt_detalle_ruta.setText("Pertenece a la ruta "+MetodosSharedPreference.ObtenerFolioRutaPref(prs));
+        Log.i("RUTA", MetodosSharedPreference.ObtenerFolioRutaPref(prs));
+
+        if(MetodosSharedPreference.ObtenerEstatusEntregaPref(prs).equals("En Ruta")||MetodosSharedPreference.ObtenerEstatusEntregaPref(prs).equals("Programado")) {
+            txt_detalle_estatus.setText("Estatus sin iniciar");
+        }else {
+            txt_detalle_estatus.setText("Estatus entrega iniciada");
+        }
+        Log.i("ESTATUS", MetodosSharedPreference.ObtenerEstatusEntregaPref(prs));
+
+        txt_detalle_cliente.setText(MetodosSharedPreference.ObtenerClienteEntregaPref(prs));
+        Log.i("CLIENTE", MetodosSharedPreference.ObtenerClienteEntregaPref(prs));
+
+        txt_detalle_direccion.setText(MetodosSharedPreference.ObtenerDireccionEntregaPref(prs));
+        Log.i("DIRECCIÓN", MetodosSharedPreference.ObtenerDireccionEntregaPref(prs));
+
+        txt_detalle_comentario.setText(MetodosSharedPreference.ObtenerComentarioEntregaPref(prs));
+        Log.i("COMENTARIO", MetodosSharedPreference.ObtenerComentarioEntregaPref(prs));
+
+        ObtenerEntrega();
+    }
     public boolean ValidarPermisosGPS(){
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -123,7 +170,7 @@ public class DetallesEntregas extends AppCompatActivity {
 
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-
+                dialog.dismiss();
             }
         });
         alert.show();
@@ -156,55 +203,11 @@ public class DetallesEntregas extends AppCompatActivity {
             }
         });
     }
-
     @Override
     public void onBackPressed() {
         Intent i = new Intent(DetallesEntregas.this, ActivityEntregas.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
-    }
-    private void IncializadorView() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
-
-        material_recycler= (RecyclerView) findViewById(R.id.material_recycler);
-        txt_detalle_folio_entrega= (TextView) findViewById(R.id.txt_detalle_folio_entrega);
-        txt_detalle_entrega_pedido= (TextView) findViewById(R.id.txt_detalle_entrega_pedido);
-        txt_detalle_ruta= (TextView) findViewById(R.id.txt_detalle_ruta);
-        txt_detalle_estatus= (TextView) findViewById(R.id.txt_detalle_estatus);
-        txt_detalle_cliente= (TextView) findViewById(R.id.txt_detalle_cliente);
-        txt_detalle_direccion= (TextView) findViewById(R.id.txt_detalle_direccion);
-        txt_detalle_comentario= (TextView) findViewById(R.id.txt_detalle_comentario);
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab_regresar = (FloatingActionButton) findViewById(R.id.fab_regresar);
-
-        txt_detalle_folio_entrega.setText("Folio entrega "+MetodosSharedPreference.ObtenerFolioEntregaPref(prs));
-        Log.i("FOLIO", MetodosSharedPreference.ObtenerFolioEntregaPref(prs));
-
-        txt_detalle_entrega_pedido.setText(MetodosSharedPreference.ObtenerEntregaPedido(prs));
-        Log.i("ENTREGA", MetodosSharedPreference.ObtenerEntregaPedido(prs));
-
-        txt_detalle_ruta.setText("Pertenece a la ruta "+MetodosSharedPreference.ObtenerFolioRutaPref(prs));
-        Log.i("RUTA", MetodosSharedPreference.ObtenerFolioRutaPref(prs));
-
-        if(MetodosSharedPreference.ObtenerEstatusEntregaPref(prs).equals("En Ruta")||MetodosSharedPreference.ObtenerEstatusEntregaPref(prs).equals("Programado")) {
-            txt_detalle_estatus.setText("Estatus sin iniciar");
-        }else {
-            txt_detalle_estatus.setText("Estatus entrega iniciada");
-        }
-        Log.i("ESTATUS", MetodosSharedPreference.ObtenerEstatusEntregaPref(prs));
-
-        txt_detalle_cliente.setText(MetodosSharedPreference.ObtenerClienteEntregaPref(prs));
-        Log.i("CLIENTE", MetodosSharedPreference.ObtenerClienteEntregaPref(prs));
-
-        txt_detalle_direccion.setText(MetodosSharedPreference.ObtenerDireccionEntregaPref(prs));
-        Log.i("DIRECCIÓN", MetodosSharedPreference.ObtenerDireccionEntregaPref(prs));
-
-        txt_detalle_comentario.setText(MetodosSharedPreference.ObtenerComentarioEntregaPref(prs));
-        Log.i("COMENTARIO", MetodosSharedPreference.ObtenerComentarioEntregaPref(prs));
-
-        ObtenerEntrega();
     }
     public void ObtenerEntrega(){
         Call<List<Detalles_entregas_retrofit>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).MaterialEntrega(

@@ -95,7 +95,7 @@
         <item name="android:textColorHint">@color/texto_blanco</item>
     </style>
 
-    <style name="btn_finalizar_entrega" parent="AppTheme" >
+    <style name="btn_finalizar_entrega" parent="AppTheme">
         <item name="colorButtonNormal">@color/texto_rojo</item>
         <item name="colorControlHighlight">@android:color/white</item>
     </style>

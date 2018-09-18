@@ -40,19 +40,19 @@ import retrofit2.Response;
 
 public class SelectorActivity extends AppCompatActivity {
 
-    String text_sucursal,text_sociedad;
+    private String text_sucursal,text_sociedad;
 
     /******variables para spinners*********/
-    Spinner spinner_sucursal, spinner_local;
+    private Spinner spinner_sucursal, spinner_local;
 
     /*******variable para boton**********/
-    Button boton_ingresar;
-    CardView cardView_bloqueo;
-    TextInputEditText textInputEditText_codigo_seguridad;
+    private Button boton_ingresar;
+    private CardView cardView_bloqueo;
+    private TextInputEditText textInputEditText_codigo_seguridad;
 
     /******* variable para preferencias*****/
     private SharedPreferences sharedPreferences;
-    Spinner_Adaptador SA;
+    private Spinner_Adaptador SA;
     private Animation codigo_animacion;
     private String txtprueba1;
     private String txtprueba2;

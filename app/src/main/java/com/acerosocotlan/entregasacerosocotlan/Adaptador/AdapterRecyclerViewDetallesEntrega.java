@@ -40,6 +40,8 @@ public class AdapterRecyclerViewDetallesEntrega extends RecyclerView.Adapter<Ada
     public void onBindViewHolder(@NonNull EntregasDetallesAdapterRecyclerHolder holder, int position) {
         detallesEntregascamionInstancia = detallesEntregaArrayList.get(position);
         holder.txt_detalle_material.setText(detallesEntregascamionInstancia.getMaterial());
+        holder.txt_cantidad_material.setText(detallesEntregascamionInstancia.getPiezas());
+        holder.txt_unidad_material.setText(detallesEntregascamionInstancia.getUnidad());
     }
 
     @Override
@@ -47,13 +49,14 @@ public class AdapterRecyclerViewDetallesEntrega extends RecyclerView.Adapter<Ada
         return detallesEntregaArrayList.size();
     }
 
-
     public class EntregasDetallesAdapterRecyclerHolder extends RecyclerView.ViewHolder{
-        private TextView txt_detalle_material;
+        private TextView txt_detalle_material,txt_cantidad_material,txt_unidad_material;
 
         public EntregasDetallesAdapterRecyclerHolder(View itemView) {
             super(itemView);
             txt_detalle_material = (TextView) itemView.findViewById(R.id.txt_detalle_material);
+            txt_cantidad_material = (TextView) itemView.findViewById(R.id.txt_cantidad_material);
+            txt_unidad_material = (TextView) itemView.findViewById(R.id.txt_unidad_material);
         }
     }
 }

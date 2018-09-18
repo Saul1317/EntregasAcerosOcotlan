@@ -57,7 +57,7 @@ public class ActivityEntregas extends AppCompatActivity {
     //VIEWS
     private RecyclerView entregaRecycler;
     //DATOS EXTERNOS
-    ProgressDialog progressDoalog;
+    private ProgressDialog progressDoalog;
     //SHARED PREFERENCE
     private SharedPreferences prs;
     private SwipeRefreshLayout swipeRefreshLayout;

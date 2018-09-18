@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -80,7 +81,7 @@ public class FinalizarRutaActivity extends AppCompatActivity {
     private SharedPreferences prs;
     private Localizacion localizacion;
     private ProgressDialog progressDoalog;
-
+    private Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,12 +91,14 @@ public class FinalizarRutaActivity extends AppCompatActivity {
         imagenEvidencia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                vibrator.vibrate(50);
                 EjecutarPermisosCamara();
             }
         });
         botonEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                vibrator.vibrate(50);
                 if (pathKilometraje.isEmpty()){
                     DialogoValidacionFoto();
                 }else{
@@ -116,6 +119,7 @@ public class FinalizarRutaActivity extends AppCompatActivity {
     public void Inicializador(){
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         imagenEvidencia =(ImageView) findViewById(R.id.imagen_formulario_finalizar);
         img_finalizar_recargar_foto1 =(ImageView) findViewById(R.id.img_finalizar_recargar_foto1);

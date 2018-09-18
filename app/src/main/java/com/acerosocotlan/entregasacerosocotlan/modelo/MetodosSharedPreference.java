@@ -146,4 +146,32 @@ public class MetodosSharedPreference {
     public static String ObtenerPruebaEntregaPref(SharedPreferences prs){
         return prs.getString("estado_entrega",null);
     }
+
+    public static void GuardarFechaProgramada(SharedPreferences prs,String llegada){
+        SharedPreferences.Editor editor = prs.edit();
+        editor.putString("fecha_programada_ruta", llegada);
+        editor.apply();
+    }
+    public static String ObtenerFechaProgramada(SharedPreferences prs) {
+        return prs.getString("fecha_programada_ruta",null);
+    }
+
+    public static void GuardarNumEntregas(SharedPreferences prs, String numEntregas) {
+        SharedPreferences.Editor editor = prs.edit();
+        editor.putString("num_entregas", numEntregas);
+        editor.apply();
+    }
+    public static String ObtenerNumEntregas(SharedPreferences prs) {
+        return prs.getString("num_entregas",null);
+    }
+
+    public static void GuardarFechaInicioRuta(SharedPreferences prs, String fechaInicio) {
+        SharedPreferences.Editor editor = prs.edit();
+        editor.putString("fecha_inicio_ruta", fechaInicio);
+        editor.apply();
+    }
+
+    public static String ObtenerFechaInicioRuta(SharedPreferences prs) {
+        return prs.getString("fecha_inicio_ruta",null);
+    }
 }

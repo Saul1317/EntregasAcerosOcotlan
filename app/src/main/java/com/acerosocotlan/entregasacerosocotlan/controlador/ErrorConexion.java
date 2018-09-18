@@ -14,7 +14,7 @@ import com.acerosocotlan.entregasacerosocotlan.modelo.ValidacionConexion;
 public class ErrorConexion extends AppCompatActivity {
 
     private TextView txt_error_conexion;
-    FloatingActionButton fab;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

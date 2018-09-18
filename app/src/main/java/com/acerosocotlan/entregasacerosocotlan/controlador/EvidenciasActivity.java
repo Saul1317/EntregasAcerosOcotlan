@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -75,13 +76,13 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 public class EvidenciasActivity extends AppCompatActivity {
 
     private static final int REQUEST_CAMERA = 1;
-    LinearLayout linear_layout_descripcion, linear_layout_descripcion1, linear_layout_descripcion2, linear_layout_descripcion3;
-    FrameLayout foto_acuse_recibo,  foto_evidencia1, foto_evidencia2, foto_evidencia3;
-    ImageView img_acuse_recibo, img_evidecia1, img_evidecia2, img_evidecia3,
+    private LinearLayout linear_layout_descripcion, linear_layout_descripcion1, linear_layout_descripcion2, linear_layout_descripcion3;
+    private FrameLayout foto_acuse_recibo,  foto_evidencia1, foto_evidencia2, foto_evidencia3;
+    private ImageView img_acuse_recibo, img_evidecia1, img_evidecia2, img_evidecia3,
     img_recargar_foto1, img_recargar_foto2, img_recargar_foto3, img_recargar_foto4;
-    TextView txt_evidencia1,txt_evidencia2,txt_evidencia3;
-    TextInputEditText text_comentario_evidencia;
-    Button btn_mandar_fotos_finalizar_entrega;
+    private TextView txt_evidencia1,txt_evidencia2,txt_evidencia3;
+    private TextInputEditText text_comentario_evidencia;
+    private Button btn_mandar_fotos_finalizar_entrega;
     private SharedPreferences prs;
     private String fotoPathTemp = "";
     private String pathAcuseRecibo = "";
@@ -93,6 +94,7 @@ public class EvidenciasActivity extends AppCompatActivity {
     private Calendar calendar;
     static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private Localizacion localizacion;
+    private Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +105,7 @@ public class EvidenciasActivity extends AppCompatActivity {
         foto_acuse_recibo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                vibrator.vibrate(50);
                 numEvidencia=1;
                 EjecutarPermisosCamara();
             }
@@ -111,6 +114,7 @@ public class EvidenciasActivity extends AppCompatActivity {
         foto_evidencia1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                vibrator.vibrate(50);
                 numEvidencia=2;
                 EjecutarPermisosCamara();
 
@@ -120,6 +124,7 @@ public class EvidenciasActivity extends AppCompatActivity {
         foto_evidencia2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                vibrator.vibrate(50);
                 numEvidencia=3;
                 EjecutarPermisosCamara();
             }
@@ -128,6 +133,7 @@ public class EvidenciasActivity extends AppCompatActivity {
         foto_evidencia3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                vibrator.vibrate(50);
                 numEvidencia=4;
                 EjecutarPermisosCamara();
             }
@@ -136,6 +142,7 @@ public class EvidenciasActivity extends AppCompatActivity {
         btn_mandar_fotos_finalizar_entrega.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                vibrator.vibrate(50);
                 if(!pathAcuseRecibo.isEmpty()){
                     DialogoConfirmacion();
                 }else{
@@ -146,6 +153,7 @@ public class EvidenciasActivity extends AppCompatActivity {
     }
     private void InicializadorView() {
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         foto_acuse_recibo = (FrameLayout) findViewById(R.id.foto_acuse_recibo);
         text_comentario_evidencia= (TextInputEditText) findViewById(R.id.text_comentario_evidencia);
         linear_layout_descripcion = (LinearLayout) findViewById(R.id.linear_layout_descripcion);
@@ -174,7 +182,7 @@ public class EvidenciasActivity extends AppCompatActivity {
         foto_evidencia3.setEnabled(false);
         foto_evidencia3.setVisibility(View.INVISIBLE);
         progressDoalog = new ProgressDialog(EvidenciasActivity.this);
-        progressDoalog.setMessage("Mandando los datos, espere un poco");
+        progressDoalog.setMessage("Mandando los datos");
         progressDoalog.setCancelable(false);
         progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     }
@@ -335,6 +343,7 @@ public class EvidenciasActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDoalog.dismiss();
+                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
@@ -390,8 +399,8 @@ public class EvidenciasActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 Log.i("FOTO",t.getMessage());
-                MostrarDialogCustomNoConfiguracion();
                 progressDoalog.dismiss();
+                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
@@ -423,7 +432,6 @@ public class EvidenciasActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 Log.i("FOTO",t.getMessage());
-                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
@@ -455,7 +463,6 @@ public class EvidenciasActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 Log.i("FOTO",t.getMessage());
-                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
@@ -487,7 +494,6 @@ public class EvidenciasActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 Log.i("FOTO",t.getMessage());
-                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
@@ -519,6 +525,7 @@ public class EvidenciasActivity extends AppCompatActivity {
         alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogErrorConexion;
         alertDialog.show();
         final FloatingActionButton botonEntendido = (FloatingActionButton) dialoglayout.findViewById(R.id.fab_recargar_app);
+
         botonEntendido.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

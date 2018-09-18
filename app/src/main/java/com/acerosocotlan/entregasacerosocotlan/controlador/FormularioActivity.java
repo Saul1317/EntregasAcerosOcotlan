@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -96,7 +97,8 @@ public class FormularioActivity extends AppCompatActivity {
     private Calendar calendar;
     private SharedPreferences prs;
     private ProgressDialog progressDoalog;
-    Localizacion localizacion;
+    private Localizacion localizacion;
+    private Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,12 +109,14 @@ public class FormularioActivity extends AppCompatActivity {
         imagenEvidencia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                vibrator.vibrate(50);
                 EjecutarPermisosCamara();
             }
         });
         botonEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                vibrator.vibrate(50);
                 if(pathKilometraje.isEmpty()){
                     DialogoValidacionFoto();
                 }else{
@@ -130,6 +134,7 @@ public class FormularioActivity extends AppCompatActivity {
         });
     }
     public void Inicializador(){
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -239,7 +244,7 @@ public class FormularioActivity extends AppCompatActivity {
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
                 progressDoalog = new ProgressDialog(FormularioActivity.this);
-                progressDoalog.setMessage("Preparando los datos");
+                progressDoalog.setMessage("Mandando los datos");
                 progressDoalog.setCancelable(false);
                 progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDoalog.show();

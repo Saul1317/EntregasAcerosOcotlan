@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/texto_blanco"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".controlador.DetallesRutas"
+    tools:showIn="@layout/activity_detalles_rutas">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/colorPrimary">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="bottom"
+                android:layout_margin="15dp">
+                <TextView
+                    android:id="@+id/txt_folio_ruta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:text="Folio de Ruta"
+                    android:textSize="30sp"
+                    android:textColor="@color/texto_blanco"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/txt_detalles_fecha_programada"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="@color/texto_blanco"
+                    android:text="Programado para el dia 15/09/2018" />
+                <TextView
+                    android:id="@+id/txt_cantidad_entregas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="@color/texto_blanco"
+                    android:text="Esta ruta tiene 6 entregas" />
+                <TextView
+                    android:id="@+id/txt_detalle_ruta_estatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="@color/texto_blanco"
+                    android:text="Estatus: Sin Iniciar" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/entregas_disponibles"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="10dp"
+            android:paddingLeft="16dp"
+            android:paddingBottom="10dp"
+            android:paddingRight="16dp">
+        </android.support.v7.widget.RecyclerView>
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

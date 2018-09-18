@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressDialog progressDoalog;
     private SharedPreferences sharedPreferences;
     private Animation botonRecargarAnimacion;
-    FloatingActionButton fab;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

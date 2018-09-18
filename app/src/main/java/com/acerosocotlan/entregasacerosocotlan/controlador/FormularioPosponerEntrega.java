@@ -64,12 +64,12 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 public class FormularioPosponerEntrega extends AppCompatActivity {
 
     private static final int REQUEST_CAMERA = 1;
-    LinearLayout linear_layout_descripcion, linear_layout_descripcion1, linear_layout_descripcion2, linear_layout_descripcion3;
-    FrameLayout foto_acuse_recibo,  foto_evidencia1, foto_evidencia2, foto_evidencia3;
-    ImageView img_acuse_recibo, img_evidecia1, img_evidecia2, img_evidecia3, img_posponer_recargar_foto1, img_posponer_recargar_foto2, img_posponer_recargar_foto3, img_posponer_recargar_foto4;;
-    TextView txt_evidencia1,txt_evidencia2,txt_evidencia3;
-    TextInputEditText text_comentario_evidencia;
-    Button btn_mandar_fotos_evidencias_posponer;
+    private LinearLayout linear_layout_descripcion, linear_layout_descripcion1, linear_layout_descripcion2, linear_layout_descripcion3;
+    private FrameLayout foto_acuse_recibo,  foto_evidencia1, foto_evidencia2, foto_evidencia3;
+    private ImageView img_acuse_recibo, img_evidecia1, img_evidecia2, img_evidecia3, img_posponer_recargar_foto1, img_posponer_recargar_foto2, img_posponer_recargar_foto3, img_posponer_recargar_foto4;;
+    private TextView txt_evidencia1,txt_evidencia2,txt_evidencia3;
+    private TextInputEditText text_comentario_evidencia;
+    private Button btn_mandar_fotos_evidencias_posponer;
     private SharedPreferences prs;
     private String fotoPathTemp = "";
     private String pathEvidencia1 = "";
@@ -328,6 +328,7 @@ public class FormularioPosponerEntrega extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 Log.i("FOTO",t.getMessage());
+                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
@@ -384,6 +385,7 @@ public class FormularioPosponerEntrega extends AppCompatActivity {
             public void onFailure(Call<List<String>> call, Throwable t) {
                 Log.i("FOTO",t.getMessage());
                 progressDoalog.dismiss();
+                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
@@ -418,6 +420,7 @@ public class FormularioPosponerEntrega extends AppCompatActivity {
             public void onFailure(Call<List<String>> call, Throwable t) {
                 Log.i("FOTO",t.getMessage());
                 progressDoalog.dismiss();
+                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
@@ -451,6 +454,7 @@ public class FormularioPosponerEntrega extends AppCompatActivity {
             public void onFailure(Call<List<String>> call, Throwable t) {
                 Log.i("FOTO",t.getMessage());
                 progressDoalog.dismiss();
+                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
@@ -484,10 +488,11 @@ public class FormularioPosponerEntrega extends AppCompatActivity {
             public void onFailure(Call<List<String>> call, Throwable t) {
                 Log.i("FOTO",t.getMessage());
                 progressDoalog.dismiss();
+                MostrarDialogCustomNoConfiguracion();
             }
         });
     }
-    public void EliminarFoto(){
+    private void EliminarFoto(){
         File dir = getApplicationContext().getExternalFilesDir("FotosEvidencias");
         //comprueba si es directorio.
         if (dir.isDirectory())

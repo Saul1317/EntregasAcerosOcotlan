@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -24,8 +25,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -55,6 +54,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
     private TextView nombre_chofer, peso_camion,peso_maximo_camion, placa_camion;
     private ImageView foto_chofer;
     private ProgressDialog progressDoalog;
+    Vibrator v;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +67,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 ObtenerRuta();
+                v.vibrate(50);
             }
         });
     }
@@ -198,6 +199,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
         });
     }
     public void inicializador(){
+        v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         rutasRecycler = (RecyclerView) findViewById(R.id.rutas_recycler);
         nombre_chofer = (TextView) findViewById(R.id.txt_nombre_perfil_chofer);
         nombre_chofer.setText(MetodosSharedPreference.ObtenerNombrePref(prs));
@@ -221,7 +223,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(ScrollingRutasActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);
         }
         progressDoalog = new ProgressDialog(ScrollingRutasActivity.this);
-        progressDoalog.setMessage("Preparando los datos");
+        progressDoalog.setMessage("Actualizando las rutas");
         progressDoalog.setCancelable(false);
         progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         ObtenerRuta();

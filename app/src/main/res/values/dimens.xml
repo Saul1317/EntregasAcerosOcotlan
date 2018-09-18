@@ -38,4 +38,5 @@
     <dimen name="dim_txt_fotos_evidencia">18sp</dimen>
     <dimen name="dim_txt_titulos_detalles_entrega">15sp</dimen>
     <dimen name="dim_txt_contenido_detalles_entrega">12sp</dimen>
+    <dimen name="dim_txt_boton_redondo">10sp</dimen>
 </resources>

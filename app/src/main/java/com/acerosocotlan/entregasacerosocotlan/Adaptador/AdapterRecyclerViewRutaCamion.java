@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Vibrator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.acerosocotlan.entregasacerosocotlan.R;
 import com.acerosocotlan.entregasacerosocotlan.controlador.ActivityEntregas;
 import com.acerosocotlan.entregasacerosocotlan.controlador.DescargaEntregaActivity;
+import com.acerosocotlan.entregasacerosocotlan.controlador.DetallesRutas;
 import com.acerosocotlan.entregasacerosocotlan.controlador.FormularioActivity;
 import com.acerosocotlan.entregasacerosocotlan.controlador.ScrollingRutasActivity;
 import com.acerosocotlan.entregasacerosocotlan.modelo.ConvertidorFecha;
@@ -41,6 +43,7 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
     private Activity activity;
     private Context context;
     boolean validacion = false;
+    private Vibrator vibrator;
 
     public AdapterRecyclerViewRutaCamion(List<RutaCamion_retrofit> rutasArrayList, int resource, Activity activity, Context context) {
         this.rutasArrayList = rutasArrayList;
@@ -48,6 +51,7 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
         this.activity = activity;
         this.context = context;
         sharedPreferences = activity.getSharedPreferences("Login", Context.MODE_PRIVATE);
+        vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
     }
     @Override
     public RutasAdapterRecyclerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -59,8 +63,8 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
         final RutaCamion_retrofit rutascamionInstancia = rutasArrayList.get(position);
         String fechahora = rutascamionInstancia.getProgramadaPara();
         ConvertidorFecha confecha= new ConvertidorFecha();
-        String fecha = confecha.ConvertirFecha(fechahora);
-        if (!rutascamionInstancia.getFechaInicio().toString().isEmpty()){
+        final String fecha = confecha.ConvertirFecha(fechahora);
+        if (!rutascamionInstancia.getFechaInicio().isEmpty()){
             holder.linearLayout_rutas.setBackgroundColor(Color.parseColor("#FBBC05"));
             //Log.i("COMPROVACION","Existe una entrega en estado proximo o descargando");
             validacion= true;
@@ -71,42 +75,25 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
         holder.cardViewRutas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                vibrator.vibrate(50);
                 if (validacion==true){
-                    if(rutascamionInstancia.getFechaInicio().toString().isEmpty()){
+                    if(rutascamionInstancia.getFechaInicio().isEmpty()){
                         Toast.makeText(activity, "No se puede abrir una nueva ruta", Toast.LENGTH_SHORT).show();
                     }else{
-                        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-                        alert.setMessage("Esta ruta ya fue inicializada, ¿Desea continuar?");
-                        alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                MetodosSharedPreference.GuardarRuta(sharedPreferences, rutascamionInstancia.getIdRuta().toString());
-                                Intent intent = new Intent(activity, ActivityEntregas.class);
-                                activity.startActivity(intent);
-                            }
-                        });
-
-                        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                            }
-                        });
-                        alert.show();
+                        MetodosSharedPreference.GuardarRuta(sharedPreferences, rutascamionInstancia.getIdRuta());
+                        MetodosSharedPreference.GuardarFechaProgramada(sharedPreferences, fecha);
+                        MetodosSharedPreference.GuardarNumEntregas(sharedPreferences, rutascamionInstancia.getNumEntregas());
+                        MetodosSharedPreference.GuardarFechaInicioRuta(sharedPreferences, rutascamionInstancia.getFechaInicio());
+                        Intent intent = new Intent(activity, DetallesRutas.class);
+                        activity.startActivity(intent);
                     }
                 }else{
-                    AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-                    alert.setMessage("Esta a punto de iniciar una ruta, ¿Desea continuar?");
-                    alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            MetodosSharedPreference.GuardarRuta(sharedPreferences, rutascamionInstancia.getIdRuta().toString());
-                            Intent intent = new Intent(activity, FormularioActivity.class);
-                            activity.startActivity(intent);
-                        }
-                    });
-
-                    alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                        }
-                    });
-                    alert.show();
+                    MetodosSharedPreference.GuardarRuta(sharedPreferences, rutascamionInstancia.getIdRuta());
+                    MetodosSharedPreference.GuardarFechaProgramada(sharedPreferences, fecha);
+                    MetodosSharedPreference.GuardarNumEntregas(sharedPreferences, rutascamionInstancia.getNumEntregas());
+                    MetodosSharedPreference.GuardarFechaInicioRuta(sharedPreferences, rutascamionInstancia.getFechaInicio());
+                    Intent intent = new Intent(activity, DetallesRutas.class);
+                    activity.startActivity(intent);
                 }
             }
         });
