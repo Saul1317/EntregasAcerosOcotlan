@@ -70,7 +70,6 @@
             android:label="@string/title_activity_finalizar_ruta"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -101,11 +100,11 @@
         <activity
             android:name=".controlador.SinEntregasActivity"
             android:label="@string/title_activity_sin_entregas"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".controlador.DetallesRutas"
             android:label="@string/title_activity_detalles_rutas"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>

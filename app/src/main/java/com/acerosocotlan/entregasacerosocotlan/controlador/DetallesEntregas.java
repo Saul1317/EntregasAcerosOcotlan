@@ -152,7 +152,7 @@ public class DetallesEntregas extends AppCompatActivity {
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
                 progressDoalog = new ProgressDialog(DetallesEntregas.this);
-                progressDoalog.setMessage("Enviando los datos");
+                progressDoalog.setMessage("Iniciando la entrega");
                 progressDoalog.setCancelable(false);
                 progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDoalog.show();
@@ -180,11 +180,21 @@ public class DetallesEntregas extends AppCompatActivity {
         return simpleDateFormat.format(calendar.getTime()).toString();
     }
     public void IniciarEntrega(){
+        String primeraVez="";
+
+        if(MetodosSharedPreference.ObtenerNumEntregasTotal(prs).equals(MetodosSharedPreference.ObtenerNumEntregasActual(prs))){
+            primeraVez="1";
+            Log.i("AVISO PERSONAL","NO SE MANDA EL MENSAJE EN LA PRIMERA ENTREGA");
+        }else{
+            primeraVez="0";
+            Log.i("AVISO PERSONAL","SI SE MANDA EL MENSAJE APARTIR DE LA SEGUNDA ENTREGA");
+        }
         Call<List<String>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).IniciaEntrega(
                 "iniciarentrega_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"_inicio/"+MetodosSharedPreference.getSociedadPref(prs),//llegada
                 ObtenerFecha(),
                 String.valueOf(localizacion.getLatitude()),
-                String.valueOf(localizacion.getLongitud()));
+                String.valueOf(localizacion.getLongitud()),
+                primeraVez);
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {

@@ -165,6 +165,24 @@ public class MetodosSharedPreference {
         return prs.getString("num_entregas",null);
     }
 
+    public static void GuardarNumEntregasTotal(SharedPreferences prs, String numEntregas) {
+        SharedPreferences.Editor editor = prs.edit();
+        editor.putString("num_entregas_total", numEntregas);
+        editor.apply();
+    }
+    public static String ObtenerNumEntregasTotal(SharedPreferences prs) {
+        return prs.getString("num_entregas_total",null);
+    }
+
+    public static void GuardarNumEntregasActual(SharedPreferences prs, String numEntregas) {
+        SharedPreferences.Editor editor = prs.edit();
+        editor.putString("num_entregas_actual", numEntregas);
+        editor.apply();
+    }
+    public static String ObtenerNumEntregasActual(SharedPreferences prs) {
+        return prs.getString("num_entregas_actual",null);
+    }
+
     public static void GuardarFechaInicioRuta(SharedPreferences prs, String fechaInicio) {
         SharedPreferences.Editor editor = prs.edit();
         editor.putString("fecha_inicio_ruta", fechaInicio);

@@ -282,7 +282,7 @@ public class SelectorActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Prueba_retrofit> call, Throwable t) {
-                MostrarDialogCustomNoConfiguracion();
+                Log.i("getURL","ERROR: "+t.toString());
                 progressDoalog.dismiss();
             }
         });

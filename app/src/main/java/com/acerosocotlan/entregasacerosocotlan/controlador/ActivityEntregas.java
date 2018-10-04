@@ -122,10 +122,12 @@ public class ActivityEntregas extends AppCompatActivity {
             public void onFailure(Call<List<EntregasCamion_retrofit>> call, Throwable t) {
                 progressDoalog.dismiss();
                 swipeRefreshLayout.setRefreshing(false);
-                MostrarDialogCustomNoConfiguracion();
+                //MostrarDialogCustomNoConfiguracion();
+                Log.i("ERROR", t.toString());
             }
         });
     }
+
     public void LlenarRecyclerView(List<EntregasCamion_retrofit> camion){
         LinearLayoutManager l = new LinearLayoutManager(getApplicationContext());
         l.setOrientation(LinearLayoutManager.VERTICAL);
@@ -133,6 +135,7 @@ public class ActivityEntregas extends AppCompatActivity {
         AdapterRecyclerViewEntregaCamion arv = new AdapterRecyclerViewEntregaCamion(camion,R.layout.cardview_entregas, ActivityEntregas.this, getApplicationContext());
         entregaRecycler.setAdapter(arv);
     }
+
     private void MostrarDialogCustomNoConfiguracion(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.DialogErrorConexion);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -158,6 +161,7 @@ public class ActivityEntregas extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public void onBackPressed() {
         Intent i = new Intent(ActivityEntregas.this, ScrollingRutasActivity.class);

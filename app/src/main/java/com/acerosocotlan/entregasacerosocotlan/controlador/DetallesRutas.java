@@ -75,7 +75,7 @@ public class DetallesRutas extends AppCompatActivity {
 
         alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-
+                dialog.dismiss();
             }
         });
         alert.show();

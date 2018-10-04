@@ -244,7 +244,7 @@ public class FormularioActivity extends AppCompatActivity {
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
                 progressDoalog = new ProgressDialog(FormularioActivity.this);
-                progressDoalog.setMessage("Mandando los datos");
+                progressDoalog.setMessage("Iniciando la ruta");
                 progressDoalog.setCancelable(false);
                 progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDoalog.show();

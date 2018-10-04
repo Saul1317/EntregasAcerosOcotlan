@@ -10,6 +10,7 @@ import android.os.Vibrator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,7 +87,10 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
                         MetodosSharedPreference.GuardarDireccionEntrega(sharedPreferences, entregaArrayList.get(position).getDireccion());
                         MetodosSharedPreference.GuardarComentarioEntrega(sharedPreferences, entregaArrayList.get(position).getCoentrega());
                         MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences, entregaArrayList.get(position).getFechaLlegada());
-                        DialogoConfirmacionContinuarEntrega();
+                        MetodosSharedPreference.GuardarNumEntregasActual(sharedPreferences, String.valueOf(entregaArrayList.size()));
+                        //DialogoConfirmacionContinuarEntrega();
+                        Intent i = new Intent(context, DetallesEntregas.class);
+                        activity.startActivity(i);
                     }
                 }
                 //Si la validacion sale negativa entonces no hay ninguna entrega iniciada eso significa que se debera almacenar la informacion de la entrega para mostrarla en la siguiente ventana.
@@ -98,6 +102,12 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
                         MetodosSharedPreference.GuardarDireccionEntrega(sharedPreferences, entregaArrayList.get(position).getDireccion());
                         MetodosSharedPreference.GuardarComentarioEntrega(sharedPreferences, entregaArrayList.get(position).getCoentrega());
                         MetodosSharedPreference.GuardarFechasEntrega(sharedPreferences, entregaArrayList.get(position).getFechaLlegada());
+                        MetodosSharedPreference.GuardarNumEntregasActual(sharedPreferences, String.valueOf(entregaArrayList.size()));
+                        if(Integer.parseInt(MetodosSharedPreference.ObtenerNumEntregasTotal(sharedPreferences))==entregaArrayList.size()){
+                            Log.i("PRIMERA VEZ","Es la primera vez");
+                        } else{
+                            Log.i("NO PRIMERA VEZ","Es la primera vez");
+                        }
                         Intent i = new Intent(context, DetallesEntregas.class);
                         activity.startActivity(i);
                 }
@@ -130,8 +140,7 @@ public class AdapterRecyclerViewEntregaCamion extends RecyclerView.Adapter<Adapt
         alert.setMessage("La entrega "+MetodosSharedPreference.ObtenerFolioEntregaPref(sharedPreferences)+" ya fue iniciada, ¿Desea continuar?");
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
-                Intent i = new Intent(context, DetallesEntregas.class);
-                activity.startActivity(i);
+
 
             }
         });

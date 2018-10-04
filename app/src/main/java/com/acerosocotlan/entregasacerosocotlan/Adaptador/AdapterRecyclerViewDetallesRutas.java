@@ -49,7 +49,6 @@ public class AdapterRecyclerViewDetallesRutas extends RecyclerView.Adapter<Adapt
     public int getItemCount() {
         return detalles_ruta_retrofitList.size();
     }
-
     public class RutaDetallesAdapterRecyclerHolder extends RecyclerView.ViewHolder{
         private TextView txt_detalle_ruta_entrega,txt_detalle_ruta_cliente, txt_detalle_ruta_direccion;
 

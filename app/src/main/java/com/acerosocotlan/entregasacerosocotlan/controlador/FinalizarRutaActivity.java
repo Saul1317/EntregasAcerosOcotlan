@@ -228,7 +228,7 @@ public class FinalizarRutaActivity extends AppCompatActivity {
         alert.setPositiveButton("Entendido", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
                 progressDoalog = new ProgressDialog(FinalizarRutaActivity.this);
-                progressDoalog.setMessage("Preparando los datos");
+                progressDoalog.setMessage("Finalizando la ruta");
                 progressDoalog.setCancelable(false);
                 progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDoalog.show();

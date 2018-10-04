@@ -39,7 +39,7 @@ public class SplashV2 extends AppCompatActivity {
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         Intent intentSelector = new Intent(SplashV2.this,SelectorActivity.class);
         Intent intentRutas = new Intent(SplashV2.this, ScrollingRutasActivity.class);
-        Intent intentPrueba = new Intent(SplashV2.this, DetallesRutas.class);
+        //Intent intentPrueba = new Intent(SplashV2.this, DetallesRutas.class);
         if (TextUtils.isEmpty(MetodosSharedPreference.getSucursalPref(prs)) || TextUtils.isEmpty(MetodosSharedPreference.ObtenerPlacasPref(prs))){
             startActivity(intentSelector);
         }else{

@@ -79,7 +79,8 @@ public interface NetworkService {
     Call<List<String>> IniciaEntrega(@Url String url,
                                                      @Field("fecha") String fecha,
                                                      @Field("latitud") String latitud,
-                                                     @Field("longitud") String longitud);
+                                                     @Field("longitud") String longitud,
+                                                     @Field("primeravez") String primera_vez);
     @FormUrlEncoded
     @POST
     Call<List<String>> RegresarEstadoEntrega(@Url String url,

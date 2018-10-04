@@ -84,13 +84,14 @@ public class AdapterRecyclerViewRutaCamion extends RecyclerView.Adapter<AdapterR
                         MetodosSharedPreference.GuardarFechaProgramada(sharedPreferences, fecha);
                         MetodosSharedPreference.GuardarNumEntregas(sharedPreferences, rutascamionInstancia.getNumEntregas());
                         MetodosSharedPreference.GuardarFechaInicioRuta(sharedPreferences, rutascamionInstancia.getFechaInicio());
-                        Intent intent = new Intent(activity, DetallesRutas.class);
+                        Intent intent = new Intent(activity, ActivityEntregas.class);
                         activity.startActivity(intent);
                     }
                 }else{
                     MetodosSharedPreference.GuardarRuta(sharedPreferences, rutascamionInstancia.getIdRuta());
                     MetodosSharedPreference.GuardarFechaProgramada(sharedPreferences, fecha);
                     MetodosSharedPreference.GuardarNumEntregas(sharedPreferences, rutascamionInstancia.getNumEntregas());
+                    MetodosSharedPreference.GuardarNumEntregasTotal(sharedPreferences, rutascamionInstancia.getNumEntregas());
                     MetodosSharedPreference.GuardarFechaInicioRuta(sharedPreferences, rutascamionInstancia.getFechaInicio());
                     Intent intent = new Intent(activity, DetallesRutas.class);
                     activity.startActivity(intent);

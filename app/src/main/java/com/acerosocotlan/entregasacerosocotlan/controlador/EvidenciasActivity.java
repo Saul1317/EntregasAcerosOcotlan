@@ -343,7 +343,7 @@ public class EvidenciasActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDoalog.dismiss();
-                MostrarDialogCustomNoConfiguracion();
+                Toast.makeText(EvidenciasActivity.this, "Ocurrio un error intente de nuevo", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -400,7 +400,7 @@ public class EvidenciasActivity extends AppCompatActivity {
             public void onFailure(Call<List<String>> call, Throwable t) {
                 Log.i("FOTO",t.getMessage());
                 progressDoalog.dismiss();
-                MostrarDialogCustomNoConfiguracion();
+                Toast.makeText(EvidenciasActivity.this, "Ocurrio un error intente de nuevo", Toast.LENGTH_SHORT).show();
             }
         });
     }
