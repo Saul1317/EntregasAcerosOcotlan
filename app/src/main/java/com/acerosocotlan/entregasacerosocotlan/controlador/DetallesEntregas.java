@@ -68,8 +68,7 @@ public class DetallesEntregas extends AppCompatActivity {
             public void onClick(View view) {
                 vibrator.vibrate(50);
                 if (ValidarPermisosGPS()==true){
-                    if(MetodosSharedPreference.ObtenerEstatusEntregaPref(prs).equals("En Ruta")
-                            || MetodosSharedPreference.ObtenerEstatusEntregaPref(prs).equals("Programada")){
+                    if(MetodosSharedPreference.ObtenerEstatusEntregaPref(prs).equals("En Ruta") || MetodosSharedPreference.ObtenerEstatusEntregaPref(prs).equals("Programado")){
                         DialogoConfirmacion();
                     }else{
                         Intent i = new Intent(DetallesEntregas.this, DescargaEntregaActivity.class);
@@ -184,7 +183,7 @@ public class DetallesEntregas extends AppCompatActivity {
 
         if(MetodosSharedPreference.ObtenerNumEntregasTotal(prs).equals(MetodosSharedPreference.ObtenerNumEntregasActual(prs))){
             primeraVez="1";
-            Log.i("AVISO PERSONAL","NO SE MANDA EL MENSAJE EN LA PRIMERA ENTREGA");
+            Log.i("AVISO PERSONAL"," ");
         }else{
             primeraVez="0";
             Log.i("AVISO PERSONAL","SI SE MANDA EL MENSAJE APARTIR DE LA SEGUNDA ENTREGA");
@@ -201,15 +200,17 @@ public class DetallesEntregas extends AppCompatActivity {
                 progressDoalog.dismiss();
                 if(response.isSuccessful()){
                     Toast.makeText(getApplicationContext(),"Se guardó la información", Toast.LENGTH_LONG).show();
+                    Log.e("RESPUESTA ENTREGA", response.body().toString());
                     Intent i = new Intent(DetallesEntregas.this, DescargaEntregaActivity.class);
                     startActivity(i);
                 }else{
+
                 }
             }
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDoalog.dismiss();
-
+                Log.e("ERROR INICIO", t.getMessage());
             }
         });
     }
@@ -219,9 +220,11 @@ public class DetallesEntregas extends AppCompatActivity {
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
     }
+
+    //AQUI LO TENIA ESTATICO
     public void ObtenerEntrega(){
         Call<List<Detalles_entregas_retrofit>> call = NetworkAdapter.getApiService(MetodosSharedPreference.ObtenerPruebaEntregaPref(prs)).MaterialEntrega(
-                "detallechofer_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"/gao");
+                "detallechofer_"+MetodosSharedPreference.ObtenerFolioEntregaPref(prs)+"/"+MetodosSharedPreference.getSociedadPref(prs));
         call.enqueue(new Callback<List<Detalles_entregas_retrofit>>() {
             @Override
             public void onResponse(Call<List<Detalles_entregas_retrofit>> call, Response<List<Detalles_entregas_retrofit>> response) {

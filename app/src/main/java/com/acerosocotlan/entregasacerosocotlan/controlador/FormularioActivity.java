@@ -164,7 +164,6 @@ public class FormularioActivity extends AppCompatActivity {
                     String valor = respuesta.get(0);
                     if (valor.equals("iniciada")){
                         InsertarFotoInicioRuta();
-
                     }
                 }else{
                     progressDoalog.dismiss();
@@ -197,9 +196,9 @@ public class FormularioActivity extends AppCompatActivity {
                     String valor = respuesta.get(0);
                     if (valor.equals("fotoguardada")){
                         Toast.makeText(getApplicationContext(),"Información guardada", Toast.LENGTH_LONG).show();
-                        AbrirEntregas();
                         ObtenerListaAvisos();
                         EliminarFoto();
+                        AbrirEntregas();
 
                     }else{
                         Toast.makeText(FormularioActivity.this, valor, Toast.LENGTH_SHORT).show();
