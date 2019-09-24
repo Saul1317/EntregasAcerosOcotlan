@@ -63,11 +63,18 @@ public class ActivityEntregas extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView txt_id_ruta_entregas;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entregas);
+        //Iniciamos los componentes de la vista
         Inicializador();
+
+        /*
+        * swipe refresh sirve para que haga una función al momento de arrastrar el cardview hacia abajo
+        * en este caso vuelve a cargar la lista de entregas
+        */
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -75,29 +82,32 @@ public class ActivityEntregas extends AppCompatActivity {
             }
         });
     }
-    //ACTIVITY
+
+
     public void Inicializador(){
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         MetodosSharedPreference.BorrarFolioEntrega(prs);
         entregaRecycler = (RecyclerView) findViewById(R.id.entregas_recycler);
         txt_id_ruta_entregas = (TextView) findViewById(R.id.txt_id_ruta_entregas);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeLayout);
+        //configuración de color del swipe refresh layout
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAzulGoogle);
-
         progressDoalog = new ProgressDialog(ActivityEntregas.this);
         progressDoalog.setMessage("Preparando los datos");
         progressDoalog.setCancelable(false);
         progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        txt_id_ruta_entregas.setText("Esta en la ruta "+MetodosSharedPreference.ObtenerFolioRutaPref(prs));
+        txt_id_ruta_entregas.setText("Esta en la ruta " + MetodosSharedPreference.ObtenerFolioRutaPref(prs));
         ObtenerEntrega();
     }
+
     public void AbrirSinEntregas(){
         Intent i = new Intent(ActivityEntregas.this, SinEntregasActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
     }
+
     //RETROFIT2
     public void ObtenerEntrega(){
         progressDoalog.show();
@@ -136,31 +146,6 @@ public class ActivityEntregas extends AppCompatActivity {
         entregaRecycler.setAdapter(arv);
     }
 
-    private void MostrarDialogCustomNoConfiguracion(){
-        AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.DialogErrorConexion);
-        LayoutInflater inflater = this.getLayoutInflater();
-        View dialoglayout = inflater.inflate(R.layout.activity_error_conexion, null);
-        alert.setCancelable(false);
-        alert.setView(dialoglayout);
-        final AlertDialog alertDialog = alert.create();
-        alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogErrorConexion;
-        alertDialog.show();
-        final FloatingActionButton botonEntendido = (FloatingActionButton) dialoglayout.findViewById(R.id.fab_recargar_app);
-        botonEntendido.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(ValidacionConexion.isConnectedWifi(getApplicationContext())||ValidacionConexion.isConnectedMobile(getApplicationContext())){
-                    if(ValidacionConexion.isOnline(getApplicationContext())){
-                        alertDialog.dismiss();
-                    }else{
-                        Toast.makeText(ActivityEntregas.this, "No tienes acceso a internet", Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    Toast.makeText(ActivityEntregas.this, "Esta apagado tu WIFI", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
 
     @Override
     public void onBackPressed() {

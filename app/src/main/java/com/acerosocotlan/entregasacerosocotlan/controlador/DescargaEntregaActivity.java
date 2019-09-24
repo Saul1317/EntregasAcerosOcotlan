@@ -76,7 +76,7 @@ public class DescargaEntregaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 vibrator.vibrate(50);
-                if (ValidarPermisosGPS()==true){
+                if (ValidarPermisosGPS() == true){
                     DialogoConfirmacion();
                 }else {
                     ActivityCompat.requestPermissions(DescargaEntregaActivity.this, new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},100);

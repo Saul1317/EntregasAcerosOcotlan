@@ -55,6 +55,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
     private ImageView foto_chofer;
     private ProgressDialog progressDoalog;
     Vibrator v;
+    FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +63,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scrolling_rutas);
         prs = getSharedPreferences("Login", Context.MODE_PRIVATE);
         inicializador();
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        //Botoón para obtener todas las rutas
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,14 +72,19 @@ public class ScrollingRutasActivity extends AppCompatActivity {
             }
         });
     }
+
+    //configuración del menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_scrolling_rutas, menu);
         return true;
     }
+
+    //Configuración de los botones del menú
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            //por medio del identificador se configura el botón para cerrar sesión
             case R.id.cerrar_sesion_menu:
                 dialogo();
                 return true;
@@ -86,9 +92,11 @@ public class ScrollingRutasActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
     private void remover_variables_sharedpreference(){
         prs.edit().clear().apply();
     }
+
     private void dialogo(){
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -129,11 +137,14 @@ public class ScrollingRutasActivity extends AppCompatActivity {
         });
         alert.show();
     }
+
     private void salir_sesion(){
         Intent i = new Intent(ScrollingRutasActivity.this, SelectorActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
     }
+
+    //Petición para obtener todas las rutas disponibles del camión
     public void ObtenerRuta(){
         progressDoalog.show();
         Log.i("SOCIEDAD", MetodosSharedPreference.getSociedadPref(prs));
@@ -144,6 +155,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
             public void onResponse(Call<List<RutaCamion_retrofit>> call, Response<List<RutaCamion_retrofit>> response) {
                 progressDoalog.dismiss();
                 if (response.isSuccessful()){
+                    //recogemos la respuesta
                     List<RutaCamion_retrofit> rutas_retrofit = response.body();
                     LlenarRecyclerView(rutas_retrofit);
                 }
@@ -155,6 +167,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
             }
         });
     }
+
     public void LlenarRecyclerView(List<RutaCamion_retrofit> camion){
         LinearLayoutManager l = new LinearLayoutManager(getApplicationContext());
         l.setOrientation(LinearLayoutManager.VERTICAL);
@@ -162,6 +175,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
         AdapterRecyclerViewRutaCamion arv = new AdapterRecyclerViewRutaCamion(camion,R.layout.cardview_rutas, ScrollingRutasActivity.this, getApplicationContext());
         rutasRecycler.setAdapter(arv);
     }
+
     public boolean ValidarPermisosGPS(){
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -173,6 +187,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
             return true;
         }
     }
+
     private void MostrarDialogCustomNoConfiguracion(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.DialogErrorConexion);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -198,6 +213,7 @@ public class ScrollingRutasActivity extends AppCompatActivity {
             }
         });
     }
+
     public void inicializador(){
         v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         rutasRecycler = (RecyclerView) findViewById(R.id.rutas_recycler);
@@ -212,6 +228,8 @@ public class ScrollingRutasActivity extends AppCompatActivity {
 
         peso_maximo_camion  = (TextView) findViewById(R.id.txt_peso_maximo_camion);
         peso_maximo_camion.setText("Peso maximo del camion: "+MetodosSharedPreference.ObtenerPesoMaximoCamionPref(prs));
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
 
         foto_chofer = (ImageView) findViewById(R.id.foto_perfil_chofer);
         Picasso.with(getApplicationContext()).load(MetodosSharedPreference.ObtenerFotoPref(prs)).fit().placeholder(R.drawable.obrero).into(foto_chofer);

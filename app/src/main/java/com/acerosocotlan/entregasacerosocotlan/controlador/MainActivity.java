@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.acerosocotlan.entregasacerosocotlan.Adaptador.AdapterRecyclerView;
@@ -26,7 +25,6 @@ import com.acerosocotlan.entregasacerosocotlan.modelo.MetodosSharedPreference;
 import com.acerosocotlan.entregasacerosocotlan.modelo.NetworkAdapter;
 import com.acerosocotlan.entregasacerosocotlan.modelo.ValidacionConexion;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -55,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /*
+    * Método para realizar una petición post y obtener el catálogo de los camiones disponibles en la sucursal
+    */
     public void ObtenerCamiones(){
         progressDoalog.show();
         Log.i("URL CONSULTA",MetodosSharedPreference.ObtenerPruebaEntregaPref(sharedPreferences)+"catcamiones/"+MetodosSharedPreference.getSociedadPref(sharedPreferences));
@@ -64,7 +65,9 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<List<Camion_retrofit>> call, Response<List<Camion_retrofit>> response) {
                 progressDoalog.dismiss();
                 if(response.isSuccessful()) {
+                    //si la peticón devuelve una respuesta correcta entonces alamacenamos los camiones en una lista
                     List<Camion_retrofit> camion_retrofit = response.body();
+                    // la lista es mandada por parametro
                     LlenarRecyclerView(camion_retrofit);
                     Log.i("RESPUESTA","HOLA1");
                 }else{
@@ -81,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
     public void LlenarRecyclerView(List<Camion_retrofit> camion){
         LinearLayoutManager l = new LinearLayoutManager(getApplicationContext());
         l.setOrientation(LinearLayoutManager.VERTICAL);
@@ -88,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         AdapterRecyclerView arv = new AdapterRecyclerView(camion,R.layout.cardview_choferes, MainActivity.this, getApplicationContext());
         choferesRecycler.setAdapter(arv);
     }
+
     private void MostrarDialogCustomNoConfiguracion(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.DialogErrorConexion);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -114,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     public void inicializador(){
         choferesRecycler = (RecyclerView) findViewById(R.id.choferes_recycler);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

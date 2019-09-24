@@ -58,9 +58,16 @@ public class SelectorActivity extends AppCompatActivity {
     private String txtprueba2;
     private ProgressDialog progressDoalog;
 
+    /*
+    * Las sociedades y sucursales estan estaticas dentro de la aplicación, esta forma de mostrar los datos fue mejorada
+    * en la aplicación de los choferes que esta enfocada en las sucursales para que funcione de una manera más dinamica.
+    */
+
+    //Sociedades
     String [] sociedad= {"Arandas","Autlan","Ayotlan","Bajio","DAO","GAO","GAO_resp","Ixtapa","La Cienega",
             "Laminas del Norte","Los Altos","Mucha Lamina","Pacifico","Pega","Saabsa","Tepa", "Tijuana","Zula"};
 
+    //Sucursales
     String [] adapter_arandas= {"Arandas"};
     String [] adapter_autlan= {"Carretera Morelia","Lopez Mateos","Cocula","Ciudad Guzman","Patria","Circunvalacion","El Salto","Tesistan"};
     String [] adapter_ayotlan= {"Ayotlan","Degollado"};
@@ -87,17 +94,23 @@ public class SelectorActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         /****ejecuta identificadores *****/
         Identificadores();
+        //Referencia de las shared preferences donde se almacenan los datos del chofer
         sharedPreferences = getSharedPreferences("Login", Context.MODE_PRIVATE);
 
-        /*****adapatador para spinner sociedad*****/
+        /*****Adapatador para spinner sociedad*****/
         SA = new Spinner_Adaptador(getApplicationContext(),sociedad);
         spinner_local.setAdapter(SA);
 
+        //Al spinner se le asigna el metodo para identificar cuando se selecciona un item diferente
         spinner_local.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //Se obtiene el item seleccionado
                 String spinner = spinner_local.getSelectedItem().toString();
+
+                //Se valida la sociedad
                 if (spinner.equals("Arandas")){
+                    //después se utiliza el adaptador con el arreglo de las sucursales de esa sociedad
                     SA = new Spinner_Adaptador(getApplicationContext(),adapter_arandas);
                     spinner_sucursal.setAdapter(SA);
                 } else if (spinner.equals("Autlan")){
@@ -163,18 +176,22 @@ public class SelectorActivity extends AppCompatActivity {
 
             }
         });
-
+        //Botón de ingreso
         boton_ingresar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Al hacer click en el boton se obtendrán los valores seleccionados
                 text_sucursal = spinner_sucursal.getSelectedItem().toString();
                 text_sociedad = spinner_local.getSelectedItem().toString();
                 String nuevaSociedad  = text_sociedad.replace(" ","_");
+
+                //se almacenara en las Shared Preferences
                 GuardarPreferencias(text_sociedad, nuevaSociedad);
                 prueba();
             }
         });
 
+        //Text input del código para ingresar, este método es para ocultar el teclado al iniciar la activity
         textInputEditText_codigo_seguridad.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -186,6 +203,7 @@ public class SelectorActivity extends AppCompatActivity {
             }
         });
 
+        //Método que se le asigna al text input para detectar cuando sufre un cambio
         textInputEditText_codigo_seguridad.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -197,6 +215,7 @@ public class SelectorActivity extends AppCompatActivity {
 
             }
 
+            //Después de detectar un cambio en el componente
             @Override
             public void afterTextChanged(Editable s) {
                 if(textInputEditText_codigo_seguridad.getText().length()==4){
@@ -213,13 +232,14 @@ public class SelectorActivity extends AppCompatActivity {
         });
     }
 
+    //Método para guardar sociedad y sucursal en las shared preferences
     private void GuardarPreferencias(String sucursal,String sociedad){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("sociedad", sociedad);
         editor.putString("sucursal", sucursal);
         editor.apply();
     }
-    /******* metodo identificadores ********/
+    /******* Método identificadores ********/
     private void Identificadores(){
         spinner_sucursal = (Spinner) findViewById(R.id.spinner_sucursal);
         spinner_local = (Spinner) findViewById(R.id.spinner_sociedad);
@@ -233,11 +253,13 @@ public class SelectorActivity extends AppCompatActivity {
         progressDoalog = new ProgressDialog(SelectorActivity.this);
         encryptar();
     }
-    /******* metodo para mostrar actividad ********/
+    /******* Método para mostrar actividad ********/
     private void NuevaActividad(){
         Intent i = new Intent(SelectorActivity.this, MainActivity.class);
         startActivity(i);
     }
+
+    //Se encriptan dos variables que se usarán en una petición para obtener la url del web services
     private void encryptar(){
         String text1 = "codigo";
         String text2 = "binarioxd";
@@ -255,27 +277,39 @@ public class SelectorActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+
+    //Petición para obtener la url del web service
     private void prueba(){
+        //configuración del progress bar
         progressDoalog.setMax(100);
         progressDoalog.setMessage("Validando sus datos");
         progressDoalog.setCancelable(false);
         progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDoalog.show();
+        //Petición con retrofit en donde se mandan a las dos variables encriptadas
         Call<Prueba_retrofit> call = NetworkAdapter.getApiServiceAlternativo().Solicitarprueba("egao.php",txtprueba1,txtprueba2);
         call.enqueue(new Callback<Prueba_retrofit>() {
             @Override
             public void onResponse(Call<Prueba_retrofit> call, Response<Prueba_retrofit> response) {
                 progressDoalog.dismiss();
+                //Se valida que la respuesta sea correcta
                 if(response.isSuccessful()) {
+                    //Almacenamos la respuesta en un objeto
                     Prueba_retrofit  prueba_retrofit= response.body();
+                    //validamos que no esté vacío
                     if (!prueba_retrofit.getResp().isEmpty()) {
+                        //guardamos en las shared preferences
                         MetodosSharedPreference.GuardarPruebaEntrega(sharedPreferences, prueba_retrofit.getResp());
                         Log.i("URL", MetodosSharedPreference.ObtenerPruebaEntregaPref(sharedPreferences));
+                        //abrimos la nueva ventana
                         NuevaActividad();
                     }else{
+                        //se abre un dialog en caso de que haya un error con la respuesta
                         MostrarDialogCustomNoConfiguracion();
                     }
                 }else{
+                    //se abre un dialog en caso de que haya un error con la conexión con el servidor
                     MostrarDialogCustomNoConfiguracion();
                 }
             }
@@ -287,6 +321,9 @@ public class SelectorActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    //Dialogo que le muestra al usuario que falló la conexión
     private void MostrarDialogCustomNoConfiguracion(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.DialogErrorConexion);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -297,6 +334,7 @@ public class SelectorActivity extends AppCompatActivity {
         alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogErrorConexion;
         alertDialog.show();
         final FloatingActionButton botonEntendido = (FloatingActionButton) dialoglayout.findViewById(R.id.fab_recargar_app);
+        //se valida si el usuario tiene conexión y tiene habilitado el wifi
         botonEntendido.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
